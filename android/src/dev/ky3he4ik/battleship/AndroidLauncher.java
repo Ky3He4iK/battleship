@@ -4,18 +4,17 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import dev.ky3he4ik.battleship.MyGdxGame;
 
 public class AndroidLauncher extends AndroidApplication {
-	@Override
-	protected void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
-		config.useAccelerometer = false;
-		config.useCompass = false;
+        config.useAccelerometer = false;
+        config.useCompass = false;
 //		config.useGLSurfaceView20API18 = android.os.Build.VERSION.SDK_INT < 10;
 
-		initialize(new MyGdxGame(), config);
-	}
+        initialize(new MyGdxGame(), config);
+    }
 }
