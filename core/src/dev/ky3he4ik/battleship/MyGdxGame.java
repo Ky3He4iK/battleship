@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
 public class MyGdxGame extends Game {
+    public static final int WIDTH = 800;
+    public static final int HEIGHT = 480;
     SpriteBatch batch;
     BitmapFont font;
 

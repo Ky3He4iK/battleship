@@ -10,8 +10,8 @@ public class DesktopLauncher {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
         config.title = "Battleship";
-        config.width = 800;
-        config.height = 480;
+        config.width = MyGdxGame.WIDTH;
+        config.height = MyGdxGame.HEIGHT;
         config.foregroundFPS = 60;
         config.backgroundFPS = 30;
 
