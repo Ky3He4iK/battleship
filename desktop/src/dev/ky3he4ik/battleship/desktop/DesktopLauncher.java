@@ -13,7 +13,8 @@ public class DesktopLauncher {
         config.width = MyGdxGame.WIDTH;
         config.height = MyGdxGame.HEIGHT;
         config.foregroundFPS = 60;
-        config.backgroundFPS = 30;
+        config.backgroundFPS = 20;
+        config.allowSoftwareMode = true;
 
 
         new LwjglApplication(new MyGdxGame(), config);

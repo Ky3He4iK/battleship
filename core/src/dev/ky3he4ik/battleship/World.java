@@ -1,5 +1,7 @@
 package dev.ky3he4ik.battleship;
 
+import com.badlogic.gdx.graphics.Color;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 
@@ -22,6 +24,11 @@ public class World {
 
     public static final int ROTATION_HORIZONTAL = 0;
     public static final int ROTATION_VERTICAL = 1;
+
+    public static Color COLOR_EMPTY = new Color(0, 0, .5f, 0);
+    public static Color COLOR_UNDAMAGED = new Color(0, 1, 0, 0);
+    public static Color COLOR_DAMAGED = new Color(.5f, 0, 0, 0);
+    public static Color COLOR_SUNK = new Color(1, 0, 0, 0);
 
     // cell states:
     public static final int STATE_MASK = 0xf; // reserved for more states
@@ -161,8 +168,10 @@ public class World {
     }
 
     public void reset() {
-        field.clear();
-        opened.clear();
+        if (field != null)
+            field.clear();
+        if (opened != null)
+            opened.clear();
         System.gc();
         field = new ArrayList<>(height);
         opened = new ArrayList<>(height);

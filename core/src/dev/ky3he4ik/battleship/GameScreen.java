@@ -9,11 +9,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import org.jetbrains.annotations.NotNull;
 
+import dev.ky3he4ik.battleship.ai.AIComputationFinished;
 import dev.ky3he4ik.battleship.ai.AIThread;
 
-public class GameScreen implements Screen {
+public class GameScreen implements Screen, AIComputationFinished {
+    public static final int CELL_MARGIN = 2;
+
     private @NotNull
-    AIThread thread;
+    AIThread aiThread;
     private @NotNull
     World player1, player2;
     private final MyGdxGame game;
@@ -27,6 +30,9 @@ public class GameScreen implements Screen {
     private float yMargin;
 
     private boolean forceRedraw = false;
+    private boolean aiFinished = false;
+    private boolean p1turn = true;
+    private int aiX = -1, aiY = -1;
 
     private void setConstants() {
         step = (int) Math.min(game.camera.viewportWidth / 20, game.camera.viewportHeight / 10);
@@ -45,6 +51,9 @@ public class GameScreen implements Screen {
 
     public GameScreen(final MyGdxGame game) {
         this.game = game;
+        player1 = new World(10, 10);
+        player2 = new World(10, 10);
+        aiThread = new AIThread(this, player1, player2);
 //        background = new Texture("Background_v01.jpg");
 
         setConstants();
@@ -60,18 +69,25 @@ public class GameScreen implements Screen {
         float deltaTime = Gdx.graphics.getDeltaTime();
 //        if (deltaTime > 0.05f) // if less then 20 FPS
 //            deltaTime = 0.05f;
-        totalDelta += deltaTime;
-        if (totalDelta < 1 / 5f && !forceRedraw) // 5 fps
-            return;
-        totalDelta = 0;
-        forceRedraw = false;
+//        totalDelta += deltaTime;
+//        if (totalDelta < 1 / 5f && !forceRedraw) // 5 fps
+//            return;
+//        totalDelta = 0;
+//        forceRedraw = false;
+        if (!p1turn && aiFinished) {
+            aiFinished = false;
+            aiThread.turn();
+        }
+//        if (Gdx.input.isButtonJustPressed())
 
         game.batch.begin();
 
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+        Gdx.gl.glClearColor(.7f, .7f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        game.batch.end();
+
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        game.shapeRenderer.setColor(.3f, .3f, 1f, 1f);
+        game.shapeRenderer.setColor(1, 1, 1, 1);
 
         for (int i = 0; i <= 10; i++) {
             game.shapeRenderer.line(xMargin + i * step, yMargin, xMargin + i * step,
@@ -86,11 +102,55 @@ public class GameScreen implements Screen {
             game.shapeRenderer.line(xMargin + 10 * step + middleGap, yMargin + i * step,
                     game.camera.viewportWidth - xMargin, yMargin + i * step);
         }
+        game.shapeRenderer.end();
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                switch (player1.getState(i, j)) {
+                    case World.STATE_EMPTY:
+                        game.shapeRenderer.setColor(World.COLOR_EMPTY);
+                        break;
+                    case World.STATE_UNDAMAGED:
+                        game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
+                        break;
+                    case World.STATE_DAMAGED:
+                        game.shapeRenderer.setColor(World.COLOR_DAMAGED);
+                        break;
+                    case World.STATE_SUNK:
+                        game.shapeRenderer.setColor(World.COLOR_SUNK);
+                        break;
+
+                }
+                game.shapeRenderer.rect(xMargin + i * step + CELL_MARGIN,
+                        yMargin + j * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
+                switch (player2.getState(i, j)) {
+                    case World.STATE_EMPTY:
+                        game.shapeRenderer.setColor(World.COLOR_EMPTY);
+                        break;
+                    case World.STATE_UNDAMAGED:
+                        game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
+                        break;
+                    case World.STATE_DAMAGED:
+                        game.shapeRenderer.setColor(World.COLOR_DAMAGED);
+                        break;
+                    case World.STATE_SUNK:
+                        game.shapeRenderer.setColor(World.COLOR_SUNK);
+                        break;
+                }
+                game.shapeRenderer.rect(xMargin + middleGap + (i + 10) * step + CELL_MARGIN,
+                        yMargin + j * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
+            }
+        }
 
         game.shapeRenderer.end();
-        game.font.setColor(1, 0, 0f, 1);
-        game.font.draw(game.batch, "Mouse: " + Gdx.input.getX() + "x" + Gdx.input.getY(), game.camera.viewportWidth / 2, game.camera.viewportHeight / 2);
+
+        game.batch.begin();
+
+        game.font.setColor(.3f, .3f, .7f, 1);
+        game.font.draw(game.batch, "Mouse: " + Gdx.input.getX() + "x" + Gdx.input.getY(), 10, game.camera.viewportHeight - game.font.getCapHeight());
+        if (!aiFinished)
+            game.font.draw(game.batch, "Loading...", 10, game.camera.viewportHeight - 2 * game.font.getCapHeight());
         game.batch.end();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -104,8 +164,9 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        game.camera.setToOrtho(false, width, height);
-        game.shapeRenderer.setProjectionMatrix(game.camera.combined);
+        game.camera.update();
+        game.shapeRenderer.updateMatrices();
+        game.batch.setProjectionMatrix(game.camera.combined);
         setConstants();
         forceRedraw = true;
     }
@@ -128,7 +189,19 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 //        background.dispose();
-        thread.dispose();
+        aiThread.dispose();
 
+    }
+
+    @Override
+    public void aiTurnFinished(int i, int j) {
+        aiX = i;
+        aiY = j;
+        aiFinished = true;
+    }
+
+    @Override
+    public void aiShipsPlaced() {
+        aiFinished = true;
     }
 }
