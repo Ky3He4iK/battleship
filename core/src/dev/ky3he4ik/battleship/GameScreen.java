@@ -91,13 +91,27 @@ public class GameScreen implements Screen, AIComputationFinished {
 //            return;
 //        totalDelta = 0;
 //        forceRedraw = false;
+
+        // actions
         if (!p1turn && aiFinished) {
+            if (aiX < 0 || aiY < 0) {
+                aiFinished = false;
+                aiThread.turn();
+                Gdx.app.log("GameScreen", "AI action is incorrect");
+                return;
+            }
+            player1.open(aiX, aiY);
+            if (!player1.isAlive())
+                Gdx.app.error("GameScreen", "P2 won!");
+            p1turn = player1.getState(aiX, aiY) == World.STATE_EMPTY;
             aiFinished = false;
             aiThread.turn();
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
             proceedClick(Gdx.input.getX(), Gdx.input.getY(), true);
 
+
+        // draw
         game.batch.begin();
 
         Gdx.gl.glClearColor(.7f, .7f, 0.5f, 1);
@@ -105,7 +119,10 @@ public class GameScreen implements Screen, AIComputationFinished {
         game.batch.end();
 
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        game.shapeRenderer.setColor(1, 1, 1, 1);
+        if (p1turn)
+            game.shapeRenderer.setColor(0, 0, .8f, 1);
+        else
+            game.shapeRenderer.setColor(.8f, 0, 0, 1);
 
         // draw lines
         for (int i = 0; i <= 10; i++) {
@@ -227,6 +244,6 @@ public class GameScreen implements Screen, AIComputationFinished {
 
     @Override
     public void aiShipsPlaced() {
-        aiFinished = true;
+        aiThread.turn();
     }
 }

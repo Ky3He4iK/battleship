@@ -54,8 +54,8 @@ public class World {
             new Ship(2, SHIP_PATROL_BOAT, "Patrol Boat"),
     };
 
-    private ArrayList<BitSet> opened;
-    private ArrayList<ArrayList<Integer>> field;
+    private BitSet[] opened;
+    private int[][] field;
     private ArrayList<Ship> ships;
     private ArrayList<Integer[]> shipsPos;
     private int width;
@@ -69,19 +69,19 @@ public class World {
         this.ships = ships;
     }
 
-    public ArrayList<ArrayList<Integer>> getField() {
+    public int[][] getField() {
         return field;
     }
 
-    public void setField(ArrayList<ArrayList<Integer>> field) {
+    public void setField(int[][] field) {
         this.field = field;
     }
 
-    public ArrayList<BitSet> getOpened() {
+    public BitSet[] getOpened() {
         return opened;
     }
 
-    public void setOpened(ArrayList<BitSet> opened) {
+    public void setOpened(BitSet[] opened) {
         this.opened = opened;
     }
 
@@ -115,15 +115,15 @@ public class World {
     }
 
     public void setState(int i, int j, int state) {
-        field.get(i).set(j, (field.get(i).get(j) & (~STATE_MASK) | state));
+        field[i][j] = field[i][j] & (~STATE_MASK) | state;
     }
 
     public int getState(int i, int j) {
-        return field.get(i).get(j) & STATE_MASK;
+        return field[i][j] & STATE_MASK;
     }
 
     public void open(int i, int j) {
-        opened.get(i).set(j);
+        opened[i].set(j);
         if (getState(i, j) == STATE_UNDAMAGED) {
             setState(i, j, STATE_DAMAGED);
             // check ship
@@ -157,7 +157,7 @@ public class World {
     }
 
     public boolean isOpened(int idx, int idy) {
-        return opened.get(idx).get(idy);
+        return opened[idx].get(idy);
     }
 
     public boolean isAlive() {
@@ -169,14 +169,10 @@ public class World {
     }
 
     public void reset() {
-        if (field == null)
-            field = new ArrayList<>(height);
-        else
-            field.clear();
-        if (opened == null)
-            opened = new ArrayList<>(height);
-        else
-            opened.clear();
+        if (field == null || field.length != height)
+            field = new int[height][];
+        if (opened == null || opened.length != height)
+            opened = new BitSet[height];
         if (ships == null)
             ships = new ArrayList<>(SHIPS_AVAILABLE.length);
         else
@@ -188,12 +184,14 @@ public class World {
         System.gc();
 
         for (int i = 0; i < height; i++) {
-            field.add(new ArrayList<Integer>(width));
-            opened.add(new BitSet(width));
-            for (int j = 0; j < width; j++) {
-                field.get(i).add(STATE_EMPTY);
-                opened.get(i).set(j, false);
-            }
+            if (field[i] == null || field.length != width)
+                field[i] = new int[width];
+            if (opened[i] == null || opened.length != width)
+                opened[i] = new BitSet(width);
+            else
+                opened[i].clear();
+            for (int j = 0; j < width; j++)
+                field[i][j] = STATE_EMPTY;
         }
     }
 
@@ -209,9 +207,9 @@ public class World {
         shipsPos.add(new Integer[]{idx, idy, rotation});
         for (int i = 0; i < ship.len; i++) {
             if (rotation == ROTATION_HORIZONTAL)
-                field.get(idy).set(idx + i, ship.code | STATE_UNDAMAGED);
+                field[idy][idx + i] = ship.code | STATE_UNDAMAGED;
             else
-                field.get(idy + i).set(idx, ship.code | STATE_UNDAMAGED);
+                field[idy + i][idx] = ship.code | STATE_UNDAMAGED;
         }
         return true;
     }
