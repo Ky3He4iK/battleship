@@ -28,6 +28,7 @@ public class GameScreen implements Screen, AIComputationFinished {
     private float xMargin;
     private float middleGap;
     private float yMargin;
+    private float timeout;
 
     private boolean forceRedraw = false;
     private boolean aiFinished = false;
@@ -40,13 +41,27 @@ public class GameScreen implements Screen, AIComputationFinished {
             step = step & (step - 1);
         float restX = game.camera.viewportWidth - step * 20;
         xMargin = restX / 4;
-        middleGap = restX / 2;
+        middleGap = restX / 2 + xMargin + step * 10;
         yMargin = (game.camera.viewportHeight - step * 10) / 2;
-        if (xMargin * 2 + step * 20 + middleGap != game.camera.viewportWidth || yMargin * 2 + step * 10 != game.camera.viewportHeight)
+        if (xMargin + step * 10 + middleGap != game.camera.viewportWidth || yMargin * 2 + step * 10 != game.camera.viewportHeight)
             Gdx.app.error("GameScreen", "Screen constants invalid!\nx: {" + xMargin + ", " + step + ", " + middleGap
                     + "}\ny: {" + yMargin + ", " + step + "}\nScreen: " + game.camera.viewportWidth + "x" + game.camera.viewportHeight);
         Gdx.app.debug("GameScreen", "Screen constants:\nx: {" + xMargin + ", " + step + ", " + middleGap
                 + "}\ny: {" + yMargin + ", " + step + "}\nScreen: " + game.camera.viewportWidth + "x" + game.camera.viewportHeight);
+    }
+
+    private void proceedClick(int x, int y, boolean isMainBtn) {
+        int xCell = (int) (x - middleGap) / step;
+        int yCell = (int) (game.camera.viewportHeight - y - yMargin) / step;
+        Gdx.app.debug("GameScreen", "Touch at " + xCell + "x" + yCell);
+        if (xCell < 0 || xCell > 9 || yCell < 0 || yCell > 9 || !p1turn)
+            return;
+        if (!player2.isOpened(xCell, yCell)) {
+            player2.open(xCell, yCell);
+            if (!player2.isAlive())
+                Gdx.app.error("GameScreen", "P1 won!");
+            p1turn = player2.getState(xCell, yCell) == World.STATE_EMPTY;
+        }
     }
 
     public GameScreen(final MyGdxGame game) {
@@ -57,6 +72,8 @@ public class GameScreen implements Screen, AIComputationFinished {
 //        background = new Texture("Background_v01.jpg");
 
         setConstants();
+        aiThread.start();
+        aiThread.placeShips();
     }
 
     @Override
@@ -66,7 +83,7 @@ public class GameScreen implements Screen, AIComputationFinished {
 
     @Override
     public void render(float delta) {
-        float deltaTime = Gdx.graphics.getDeltaTime();
+//        float deltaTime = Gdx.graphics.getDeltaTime();
 //        if (deltaTime > 0.05f) // if less then 20 FPS
 //            deltaTime = 0.05f;
 //        totalDelta += deltaTime;
@@ -78,7 +95,8 @@ public class GameScreen implements Screen, AIComputationFinished {
             aiFinished = false;
             aiThread.turn();
         }
-//        if (Gdx.input.isButtonJustPressed())
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
+            proceedClick(Gdx.input.getX(), Gdx.input.getY(), true);
 
         game.batch.begin();
 
@@ -89,6 +107,7 @@ public class GameScreen implements Screen, AIComputationFinished {
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         game.shapeRenderer.setColor(1, 1, 1, 1);
 
+        // draw lines
         for (int i = 0; i <= 10; i++) {
             game.shapeRenderer.line(xMargin + i * step, yMargin, xMargin + i * step,
                     game.camera.viewportHeight - yMargin);
@@ -99,46 +118,52 @@ public class GameScreen implements Screen, AIComputationFinished {
             game.shapeRenderer.line(xMargin, yMargin + i * step,
                     xMargin + 10 * step, yMargin + i * step);
 
-            game.shapeRenderer.line(xMargin + 10 * step + middleGap, yMargin + i * step,
+            game.shapeRenderer.line(middleGap, yMargin + i * step,
                     game.camera.viewportWidth - xMargin, yMargin + i * step);
         }
         game.shapeRenderer.end();
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
+        // draw squares
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                switch (player1.getState(i, j)) {
-                    case World.STATE_EMPTY:
-                        game.shapeRenderer.setColor(World.COLOR_EMPTY);
-                        break;
-                    case World.STATE_UNDAMAGED:
-                        game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
-                        break;
-                    case World.STATE_DAMAGED:
-                        game.shapeRenderer.setColor(World.COLOR_DAMAGED);
-                        break;
-                    case World.STATE_SUNK:
-                        game.shapeRenderer.setColor(World.COLOR_SUNK);
-                        break;
-
-                }
+                if (player1.isOpened(i, j))
+                    switch (player1.getState(i, j)) {
+                        case World.STATE_EMPTY:
+                            game.shapeRenderer.setColor(World.COLOR_EMPTY);
+                            break;
+                        case World.STATE_UNDAMAGED:
+                            game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
+                            break;
+                        case World.STATE_DAMAGED:
+                            game.shapeRenderer.setColor(World.COLOR_DAMAGED);
+                            break;
+                        case World.STATE_SUNK:
+                            game.shapeRenderer.setColor(World.COLOR_SUNK);
+                            break;
+                    }
+                else
+                    game.shapeRenderer.setColor(World.COLOR_UNKNOWN);
                 game.shapeRenderer.rect(xMargin + i * step + CELL_MARGIN,
                         yMargin + j * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
-                switch (player2.getState(i, j)) {
-                    case World.STATE_EMPTY:
-                        game.shapeRenderer.setColor(World.COLOR_EMPTY);
-                        break;
-                    case World.STATE_UNDAMAGED:
-                        game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
-                        break;
-                    case World.STATE_DAMAGED:
-                        game.shapeRenderer.setColor(World.COLOR_DAMAGED);
-                        break;
-                    case World.STATE_SUNK:
-                        game.shapeRenderer.setColor(World.COLOR_SUNK);
-                        break;
-                }
-                game.shapeRenderer.rect(xMargin + middleGap + (i + 10) * step + CELL_MARGIN,
+                if (player2.isOpened(i, j))
+                    switch (player2.getState(i, j)) {
+                        case World.STATE_EMPTY:
+                            game.shapeRenderer.setColor(World.COLOR_EMPTY);
+                            break;
+                        case World.STATE_UNDAMAGED:
+                            game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
+                            break;
+                        case World.STATE_DAMAGED:
+                            game.shapeRenderer.setColor(World.COLOR_DAMAGED);
+                            break;
+                        case World.STATE_SUNK:
+                            game.shapeRenderer.setColor(World.COLOR_SUNK);
+                            break;
+                    }
+                else
+                    game.shapeRenderer.setColor(World.COLOR_UNKNOWN);
+                game.shapeRenderer.rect(middleGap + i * step + CELL_MARGIN,
                         yMargin + j * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
             }
         }
@@ -148,9 +173,9 @@ public class GameScreen implements Screen, AIComputationFinished {
         game.batch.begin();
 
         game.font.setColor(.3f, .3f, .7f, 1);
-        game.font.draw(game.batch, "Mouse: " + Gdx.input.getX() + "x" + Gdx.input.getY(), 10, game.camera.viewportHeight - game.font.getCapHeight());
+        game.font.draw(game.batch, "Mouse: " + Gdx.input.getX() + "x" + Gdx.input.getY() + "\nFPS: " + Gdx.graphics.getFramesPerSecond(), 10, game.camera.viewportHeight - game.font.getCapHeight());
         if (!aiFinished)
-            game.font.draw(game.batch, "Loading...", 10, game.camera.viewportHeight - 2 * game.font.getCapHeight());
+            game.font.draw(game.batch, "Loading...", 10, game.camera.viewportHeight - 5 * game.font.getCapHeight());
         game.batch.end();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {

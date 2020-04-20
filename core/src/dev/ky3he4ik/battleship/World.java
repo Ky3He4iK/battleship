@@ -25,6 +25,7 @@ public class World {
     public static final int ROTATION_HORIZONTAL = 0;
     public static final int ROTATION_VERTICAL = 1;
 
+    public static Color COLOR_UNKNOWN = new Color(.3f, .3f, .3f, 0);
     public static Color COLOR_EMPTY = new Color(0, 0, .5f, 0);
     public static Color COLOR_UNDAMAGED = new Color(0, 1, 0, 0);
     public static Color COLOR_DAMAGED = new Color(.5f, 0, 0, 0);
@@ -168,13 +169,24 @@ public class World {
     }
 
     public void reset() {
-        if (field != null)
+        if (field == null)
+            field = new ArrayList<>(height);
+        else
             field.clear();
-        if (opened != null)
+        if (opened == null)
+            opened = new ArrayList<>(height);
+        else
             opened.clear();
+        if (ships == null)
+            ships = new ArrayList<>(SHIPS_AVAILABLE.length);
+        else
+            ships.clear();
+        if (shipsPos == null)
+            shipsPos = new ArrayList<>(SHIPS_AVAILABLE.length);
+        else
+            shipsPos.clear();
         System.gc();
-        field = new ArrayList<>(height);
-        opened = new ArrayList<>(height);
+
         for (int i = 0; i < height; i++) {
             field.add(new ArrayList<Integer>(width));
             opened.add(new BitSet(width));
@@ -185,8 +197,22 @@ public class World {
         }
     }
 
-    public void placeShip(Ship ship, int idx, int idy, int rotation) {
+    public boolean placeShip(Ship ship, int idx, int idy, int rotation) {
+        for (int i = 0; i < ship.len; i++) {
+            if (rotation == ROTATION_HORIZONTAL) {
+                // todo: check for correct placement
+            } else {
+
+            }
+        }
         ships.add(ship);
         shipsPos.add(new Integer[]{idx, idy, rotation});
+        for (int i = 0; i < ship.len; i++) {
+            if (rotation == ROTATION_HORIZONTAL)
+                field.get(idy).set(idx + i, ship.code | STATE_UNDAMAGED);
+            else
+                field.get(idy + i).set(idx, ship.code | STATE_UNDAMAGED);
+        }
+        return true;
     }
 }
