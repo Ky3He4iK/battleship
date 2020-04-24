@@ -9,11 +9,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+
 import dev.ky3he4ik.battleship.ai.AIComputationFinished;
 import dev.ky3he4ik.battleship.ai.AIThread;
 
 public class GameScreen implements Screen, AIComputationFinished {
     public static final int CELL_MARGIN = 2;
+
+    public static final int CELLS_CNT_X = 25;
+    public static final int CELLS_CNT_Y = 15;
 
     private @NotNull
     AIThread aiThread;
@@ -26,7 +31,7 @@ public class GameScreen implements Screen, AIComputationFinished {
 
     private int step;
     private float xMargin;
-    private float middleGap;
+    //    private float middleGap;
     private float yMargin;
     private float timeout;
 
@@ -36,23 +41,19 @@ public class GameScreen implements Screen, AIComputationFinished {
     private int aiX = -1, aiY = -1;
 
     private void setConstants() {
-        step = (int) Math.min(game.camera.viewportWidth / 20, game.camera.viewportHeight / 10);
-        while ((step & (step - 1)) != 0)
-            step = step & (step - 1);
-        float restX = game.camera.viewportWidth - step * 20;
-        xMargin = restX / 4;
-        middleGap = restX / 2 + xMargin + step * 10;
-        yMargin = (game.camera.viewportHeight - step * 10) / 2;
-        if (xMargin + step * 10 + middleGap != game.camera.viewportWidth || yMargin * 2 + step * 10 != game.camera.viewportHeight)
-            Gdx.app.error("GameScreen", "Screen constants invalid!\nx: {" + xMargin + ", " + step + ", " + middleGap
+        step = (int) Math.min((game.camera.viewportWidth - 1) / CELLS_CNT_X, (game.camera.viewportHeight - 1) / CELLS_CNT_Y);
+        xMargin = (game.camera.viewportWidth - step * CELLS_CNT_X) / 2;
+        yMargin = (game.camera.viewportHeight - step * CELLS_CNT_Y) / 2;
+        if (xMargin * 2 + step * CELLS_CNT_X != game.camera.viewportWidth || yMargin * 2 + step * CELLS_CNT_Y != game.camera.viewportHeight)
+            Gdx.app.error("GameScreen", "Screen constants invalid!\nx: {" + xMargin + ", " + step
                     + "}\ny: {" + yMargin + ", " + step + "}\nScreen: " + game.camera.viewportWidth + "x" + game.camera.viewportHeight);
-        Gdx.app.debug("GameScreen", "Screen constants:\nx: {" + xMargin + ", " + step + ", " + middleGap
+        Gdx.app.debug("GameScreen", "Screen constants:\nx: {" + xMargin + ", " + step
                 + "}\ny: {" + yMargin + ", " + step + "}\nScreen: " + game.camera.viewportWidth + "x" + game.camera.viewportHeight);
     }
 
     private void proceedClick(int x, int y, boolean isMainBtn) {
-        int xCell = (int) (x - middleGap) / step;
-        int yCell = (int) (game.camera.viewportHeight - y - yMargin) / step;
+        int xCell = (int) (x - xMargin) / step - 14;
+        int yCell = (int) (y - yMargin) / step - 1;
         Gdx.app.debug("GameScreen", "Touch at " + xCell + "x" + yCell);
         if (xCell < 0 || xCell > 9 || yCell < 0 || yCell > 9 || !p1turn)
             return;
@@ -60,7 +61,7 @@ public class GameScreen implements Screen, AIComputationFinished {
             player2.open(xCell, yCell);
             if (!player2.isAlive())
                 Gdx.app.error("GameScreen", "P1 won!");
-            p1turn = player2.getState(xCell, yCell) == World.STATE_EMPTY;
+            p1turn = player2.getState(xCell, yCell) != World.STATE_EMPTY;
         }
     }
 
@@ -108,16 +109,28 @@ public class GameScreen implements Screen, AIComputationFinished {
             aiThread.turn();
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
-            proceedClick(Gdx.input.getX(), Gdx.input.getY(), true);
+            proceedClick(Gdx.input.getX(), (int) (game.camera.viewportHeight - Gdx.input.getY()), true);
 
 
         // draw
         game.batch.begin();
 
-        Gdx.gl.glClearColor(.7f, .7f, 0.5f, 1);
+//        Gdx.gl.glClearColor(.7f, .7f, 0.5f, 1);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.end();
 
+        // background grid
+        Gdx.gl.glLineWidth(.5f);
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        game.shapeRenderer.setColor(.9f, .9f, .9f, .5f);
+        for (int i = 0; i <= CELLS_CNT_X; i++)
+            game.shapeRenderer.line(xMargin + step * i, 0, xMargin + step * i, game.camera.viewportHeight);
+        for (int i = 0; i <= CELLS_CNT_Y; i++)
+            game.shapeRenderer.line(0, yMargin + step * i, game.camera.viewportWidth, yMargin + step * i);
+        game.shapeRenderer.end();
+
+        Gdx.gl.glLineWidth(GameScreen.CELL_MARGIN * 2);
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         if (p1turn)
             game.shapeRenderer.setColor(0, 0, .8f, 1);
@@ -126,22 +139,27 @@ public class GameScreen implements Screen, AIComputationFinished {
 
         // draw lines
         for (int i = 0; i <= 10; i++) {
-            game.shapeRenderer.line(xMargin + i * step, yMargin, xMargin + i * step,
-                    game.camera.viewportHeight - yMargin);
+            // p1 ||
+            game.shapeRenderer.line(xMargin + (i + 2) * step, yMargin + step, xMargin + (i + 2) * step,
+                    yMargin + step * 11);
 
-            game.shapeRenderer.line(game.camera.viewportWidth - xMargin - i * step, yMargin,
-                    game.camera.viewportWidth - xMargin - i * step, game.camera.viewportHeight - yMargin);
+            // p2 ||
+            game.shapeRenderer.line(xMargin + (i + 14) * step, yMargin + step,
+                    xMargin + (i + 14) * step, yMargin + step * 11);
 
-            game.shapeRenderer.line(xMargin, yMargin + i * step,
-                    xMargin + 10 * step, yMargin + i * step);
+            // p1 --
+            game.shapeRenderer.line(xMargin + 2 * step, yMargin + (i + 1) * step,
+                    xMargin + 12 * step, yMargin + (i + 1) * step);
 
-            game.shapeRenderer.line(middleGap, yMargin + i * step,
-                    game.camera.viewportWidth - xMargin, yMargin + i * step);
+            // p2 --
+            game.shapeRenderer.line(xMargin + 14 * step, yMargin + (i + 1) * step,
+                    xMargin + 24 * step, yMargin + (i + 1) * step);
         }
         game.shapeRenderer.end();
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // draw squares
+        HashMap<Integer, Integer> colorMap = new HashMap<>();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (player1.isOpened(i, j))
@@ -161,8 +179,8 @@ public class GameScreen implements Screen, AIComputationFinished {
                     }
                 else
                     game.shapeRenderer.setColor(World.COLOR_UNKNOWN);
-                game.shapeRenderer.rect(xMargin + i * step + CELL_MARGIN,
-                        yMargin + j * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
+                game.shapeRenderer.rect(xMargin + (i + 2) * step + CELL_MARGIN,
+                        yMargin + (j + 1) * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
                 if (player2.isOpened(i, j))
                     switch (player2.getState(i, j)) {
                         case World.STATE_EMPTY:
@@ -180,8 +198,8 @@ public class GameScreen implements Screen, AIComputationFinished {
                     }
                 else
                     game.shapeRenderer.setColor(World.COLOR_UNKNOWN);
-                game.shapeRenderer.rect(middleGap + i * step + CELL_MARGIN,
-                        yMargin + j * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
+                game.shapeRenderer.rect(xMargin + (i + 14) * step + CELL_MARGIN,
+                        yMargin + (j + 1) * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
             }
         }
 
@@ -206,8 +224,9 @@ public class GameScreen implements Screen, AIComputationFinished {
 
     @Override
     public void resize(int width, int height) {
-        game.camera.update();
-        game.shapeRenderer.updateMatrices();
+        Gdx.app.debug("GameScreen", "Resize to " + width + "x" + height);
+        game.camera.setToOrtho(false, width, height);
+        game.shapeRenderer.setProjectionMatrix(game.camera.combined);
         game.batch.setProjectionMatrix(game.camera.combined);
         setConstants();
         forceRedraw = true;

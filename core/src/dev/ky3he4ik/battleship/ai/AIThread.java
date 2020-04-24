@@ -32,7 +32,8 @@ public class AIThread extends Thread {
             if (isPlaceShips) {
                 int idx = 0;
                 for (World.Ship ship: World.SHIPS_AVAILABLE) {
-                    my.placeShip(ship, idx, 0, World.ROTATION_VERTICAL);
+//                    my.placeShip(ship, idx, 0, World.ROTATION_VERTICAL);
+                    my.placeShip(ship, 2, idx, World.ROTATION_HORIZONTAL);
                     idx += 2;
                 }
                 isPlaceShips = false;
@@ -49,7 +50,7 @@ public class AIThread extends Thread {
                 callback.aiTurnFinished(i, j);
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 Gdx.app.error("AI thread", e.getMessage(), e);
             }

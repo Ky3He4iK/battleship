@@ -102,9 +102,7 @@ public class World {
     }
 
     public World(int width, int height) {
-        this.width = width;
-        this.height = height;
-        reset();
+        reset(width, height);
     }
 
     public World copy() {
@@ -168,7 +166,9 @@ public class World {
         return false;
     }
 
-    public void reset() {
+    public void reset(int width, int height) {
+        this.width = width;
+        this.height = height;
         if (field == null || field.length != height)
             field = new int[height][];
         if (opened == null || opened.length != height)
