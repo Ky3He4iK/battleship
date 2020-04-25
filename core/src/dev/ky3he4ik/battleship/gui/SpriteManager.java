@@ -38,11 +38,14 @@ public class SpriteManager {
     }
 
     public Sprite cloneSprite(String currentName, String newName) {
-        if (!sprites.containsKey(currentName))
-            throw new NoSuchElementException("No sprite with name " + currentName);
+        Sprite sprite;
+        if (!contains(currentName))
+            sprite = new Sprite(new Texture(currentName));
+        else
+            sprite = sprites.get(currentName);
         if (sprites.containsKey(newName))
             throw new IllegalArgumentException("Sprite with name " + newName + " is already here");
-        sprites.put(newName, new Sprite(sprites.get(currentName)));
+        sprites.put(newName, new Sprite(sprite));
         usageCnt.put(newName, 1);
         return getSprite(newName);
     }
