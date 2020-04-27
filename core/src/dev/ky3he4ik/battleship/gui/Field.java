@@ -9,7 +9,7 @@ import dev.ky3he4ik.battleship.World;
 
 public class Field extends Group {
     private final World world;
-    Cell cells[][];
+    private Cell cells[][];
     private int clickX, clickY;
     private boolean clicked = false;
 
@@ -40,14 +40,22 @@ public class Field extends Group {
         clickY = idy;
     }
 
+    public void registerRelease(int idx, int idy) {
+        clicked = false;
+        clickX = idx;
+        clickY = idy;
+    }
+
     @Nullable
     public int[] getClick() {
-        if (clicked)
-            return new int[]{clickX, clickY};
-        return null;
+        return new int[]{(clicked ? 1 : 0), clickX, clickY};
     }
 
     public void clearClick() {
         clicked = false;
+    }
+
+    public World getWorld() {
+        return world;
     }
 }
