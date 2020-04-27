@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 import dev.ky3he4ik.battleship.World;
 
@@ -25,7 +27,7 @@ public class Cell extends Actor {
         return state;
     }
 
-    public Cell(final Field field, int idx, int idy) {
+    public Cell(final Field field, final int idx, final int idy) {
         this.field = field;
         this.idx = idx;
         this.idy = idy;
@@ -36,6 +38,14 @@ public class Cell extends Actor {
         setBounds(region.getRegionX(), region.getRegionY(),
                 region.getRegionWidth(), region.getRegionHeight());
 
+        addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Press at " + idx + "x" + idy);
+                field.registerClick(idx, idy);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -51,20 +61,20 @@ public class Cell extends Actor {
         this.state = state;
         this.isOpened = isOpened;
         if (isOpened)
-        switch (state) {
-            case World.STATE_EMPTY:
-                region.setTexture(SpriteManager.getInstance().getSprite("cell_empty.png").getTexture());
-                break;
-            case World.STATE_UNDAMAGED:
-                region.setTexture(SpriteManager.getInstance().getSprite("cell_undamaged.png").getTexture());
-                break;
-            case World.STATE_DAMAGED:
-            case World.STATE_SUNK:
-                region.setTexture(SpriteManager.getInstance().getSprite("cell_hit.png").getTexture());
-                break;
-            default:
-                Gdx.app.error("Cell " + idx + "x" + idy, "Invalid state: " + state);
-        }
+            switch (state) {
+                case World.STATE_EMPTY:
+                    region.setTexture(SpriteManager.getInstance().getSprite("cell_empty.png").getTexture());
+                    break;
+                case World.STATE_UNDAMAGED:
+                    region.setTexture(SpriteManager.getInstance().getSprite("cell_undamaged.png").getTexture());
+                    break;
+                case World.STATE_DAMAGED:
+                case World.STATE_SUNK:
+                    region.setTexture(SpriteManager.getInstance().getSprite("cell_hit.png").getTexture());
+                    break;
+                default:
+                    Gdx.app.error("Cell " + idx + "x" + idy, "Invalid state: " + state);
+            }
         else
             region.setTexture(SpriteManager.getInstance().getSprite("cell_closed.png").getTexture());
     }
