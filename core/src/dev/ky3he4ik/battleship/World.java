@@ -215,10 +215,12 @@ public class World {
     }
 
     public boolean isAlive() {
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++)
-                if (getState(i, j) == STATE_UNDAMAGED)
+        for (int shipId = 0; shipId < ships.size(); shipId++) {
+            int idx = shipsPos.get(shipId)[0], idy = shipsPos.get(shipId)[1], rot = shipsPos.get(shipId)[2], len = ships.get(shipId).len;
+            for (int i = 0; i < len; i++)
+                if (getState(idy + (rot == ROTATION_VERTICAL ? i : 0), idx + (rot == ROTATION_HORIZONTAL ? i : 0)) == STATE_UNDAMAGED)
                     return true;
+        }
         return false;
     }
 
