@@ -182,7 +182,7 @@ public class GameScreen implements Screen, AIComputationFinished {
                 game.shapeRenderer.rect(xMargin + (i + 2) * step + CELL_MARGIN,
                         yMargin + (j + 1) * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
                 if (player2.isOpened(i, j))
-                    switch (player2.getState(i, j)) {
+                   switch (player2.getState(i, j)) {
                         case World.STATE_EMPTY:
                             game.shapeRenderer.setColor(World.COLOR_EMPTY);
                             break;

@@ -25,11 +25,11 @@ public class World {
     public static final int ROTATION_HORIZONTAL = 0;
     public static final int ROTATION_VERTICAL = 1;
 
-    public static Color COLOR_UNKNOWN = new Color(.3f, .3f, .3f, 0);
-    public static Color COLOR_EMPTY = new Color(0, 0, .5f, 0);
-    public static Color COLOR_UNDAMAGED = new Color(0, 1, 0, 0);
-    public static Color COLOR_DAMAGED = new Color(.5f, 0, 0, 0);
-    public static Color COLOR_SUNK = new Color(1, 0, 0, 0);
+    public static Color COLOR_UNKNOWN = new Color(.3f, .3f, .3f, 1);
+    public static Color COLOR_EMPTY = new Color(0, 0, .5f, 1);
+    public static Color COLOR_UNDAMAGED = new Color(0, 1, 0, 1);
+    public static Color COLOR_DAMAGED = new Color(.5f, 0, 0, 1);
+    public static Color COLOR_SUNK = new Color(1, 0, 0, 1);
 
     // cell states:
     public static final int STATE_MASK = 0xf; // reserved for more states
@@ -121,36 +121,92 @@ public class World {
     }
 
     public void open(int i, int j) {
+        if (opened[i].get(j))
+            return;
         opened[i].set(j);
         if (getState(i, j) == STATE_UNDAMAGED) {
             setState(i, j, STATE_DAMAGED);
+
             // check ship
-            int mii = i, mai = i, mij = j, maj = j;
-            while (mii >= 0 && getState(mii, j) == STATE_DAMAGED)
-                --mii;
-            while (mai < height && getState(mai, j) == STATE_DAMAGED)
-                ++mai;
-            while (mij >= 0 && getState(i, mij) == STATE_DAMAGED)
-                --mij;
-            while (maj < width && getState(i, maj) == STATE_DAMAGED)
-                ++maj;
-            if (mii < 0)
-                ++mii;
-            if (mai >= height)
-                --mai;
-            if (mij < 0)
-                ++mij;
-            if (maj >= width)
-                --maj;
-            if (!((mii >= 0 && getState(mii, j) == STATE_UNDAMAGED)
-                    || (mai < height && getState(mai, j) == STATE_UNDAMAGED)
-                    || (mij >= 0 && getState(i, mij) == STATE_UNDAMAGED)
-                    || (maj < width && getState(i, mij) == STATE_UNDAMAGED))) { // If has not any float fragment
-                for (int ii = mii; ii <= maj; ii++)
-                    setState(ii, j, STATE_SUNK);
-                for (int jj = mij; jj <= maj; jj++)
-                    setState(i, jj, STATE_SUNK);
+            outerLoop:
+            for (int iter = i + 1; iter < height; iter++) {
+                switch (getState(iter, j)) {
+                    case STATE_UNDAMAGED:
+                        return;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
             }
+            outerLoop:
+            for (int iter = i - 1; iter >= 0; iter--) {
+                switch (getState(iter, j)) {
+                    case STATE_UNDAMAGED:
+                        return;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
+            }
+            outerLoop:
+            for (int iter = j + 1; iter < width; iter++) {
+                switch (getState(i, iter)) {
+                    case STATE_UNDAMAGED:
+                        return;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
+            }
+            outerLoop:
+            for (int iter = j - 1; iter >= 0; iter--) {
+                switch (getState(i, iter)) {
+                    case STATE_UNDAMAGED:
+                        return;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
+            }
+
+            // kill ship
+            outerLoop:
+            for (int iter = i + 1; iter < height; iter++) {
+                switch (getState(iter, j)) {
+                    case STATE_DAMAGED:
+                        setState(iter, j, STATE_SUNK);
+                        break;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
+            }
+            outerLoop:
+            for (int iter = i - 1; iter >= 0; iter--) {
+                switch (getState(iter, j)) {
+                    case STATE_DAMAGED:
+                        setState(iter, j, STATE_SUNK);
+                        break;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
+            }
+            outerLoop:
+            for (int iter = j + 1; iter < width; iter++) {
+                switch (getState(i, iter)) {
+                    case STATE_DAMAGED:
+                        setState(i, iter, STATE_SUNK);
+                        break;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
+            }
+            outerLoop:
+            for (int iter = j - 1; iter >= 0; iter--) {
+                switch (getState(i, iter)) {
+                    case STATE_DAMAGED:
+                        setState(i, iter, STATE_SUNK);
+                        break;
+                    case STATE_EMPTY:
+                        break outerLoop;
+                }
+            }
+            setState(i, j, STATE_SUNK);
         }
     }
 
