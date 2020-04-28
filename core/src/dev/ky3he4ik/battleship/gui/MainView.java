@@ -6,12 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import dev.ky3he4ik.battleship.MyGdxGame;
+import dev.ky3he4ik.battleship.utils.Constants;
 
 public class MainView {
     private Stage stage;
 
     public void create() {
-        stage = new Stage(new ExtendViewport(MyGdxGame.WIDTH, MyGdxGame.HEIGHT));
+        stage = new Stage(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
         Gdx.input.setInputProcessor(stage);
     }
 

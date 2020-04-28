@@ -4,13 +4,14 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 import dev.ky3he4ik.battleship.MyGdxGame;
+import dev.ky3he4ik.battleship.utils.Constants;
 
 public class HtmlLauncher extends GwtApplication {
 
         // USE THIS CODE FOR A FIXED SIZE APPLICATION
         @Override
         public GwtApplicationConfiguration getConfig () {
-                return new GwtApplicationConfiguration(MyGdxGame.WIDTH, MyGdxGame.HEIGHT);
+                return new GwtApplicationConfiguration(Constants.APP_WIDTH, Constants.APP_HEIGHT);
         }
         // END CODE FOR FIXED SIZE APPLICATION
 

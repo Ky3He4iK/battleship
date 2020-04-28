@@ -13,13 +13,11 @@ import java.util.HashMap;
 
 import dev.ky3he4ik.battleship.ai.AIComputationFinished;
 import dev.ky3he4ik.battleship.ai.AIThread;
+import dev.ky3he4ik.battleship.utils.Constants;
+
+import static dev.ky3he4ik.battleship.utils.Constants.CELLS_CNT_Y;
 
 public class GameScreen implements Screen, AIComputationFinished {
-    public static final int CELL_MARGIN = 2;
-
-    public static final int CELLS_CNT_X = 25;
-    public static final int CELLS_CNT_Y = 15;
-
     private @NotNull
     AIThread aiThread;
     private @NotNull
@@ -41,10 +39,10 @@ public class GameScreen implements Screen, AIComputationFinished {
     private int aiX = -1, aiY = -1;
 
     private void setConstants() {
-        step = (int) Math.min((game.camera.viewportWidth - 1) / CELLS_CNT_X, (game.camera.viewportHeight - 1) / CELLS_CNT_Y);
-        xMargin = (game.camera.viewportWidth - step * CELLS_CNT_X) / 2;
+        step = (int) Math.min((game.camera.viewportWidth - 1) / Constants.CELLS_CNT_X, (game.camera.viewportHeight - 1) / Constants.CELLS_CNT_Y);
+        xMargin = (game.camera.viewportWidth - step * Constants.CELLS_CNT_X) / 2;
         yMargin = (game.camera.viewportHeight - step * CELLS_CNT_Y) / 2;
-        if (xMargin * 2 + step * CELLS_CNT_X != game.camera.viewportWidth || yMargin * 2 + step * CELLS_CNT_Y != game.camera.viewportHeight)
+        if (xMargin * 2 + step * Constants.CELLS_CNT_X != game.camera.viewportWidth || yMargin * 2 + step * Constants.CELLS_CNT_Y != game.camera.viewportHeight)
             Gdx.app.error("GameScreen", "Screen constants invalid!\nx: {" + xMargin + ", " + step
                     + "}\ny: {" + yMargin + ", " + step + "}\nScreen: " + game.camera.viewportWidth + "x" + game.camera.viewportHeight);
         Gdx.app.debug("GameScreen", "Screen constants:\nx: {" + xMargin + ", " + step
@@ -124,13 +122,13 @@ public class GameScreen implements Screen, AIComputationFinished {
         Gdx.gl.glLineWidth(.5f);
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         game.shapeRenderer.setColor(.9f, .9f, .9f, .5f);
-        for (int i = 0; i <= CELLS_CNT_X; i++)
+        for (int i = 0; i <= Constants.CELLS_CNT_X; i++)
             game.shapeRenderer.line(xMargin + step * i, 0, xMargin + step * i, game.camera.viewportHeight);
         for (int i = 0; i <= CELLS_CNT_Y; i++)
             game.shapeRenderer.line(0, yMargin + step * i, game.camera.viewportWidth, yMargin + step * i);
         game.shapeRenderer.end();
 
-        Gdx.gl.glLineWidth(GameScreen.CELL_MARGIN * 2);
+        Gdx.gl.glLineWidth(Constants.CELL_MARGIN * 2);
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         if (p1turn)
             game.shapeRenderer.setColor(0, 0, .8f, 1);
@@ -179,8 +177,8 @@ public class GameScreen implements Screen, AIComputationFinished {
                     }
                 else
                     game.shapeRenderer.setColor(World.COLOR_UNKNOWN);
-                game.shapeRenderer.rect(xMargin + (i + 2) * step + CELL_MARGIN,
-                        yMargin + (j + 1) * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
+                game.shapeRenderer.rect(xMargin + (i + 2) * step + Constants.CELL_MARGIN,
+                        yMargin + (j + 1) * step + Constants.CELL_MARGIN, step - Constants.CELL_MARGIN * 2, step - Constants.CELL_MARGIN * 2);
                 if (player2.isOpened(i, j))
                    switch (player2.getState(i, j)) {
                         case World.STATE_EMPTY:
@@ -198,8 +196,8 @@ public class GameScreen implements Screen, AIComputationFinished {
                     }
                 else
                     game.shapeRenderer.setColor(World.COLOR_UNKNOWN);
-                game.shapeRenderer.rect(xMargin + (i + 14) * step + CELL_MARGIN,
-                        yMargin + (j + 1) * step + CELL_MARGIN, step - CELL_MARGIN * 2, step - CELL_MARGIN * 2);
+                game.shapeRenderer.rect(xMargin + (i + 14) * step + Constants.CELL_MARGIN,
+                        yMargin + (j + 1) * step + Constants.CELL_MARGIN, step - Constants.CELL_MARGIN * 2, step - Constants.CELL_MARGIN * 2);
             }
         }
 
