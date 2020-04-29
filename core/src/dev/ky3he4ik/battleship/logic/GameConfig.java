@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import dev.ky3he4ik.battleship.utils.Constants;
 
@@ -83,6 +82,7 @@ public class GameConfig {
     private int movingPerTurn;
     private int shotsPerTurn;
     private int aiLevel;
+    private int version = 1;
 
     @NotNull
     private GameType gameType;

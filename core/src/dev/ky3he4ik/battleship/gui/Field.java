@@ -96,4 +96,10 @@ public class Field extends Group {
             }
         }
     }
+
+    public boolean open(int idx, int idy) {
+        //todo: animation
+        world.open(idx, idy);
+        return world.getState(idx, idy) != World.STATE_EMPTY;
+    }
 }

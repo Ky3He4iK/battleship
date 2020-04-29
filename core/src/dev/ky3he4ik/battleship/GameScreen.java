@@ -253,14 +253,14 @@ public class GameScreen implements Screen, PlayerFinished {
     }
 
     @Override
-    public void aiTurnFinished(int playerId, int i, int j) {
+    public void turnFinished(int playerId, int i, int j) {
         aiX = i;
         aiY = j;
         aiFinished = true;
     }
 
     @Override
-    public void aiShipsPlaced(int playerId) {
+    public void shipsPlaced(int playerId) {
         ai.setTurn();
     }
 }

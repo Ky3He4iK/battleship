@@ -21,7 +21,7 @@ public class AIDummy extends AI {
             idx += 2;
         }
         isPlaceShips = false;
-        callback.aiShipsPlaced(id);
+        callback.shipsPlaced(id);
     }
 
     @Override
@@ -33,6 +33,6 @@ public class AIDummy extends AI {
             i = random.nextInt(enemy.getHeight());
             j = random.nextInt(enemy.getWidth());
         }
-        callback.aiTurnFinished(id, i, j);
+        callback.turnFinished(id, i, j);
     }
 }
