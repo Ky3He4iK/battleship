@@ -63,8 +63,9 @@ public class GameStage extends Stage {
         if (aiReady && turn == TURN_RIGHT) {
             aiReady = false;
             if (leftPlayer.open(aiX, aiY))
+                rightPlayer.setTurn();
+            else
                 turn();
-            rightPlayer.setTurn();
         }
     }
 
@@ -95,6 +96,8 @@ public class GameStage extends Stage {
 //        switch (config.getGameType())
         if (isMyTurn(playerId)) {
             if (getOpponent(playerId).open(i, j))
+                getPlayer(playerId).setTurn();
+            else
                 turn();
             if (!getOpponent(playerId).getWorld().isAlive())
                 Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
@@ -114,24 +117,27 @@ public class GameStage extends Stage {
     }
 
     private void turn() {
-        if (turn == TURN_LEFT)
+        if (turn == TURN_LEFT) {
             turn = TURN_RIGHT;
-        else
+            rightPlayer.setTurn();
+        } else {
             turn = TURN_LEFT;
+            leftPlayer.setTurn();
+        }
     }
 
     private Field getPlayer(int playerId) {
         if (playerId == TURN_LEFT)
-            return rightPlayer;
-        else
             return leftPlayer;
+        else
+            return rightPlayer;
     }
 
     private Field getOpponent(int playerId) {
         if (playerId == TURN_LEFT)
-            return leftPlayer;
-        else
             return rightPlayer;
+        else
+            return leftPlayer;
     }
 
     public void cellPressed(int playerId, int idx, int idy) {

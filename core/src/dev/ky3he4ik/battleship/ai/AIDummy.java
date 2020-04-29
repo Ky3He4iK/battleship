@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.World;
-import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 public class AIDummy extends AI {
     public AIDummy(@NotNull World enemy, @NotNull World my) {
@@ -21,25 +20,17 @@ public class AIDummy extends AI {
             idx += 2;
         }
         isPlaceShips = false;
-        if (callback != null)
-            callback.shipsPlaced();
     }
 
     @Override
     protected void turn() {
         isMyTurn = false;
         Random random = new Random();
-        int i = random.nextInt(enemy.getHeight()), j = random.nextInt(enemy.getWidth());
-        while (enemy.isOpened(i, j)) {
-            i = random.nextInt(enemy.getHeight());
-            j = random.nextInt(enemy.getWidth());
+        turnX = random.nextInt(enemy.getHeight());
+        turnY = random.nextInt(enemy.getWidth());
+        while (enemy.isOpened(turnX, turnY)) {
+            turnX = random.nextInt(enemy.getHeight());
+            turnY = random.nextInt(enemy.getWidth());
         }
-        if (callback != null)
-            callback.turnFinished(i, j);
-    }
-
-    @Override
-    public void setCallback(@NotNull PlayerFinished callback) {
-        this.callback = callback;
     }
 }

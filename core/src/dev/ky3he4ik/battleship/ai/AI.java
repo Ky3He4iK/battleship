@@ -22,6 +22,10 @@ abstract public class AI extends Thread implements Communication {
     protected boolean isPlaceShips;
     protected boolean running;
 
+    protected int turnX, turnY;
+    private boolean turn = false;
+    private boolean shipsPlaced = false;
+
     protected AI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my) {
         super();
         this.callback = callback;
@@ -37,9 +41,17 @@ abstract public class AI extends Thread implements Communication {
         while (running) {
             if (isPlaceShips) {
                 placeShips();
+                if (callback != null)
+                    callback.shipsPlaced();
+                else
+                    shipsPlaced = true;
             }
             if (isMyTurn) {
                 turn();
+                if (callback != null)
+                    callback.turnFinished(turnX, turnY);
+                else
+                    turn = true;
             }
             try {
                 Thread.sleep(100);
@@ -76,5 +88,18 @@ abstract public class AI extends Thread implements Communication {
     @Override
     public void init() {
         start();
+    }
+
+    @Override
+    public void setCallback(@NotNull PlayerFinished callback) {
+        this.callback = callback;
+        if (shipsPlaced) {
+            callback.shipsPlaced();
+            shipsPlaced = false;
+        }
+        if (turn) {
+            callback.turnFinished(turnX, turnY);
+            turn = false;
+        }
     }
 }
