@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import dev.ky3he4ik.battleship.gui.MainView;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class MyGdxGame extends Game {
@@ -36,7 +37,8 @@ public class MyGdxGame extends Game {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
 //        this.setScreen(new MainScreen(this));
         Gdx.gl.glLineWidth(Constants.CELL_MARGIN * 2);
-        setScreen(new GameScreen(this));
+//        setScreen(new GameScreen(this));
+        setScreen(new MainView(this));
     }
 
     @Override

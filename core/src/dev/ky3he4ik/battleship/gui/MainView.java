@@ -3,31 +3,35 @@ package dev.ky3he4ik.battleship.gui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
+import dev.ky3he4ik.battleship.MyGdxGame;
+import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.ai.AIThread;
+import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
-import dev.ky3he4ik.battleship.utils.Constants;
 
 public class MainView implements Screen, PlayerFinished {
-    private Stage stage;
+    private GameStage stage;
+    private MyGdxGame game;
 
-    public void create() {
-        stage = new Stage(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
+    public MainView(final MyGdxGame game) {
+        this.game = game;
+        GameConfig config = GameConfig.getSampleConfigEast();
+        stage = new GameStage(config, new World(config.getWidth(), config.getHeight()), new World(config.getWidth(), config.getHeight()));
         Gdx.input.setInputProcessor(stage);
+//        player1 = new World(10, 10);
+//        player2 = new World(10, 10);
+//        aiThread = new AIThread(this, player1, player2);
+//        background = new Texture("Background_v01.jpg");
+
+//        setConstants();
+//        aiThread.start();
+//        aiThread.placeShips();
     }
 
     @Override
     public void resize(int width, int height) {
-        // See below for what true means.
         stage.getViewport().update(width, height, true);
-    }
-
-    public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(delta);
-        stage.draw();
     }
 
     @Override
@@ -42,7 +46,10 @@ public class MainView implements Screen, PlayerFinished {
 
     @Override
     public void render(float delta) {
+        stage.act(delta);
 
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.draw();
     }
 
     @Override

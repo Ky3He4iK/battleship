@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class GameConfig {
     static class Ship {
@@ -43,19 +44,16 @@ public class GameConfig {
 
         @NotNull
         public static ArrayList<Ship> getSampleShipsWest() {
-            return (ArrayList<Ship>) Arrays.asList(new Ship[]{
-                    new Ship(5, 5, "Carrier.png"),
+            return new ArrayList<>(Arrays.asList(new Ship(5, 5, "Carrier.png"),
                     new Ship(4, 4, "Battleship.png"),
                     new Ship(3, 3, "Destroyer.png"),
                     new Ship(3, 2, "Submarine.png"),
-                    new Ship(2, 1, "Patrol_boat.png")
-            });
+                    new Ship(2, 1, "Patrol_boat.png")));
         }
 
         @NotNull
         public static ArrayList<Ship> getSampleShipsEast() {
-            return (ArrayList<Ship>) Arrays.asList(new Ship[]{
-                    new Ship(4, 10, "Battleship.png"),
+            return new ArrayList<>(Arrays.asList(new Ship(4, 10, "Battleship.png"),
                     new Ship(3, 9, "Submarine.png"),
                     new Ship(3, 8, "Submarine.png"),
                     new Ship(2, 7, "Patrol_boat.png"),
@@ -64,8 +62,7 @@ public class GameConfig {
                     new Ship(1, 4, "Rubber_boat.png"),
                     new Ship(1, 3, "Rubber_boat.png"),
                     new Ship(1, 2, "Rubber_boat.png"),
-                    new Ship(1, 1, "Rubber_boat.png")
-            });
+                    new Ship(1, 1, "Rubber_boat.png")));
         }
     }
 
@@ -92,17 +89,16 @@ public class GameConfig {
     private ArrayList<Ship> ships;
 
     /**
-     *
-     * @param width - width of field (in cells). Default 10
-     * @param height - height of field (in cells). Default 10
-     * @param movingEnabled - is ships can be moved after each turn?
-     * @param multipleShots - if true each player will shoot several times each turn
+     * @param width           - width of field (in cells). Default 10
+     * @param height          - height of field (in cells). Default 10
+     * @param movingEnabled   - is ships can be moved after each turn?
+     * @param multipleShots   - if true each player will shoot several times each turn
      * @param additionalShots - if true player will get one more shot after enemy's ship hit
-     * @param movingPerTurn - how many ships an be moved each turn
-     * @param shotsPerTurn - how many shoots each player gets (ignored if `multipleShots` s false)
-     * @param aiLevel - difficulty level (only GameType.AI)
-     * @param gameType - type of game
-     * @param ships - list of available ships
+     * @param movingPerTurn   - how many ships an be moved each turn
+     * @param shotsPerTurn    - how many shoots each player gets (ignored if `multipleShots` s false)
+     * @param aiLevel         - difficulty level (only GameType.AI)
+     * @param gameType        - type of game
+     * @param ships           - list of available ships
      */
     public GameConfig(int width, int height, boolean movingEnabled, boolean multipleShots,
                       boolean additionalShots, int movingPerTurn, int shotsPerTurn, int aiLevel,
