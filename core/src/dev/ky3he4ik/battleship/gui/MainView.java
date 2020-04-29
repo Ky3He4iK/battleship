@@ -22,7 +22,7 @@ public class MainView implements Screen, PlayerFinished {
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
+        stage.resize(width, height);
         Gdx.app.debug("MainView", "Resize to " + width + "x" + height);
         game.camera.setToOrtho(false, width, height);
         game.shapeRenderer.setProjectionMatrix(game.camera.combined);

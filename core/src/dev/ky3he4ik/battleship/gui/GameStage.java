@@ -22,18 +22,20 @@ public class GameStage extends Stage {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
         this.config = config;
         float cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
+        float redundantX = (getWidth() - cellSize * (config.getWidth() * 2 + 4)) / 2;
+        float redundantY = (getHeight() - cellSize * (config.getHeight() + 3)) / 2;
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
         leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P);
         rightPlayer = new Field(rightWorld, cellSize, false);
 
-        leftPlayer.setPosition(cellSize, cellSize);
+        leftPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
         leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(true);
         addActor(leftPlayer);
 
-        rightPlayer.setPosition(cellSize * (config.getWidth() + 3), cellSize);
+        rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(true);
         addActor(rightPlayer);
@@ -48,6 +50,18 @@ public class GameStage extends Stage {
         rightPlayer.clearActions();
         rightPlayer.clearListeners();
         rightPlayer.dispose();
+    }
+
+    public void resize(int width, int height) {
+        getViewport().update(width, height, true);
+        float cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
+        float redundantX = (getWidth() - cellSize * (config.getWidth() * 2 + 4)) / 2;
+        float redundantY = (getHeight() - cellSize * (config.getHeight() + 3)) / 2;
+
+        leftPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
+        leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
+        rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
+        rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
     }
 
 //    @Override
