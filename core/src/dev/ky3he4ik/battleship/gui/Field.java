@@ -82,8 +82,8 @@ public class Field extends Group implements PlayerFinished {
         clicked = false;
         clickX = idx;
         clickY = idy;
-        if (communication == null)
-            callback.turnFinished(playerId, idx, idy);
+        if (!isOpened(idx, idy))
+            callback.cellPressed(playerId, idx, idy);
     }
 
     @NotNull
@@ -137,5 +137,9 @@ public class Field extends Group implements PlayerFinished {
     @Override
     public void shipsPlaced() {
         callback.shipsPlaced(playerId);
+    }
+
+    public int getPlayerId() {
+        return playerId;
     }
 }

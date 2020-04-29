@@ -133,4 +133,11 @@ public class GameStage extends Stage {
         else
             return rightPlayer;
     }
+
+    public void cellPressed(int playerId, int idx, int idy) {
+        if ((playerId == TURN_RIGHT || config.getGameType() == GameConfig.GameType.LOCAL_2P) && turn != playerId) {
+            turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
+        }
+        //todo
+    }
 }
