@@ -238,10 +238,10 @@ public class World {
     public void reset(int width, int height) {
         this.width = width;
         this.height = height;
-        if (field == null || field.length != height)
-            field = new int[height][];
-        if (opened == null || opened.length != height)
-            opened = new BitSet[height];
+        if (field == null || field.length != width)
+            field = new int[width][];
+        if (opened == null || opened.length != width)
+            opened = new BitSet[width];
         if (ships == null)
             ships = new ArrayList<>(SHIPS_AVAILABLE.length);
         else
@@ -249,13 +249,13 @@ public class World {
         System.gc();
 
         for (int i = 0; i < height; i++) {
-            if (field[i] == null || field.length != width)
-                field[i] = new int[width];
-            if (opened[i] == null || opened.length != width)
-                opened[i] = new BitSet(width);
+            if (field[i] == null || field.length != height)
+                field[i] = new int[height];
+            if (opened[i] == null || opened.length != height)
+                opened[i] = new BitSet(height);
             else
                 opened[i].clear();
-            for (int j = 0; j < width; j++)
+            for (int j = 0; j < height; j++)
                 field[i][j] = STATE_EMPTY;
         }
     }
@@ -270,10 +270,10 @@ public class World {
         }
         ships.add(ship.move(idx, idy, rotation));
         for (int i = 0; i < ship.len; i++) {
-            if (rotation == ROTATION_HORIZONTAL)
-                field[idy][idx + i] = ship.code | STATE_UNDAMAGED;
+            if (rotation == ROTATION_VERTICAL)
+                field[idx][idy + i] = ship.code | STATE_UNDAMAGED;
             else
-                field[idy + i][idx] = ship.code | STATE_UNDAMAGED;
+                field[idx + i][idy] = ship.code | STATE_UNDAMAGED;
         }
         return true;
     }
