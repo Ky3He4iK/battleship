@@ -7,18 +7,29 @@ import java.util.BitSet;
 
 public class World {
     public static class Ship {
-        public int len;
-        public String name;
-        public int code;
+        public final int len;
+        public final String name;
+        public final int code;
+        public final int idx;
+        public final int idy;
+        public final int rotation;
 
-        public Ship(int len, int code, String name) {
+
+        public Ship(int len, int code, String name, int idx, int idy, int rotation) {
             this.len = len;
             this.code = code;
             this.name = name;
+            this.idx = idx;
+            this.idy = idy;
+            this.rotation = rotation;
         }
 
         public Ship copy() {
-            return new Ship(len, code, name);
+            return new Ship(len, code, name, idx, idy, rotation);
+        }
+
+        public Ship move(int idx, int idy, int rotation) {
+            return new Ship(len, code, name, idx, idy, rotation);
         }
     }
 
@@ -39,7 +50,7 @@ public class World {
     public static final int STATE_SUNK = 0x3; // sunk ship
 
     // ship codes
-    public static final int SHIP_MASK = 0xf00; // reserved for more ships
+    public static final int SHIP_MASK = 0xff00; // reserved for more ships
     public static final int SHIP_NOSHIP = 0x000; // literally no ship;
     public static final int SHIP_CARRIER = 0x100;
     public static final int SHIP_BATTLESHIP = 0x200;
@@ -47,17 +58,16 @@ public class World {
     public static final int SHIP_SUBMARINE = 0x400;
     public static final int SHIP_PATROL_BOAT = 0x500;
 
-    public static final Ship[] SHIPS_AVAILABLE = {new Ship(5, SHIP_CARRIER, "Carrier"),
-            new Ship(4, SHIP_BATTLESHIP, "Battleship"),
-            new Ship(3, SHIP_DESTROYER, "Destroyer"),
-            new Ship(3, SHIP_SUBMARINE, "Submarine"),
-            new Ship(2, SHIP_PATROL_BOAT, "Patrol Boat"),
+    public static final Ship[] SHIPS_AVAILABLE = {new Ship(5, SHIP_CARRIER, "Carrier.png", 0, 0, 0),
+            new Ship(4, SHIP_BATTLESHIP, "Battleship.png", 0, 0, 0),
+            new Ship(3, SHIP_DESTROYER, "Destroyer.png", 0, 0, 0),
+            new Ship(3, SHIP_SUBMARINE, "Submarine.png", 0, 0, 0),
+            new Ship(2, SHIP_PATROL_BOAT, "Patrol_boat.png", 0, 0, 0),
     };
 
     private BitSet[] opened;
     private int[][] field;
     private ArrayList<Ship> ships;
-    private ArrayList<Integer[]> shipsPos;
     private int width;
     private int height;
 
@@ -215,10 +225,9 @@ public class World {
     }
 
     public boolean isAlive() {
-        for (int shipId = 0; shipId < ships.size(); shipId++) {
-            int idx = shipsPos.get(shipId)[0], idy = shipsPos.get(shipId)[1], rot = shipsPos.get(shipId)[2], len = ships.get(shipId).len;
-            for (int i = 0; i < len; i++)
-                if (getState(idy + (rot == ROTATION_VERTICAL ? i : 0), idx + (rot == ROTATION_HORIZONTAL ? i : 0)) == STATE_UNDAMAGED)
+        for (Ship ship : ships) {
+            for (int i = 0; i < ship.len; i++)
+                if (getState(ship.idy + (ship.rotation == ROTATION_VERTICAL ? i : 0), ship.idx + (ship.rotation == ROTATION_HORIZONTAL ? i : 0)) == STATE_UNDAMAGED)
                     return true;
         }
         return false;
@@ -235,10 +244,6 @@ public class World {
             ships = new ArrayList<>(SHIPS_AVAILABLE.length);
         else
             ships.clear();
-        if (shipsPos == null)
-            shipsPos = new ArrayList<>(SHIPS_AVAILABLE.length);
-        else
-            shipsPos.clear();
         System.gc();
 
         for (int i = 0; i < height; i++) {
@@ -261,8 +266,7 @@ public class World {
 
             }
         }
-        ships.add(ship);
-        shipsPos.add(new Integer[]{idx, idy, rotation});
+        ships.add(ship.move(idx, idy, rotation));
         for (int i = 0; i < ship.len; i++) {
             if (rotation == ROTATION_HORIZONTAL)
                 field[idy][idx + i] = ship.code | STATE_UNDAMAGED;

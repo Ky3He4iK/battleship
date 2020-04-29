@@ -10,12 +10,15 @@ import java.util.Arrays;
 public class GameConfig {
     static class Ship {
         public final int length;
+        public final int id;
 
         @NotNull
         public final String name;
 
-        public Ship(int length, @NotNull String name) {
+
+        public Ship(int length, int id, @NotNull String name) {
             this.length = length;
+            this.id = id;
             this.name = name;
         }
 
@@ -33,6 +36,7 @@ public class GameConfig {
         @Override
         public int hashCode() {
             int result = length;
+            result = 31 * result + id;
             result = 31 * result + name.hashCode();
             return result;
         }
@@ -40,27 +44,27 @@ public class GameConfig {
         @NotNull
         public static ArrayList<Ship> getSampleShipsWest() {
             return (ArrayList<Ship>) Arrays.asList(new Ship[]{
-                    new Ship(5, "Carrier"),
-                    new Ship(4, "Battleship"),
-                    new Ship(3, "Destroyer"),
-                    new Ship(3, "Submarine"),
-                    new Ship(2, "Patrol_boat")
+                    new Ship(5, 5, "Carrier.png"),
+                    new Ship(4, 4, "Battleship.png"),
+                    new Ship(3, 3, "Destroyer.png"),
+                    new Ship(3, 2, "Submarine.png"),
+                    new Ship(2, 1, "Patrol_boat.png")
             });
         }
 
         @NotNull
         public static ArrayList<Ship> getSampleShipsEast() {
             return (ArrayList<Ship>) Arrays.asList(new Ship[]{
-                    new Ship(4, "Battleship"),
-                    new Ship(3, "Submarine"),
-                    new Ship(3, "Submarine"),
-                    new Ship(2, "Patrol_boat"),
-                    new Ship(2, "Patrol_boat"),
-                    new Ship(2, "Patrol_boat"),
-                    new Ship(1, "Rubber_boat"),
-                    new Ship(1, "Rubber_boat"),
-                    new Ship(1, "Rubber_boat"),
-                    new Ship(1, "Rubber_boat")
+                    new Ship(4, 10, "Battleship.png"),
+                    new Ship(3, 9, "Submarine.png"),
+                    new Ship(3, 8, "Submarine.png"),
+                    new Ship(2, 7, "Patrol_boat.png"),
+                    new Ship(2, 6, "Patrol_boat.png"),
+                    new Ship(2, 5, "Patrol_boat.png"),
+                    new Ship(1, 4, "Rubber_boat.png"),
+                    new Ship(1, 3, "Rubber_boat.png"),
+                    new Ship(1, 2, "Rubber_boat.png"),
+                    new Ship(1, 1, "Rubber_boat.png")
             });
         }
     }

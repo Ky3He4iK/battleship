@@ -32,6 +32,12 @@ public class Cell extends Actor {
         this.idx = idx;
         this.idy = idy;
 
+        SpriteManager manager = SpriteManager.getInstance();
+        manager.initSprite("cell_empty.png");
+        manager.initSprite("cell_undamaged.png");
+        manager.initSprite("cell_hit.png");
+        manager.initSprite("cell_closed.png");
+
         region = new TextureRegion();
         updateState(field.getState(idx, idy), field.isOpened(idx, idy));
 
@@ -77,5 +83,13 @@ public class Cell extends Actor {
             }
         else
             region.setTexture(SpriteManager.getInstance().getSprite("cell_closed.png").getTexture());
+    }
+
+    public void dispose() {
+        SpriteManager manager = SpriteManager.getInstance();
+        manager.dispose("cell_empty.png");
+        manager.dispose("cell_undamaged.png");
+        manager.dispose("cell_hit.png");
+        manager.dispose("cell_closed.png");
     }
 }
