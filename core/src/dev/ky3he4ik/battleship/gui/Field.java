@@ -58,7 +58,7 @@ public class Field extends Group implements PlayerFinished {
             } else {
                 Sprite sprite = SpriteManager.getInstance().cloneSprite(ship.name, ship.name + "_rot");
                 sprite.setOrigin(.5f, .5f);
-                sprite.setSize( 1, ship.len);
+                sprite.setSize(1, ship.len);
                 sprite.setRotation(-90);
 
                 sprite.setFlip(true, false);
@@ -74,9 +74,9 @@ public class Field extends Group implements PlayerFinished {
             for (World.Ship ship : world.getShips()) {
                 Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
                 batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
-                        cellSize / 2, cellSize / 2,
-                        sprite.getWidth() * cellSize,
-                        sprite.getHeight() * cellSize, 1, 1, sprite.getRotation());
+                        sprite.getOriginX() * cellSize, sprite.getOriginY() * cellSize,
+                        sprite.getWidth() * cellSize, sprite.getHeight() * cellSize,
+                        1, 1, sprite.getRotation());
 
             }
         }
@@ -97,6 +97,8 @@ public class Field extends Group implements PlayerFinished {
     }
 
     public void registerRelease(int idx, int idy) {
+        if (idx == -1 || idy == -1)
+            return;
         clicked = false;
         clickX = idx;
         clickY = idy;

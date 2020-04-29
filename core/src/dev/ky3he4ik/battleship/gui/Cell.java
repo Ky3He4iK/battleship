@@ -83,8 +83,29 @@ public class Cell extends Actor {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
-                    Gdx.app.debug("Cell " + idx + "x" + idy, "Release at " + idx + "x" + idy + " (" + x + "x" + y + "; " + pointer + ")");
-                    field.registerRelease(idx, idy);
+                    int localX = idx;
+                    int localY = idy;
+                    while (x > getWidth()) {
+                        x -= getWidth();
+                        localX++;
+                    }
+                    while (y > getHeight()) {
+                        y -= getHeight();
+                        localY++;
+                    }
+                    while (x < 0) {
+                        x += getWidth();
+                        localX--;
+                    }
+                    while (y < 0) {
+                        y += getHeight();
+                        localY--;
+                    }
+                    if (localX >= 0 && localY >= 0 && localX < field.getWorld().getWidth() && localY < field.getWorld().getHeight()) {
+                        Gdx.app.debug("Cell " + idx + "x" + idy, "Release at " + localX + "x" + localY + " (" + x + "x" + y + "; " + pointer + ")");
+                        field.registerRelease(localX, localY);
+                    } else
+                        field.registerRelease(-1, -1);
                 }
             }
         });
