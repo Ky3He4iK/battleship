@@ -34,7 +34,8 @@ public class MyGdxGame extends Game {
 //        viewport = new ExtendViewport(WIDTH, HEIGHT, camera);
 
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
-        Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        if (Constants.DEBUG_MODE)
+            Gdx.app.setLogLevel(Application.LOG_DEBUG);
 //        this.setScreen(new MainScreen(this));
         Gdx.gl.glLineWidth(Constants.CELL_MARGIN * 2);
 //        setScreen(new GameScreen(this));

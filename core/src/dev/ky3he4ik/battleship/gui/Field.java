@@ -2,6 +2,7 @@ package dev.ky3he4ik.battleship.gui;
 
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 import static dev.ky3he4ik.battleship.World.ROTATION_HORIZONTAL;
+import static dev.ky3he4ik.battleship.World.ROTATION_VERTICAL;
 
 public class Field extends Group implements PlayerFinished {
     @NotNull
@@ -49,8 +51,15 @@ public class Field extends Group implements PlayerFinished {
                 addActor(cells[i][j]);
             }
         }
-        for (World.Ship ship : world.getShips())
-            SpriteManager.getInstance().initSprite(ship.name);
+        for (int i = 0; i < world.getShips().size(); i++) {
+            World.Ship ship = world.getShips().get(i);
+            if (ship.rotation == ROTATION_VERTICAL)
+                SpriteManager.getInstance().initSprite(ship.name);
+            else {
+                SpriteManager.getInstance().cloneSprite(ship.name, ship.name + "_rot").setRotation(-90);
+                world.getShips().set(i, new World.Ship(ship.len, ship.code, ship.name + "_rot", ship.idx, ship.idy, ship.rotation));
+            }
+        }
     }
 
     @Override
@@ -58,8 +67,16 @@ public class Field extends Group implements PlayerFinished {
         super.draw(batch, parentAlpha);
         if (showShips) {
             for (World.Ship ship : world.getShips()) {
-                batch.draw(SpriteManager.getInstance().getSprite(ship.name), getX() + ship.idy * cellSize, getY() + ship.idx, getOriginX(), getOriginY(),
-                        getWidth(), getHeight(), getScaleX(), getScaleY(), ship.rotation == ROTATION_HORIZONTAL ? -90 : 0);
+                Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
+//                batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
+//                        ship.rotation == ROTATION_HORIZONTAL ? ship.len * cellSize : cellSize,
+//                        ship.rotation == ROTATION_HORIZONTAL ? cellSize : ship.len * cellSize);
+                batch.draw(sprite, getX() + ship.idx * cellSize, getY() + (ship.idy + 1) * cellSize,
+                        0, 0,
+                        ship.rotation != ROTATION_HORIZONTAL ? ship.len * cellSize : cellSize,
+                        ship.rotation != ROTATION_HORIZONTAL ? cellSize : ship.len * cellSize,
+                        1, 1, ship.rotation == ROTATION_HORIZONTAL ? -90 : 0);
+
             }
         }
     }

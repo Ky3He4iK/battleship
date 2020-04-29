@@ -50,7 +50,7 @@ public class GameStage extends Stage {
             rightComm.init();
             rightComm.setPlaceShips();
         }
-        rightPlayer = new Field(rightWorld, cellSize, false, rightComm, TURN_RIGHT, this);
+        rightPlayer = new Field(rightWorld, cellSize, Constants.DEBUG_MODE, rightComm, TURN_RIGHT, this);
         rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(true);

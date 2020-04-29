@@ -51,9 +51,11 @@ public class SpriteManager {
         else
             sprite = sprites.get(currentName);
         if (sprites.containsKey(newName))
-            throw new IllegalArgumentException("Sprite with name " + newName + " is already here");
-        sprites.put(newName, new Sprite(sprite));
-        usageCnt.put(newName, 1);
+            usageCnt.put(newName, usageCnt.get(newName) + 1);
+        else {
+            sprites.put(newName, new Sprite(sprite));
+            usageCnt.put(newName, 1);
+        }
         return getSprite(newName);
     }
 

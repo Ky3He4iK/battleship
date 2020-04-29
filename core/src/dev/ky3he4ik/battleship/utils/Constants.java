@@ -1,11 +1,11 @@
 package dev.ky3he4ik.battleship.utils;
 
-import com.badlogic.gdx.math.Vector2;
-
 public class Constants {
     public static final int CELL_MARGIN = 2;
     public static final int CELLS_CNT_X = 25;
     public static final int CELLS_CNT_Y = 15;
+
+    public static final boolean DEBUG_MODE = true;
 
     public static final String GAME_NAME = "Advanced sea battle";
 
