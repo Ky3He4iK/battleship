@@ -12,9 +12,6 @@ import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
-import static dev.ky3he4ik.battleship.World.ROTATION_HORIZONTAL;
-import static dev.ky3he4ik.battleship.World.ROTATION_VERTICAL;
-
 public class Field extends Group implements PlayerFinished {
     @NotNull
     private final World world;
@@ -53,10 +50,18 @@ public class Field extends Group implements PlayerFinished {
         }
         for (int i = 0; i < world.getShips().size(); i++) {
             World.Ship ship = world.getShips().get(i);
-            if (ship.rotation == ROTATION_VERTICAL)
-                SpriteManager.getInstance().initSprite(ship.name);
-            else {
-                SpriteManager.getInstance().cloneSprite(ship.name, ship.name + "_rot").setRotation(-90);
+            if (ship.rotation == World.ROTATION_VERTICAL) {
+                Sprite sprite = SpriteManager.getInstance().initSprite(ship.name);
+                sprite.setSize(1, ship.len);
+                sprite.setOrigin(.5f, .5f);
+                sprite.setRotation(0);
+            } else {
+                Sprite sprite = SpriteManager.getInstance().cloneSprite(ship.name, ship.name + "_rot");
+                sprite.setOrigin(.5f, .5f);
+                sprite.setSize( 1, ship.len);
+                sprite.setRotation(-90);
+
+                sprite.setFlip(true, false);
                 world.getShips().set(i, new World.Ship(ship.len, ship.code, ship.name + "_rot", ship.idx, ship.idy, ship.rotation));
             }
         }
@@ -68,14 +73,10 @@ public class Field extends Group implements PlayerFinished {
         if (showShips) {
             for (World.Ship ship : world.getShips()) {
                 Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
-//                batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
-//                        ship.rotation == ROTATION_HORIZONTAL ? ship.len * cellSize : cellSize,
-//                        ship.rotation == ROTATION_HORIZONTAL ? cellSize : ship.len * cellSize);
-                batch.draw(sprite, getX() + ship.idx * cellSize, getY() + (ship.idy + 1) * cellSize,
-                        0, 0,
-                        ship.rotation != ROTATION_HORIZONTAL ? ship.len * cellSize : cellSize,
-                        ship.rotation != ROTATION_HORIZONTAL ? cellSize : ship.len * cellSize,
-                        1, 1, ship.rotation == ROTATION_HORIZONTAL ? -90 : 0);
+                batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
+                        cellSize / 2, cellSize / 2,
+                        sprite.getWidth() * cellSize,
+                        sprite.getHeight() * cellSize, 1, 1, sprite.getRotation());
 
             }
         }

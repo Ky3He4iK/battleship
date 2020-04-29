@@ -16,7 +16,7 @@ public class AIDummy extends AI {
     protected void placeShips() {
         int idx = 0;
         for (World.Ship ship : World.SHIPS_AVAILABLE) {
-//                    my.placeShip(ship, idx, 0, World.ROTATION_VERTICAL);
+//            my.placeShip(ship, idx, 0, World.ROTATION_VERTICAL);
             my.placeShip(ship, 2, idx, World.ROTATION_HORIZONTAL);
             idx += 2;
         }
