@@ -8,9 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-public class GameStage extends Stage {
+public class GameStage extends Stage implements PlayerFinished {
     @NotNull
     private Field leftPlayer;
     @NotNull
@@ -64,8 +65,13 @@ public class GameStage extends Stage {
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
     }
 
-//    @Override
-//    public void draw() {
-//        super.draw();
-//    }
+    @Override
+    public void aiTurnFinished(int playerId, int i, int j) {
+
+    }
+
+    @Override
+    public void aiShipsPlaced(int playerId) {
+
+    }
 }

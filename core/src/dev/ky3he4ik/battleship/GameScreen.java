@@ -11,14 +11,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-import dev.ky3he4ik.battleship.ai.AIThread;
+import dev.ky3he4ik.battleship.ai.AI;
+import dev.ky3he4ik.battleship.ai.AIDummy;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 
 public class GameScreen implements Screen, PlayerFinished {
     private @NotNull
-    AIThread aiThread;
+    AI ai;
     private @NotNull
     World player1, player2;
     private final MyGdxGame game;
@@ -66,12 +67,12 @@ public class GameScreen implements Screen, PlayerFinished {
         this.game = game;
         player1 = new World(10, 10);
         player2 = new World(10, 10);
-        aiThread = new AIThread(this, player1, player2);
+        ai = new AIDummy(this, player1, player2, 1);
 //        background = new Texture("Background_v01.jpg");
 
         setConstants();
-        aiThread.start();
-        aiThread.placeShips();
+        ai.start();
+        ai.setPlaceShips();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class GameScreen implements Screen, PlayerFinished {
         if (!p1turn && aiFinished) {
             if (aiX < 0 || aiY < 0) {
                 aiFinished = false;
-                aiThread.turn();
+                ai.setTurn();
                 Gdx.app.log("GameScreen", "AI action is incorrect");
                 return;
             }
@@ -103,7 +104,7 @@ public class GameScreen implements Screen, PlayerFinished {
                 Gdx.app.error("GameScreen", "P2 won!");
             p1turn = player1.getState(aiX, aiY) == World.STATE_EMPTY;
             aiFinished = false;
-            aiThread.turn();
+            ai.setTurn();
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
             proceedClick(Gdx.input.getX(), (int) (game.camera.viewportHeight - Gdx.input.getY()), true);
@@ -247,19 +248,19 @@ public class GameScreen implements Screen, PlayerFinished {
     @Override
     public void dispose() {
 //        background.dispose();
-        aiThread.dispose();
+        ai.dispose();
 
     }
 
     @Override
-    public void aiTurnFinished(int i, int j) {
+    public void aiTurnFinished(int playerId, int i, int j) {
         aiX = i;
         aiY = j;
         aiFinished = true;
     }
 
     @Override
-    public void aiShipsPlaced() {
-        aiThread.turn();
+    public void aiShipsPlaced(int playerId) {
+        ai.setTurn();
     }
 }

@@ -9,7 +9,7 @@ import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
-public class MainView implements Screen, PlayerFinished {
+public class MainView implements Screen {
     private GameStage stage;
     private MyGdxGame game;
 
@@ -67,16 +67,6 @@ public class MainView implements Screen, PlayerFinished {
 
     @Override
     public void hide() {
-
-    }
-
-    @Override
-    public void aiTurnFinished(int i, int j) {
-
-    }
-
-    @Override
-    public void aiShipsPlaced() {
 
     }
 }
