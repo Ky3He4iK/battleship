@@ -8,8 +8,8 @@ import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 public class AIDummy extends AI {
-    public AIDummy(@NotNull PlayerFinished callback, @NotNull World enemy, @NotNull World my, int id) {
-        super(callback, enemy, my, id);
+    public AIDummy(@NotNull PlayerFinished callback, @NotNull World enemy, @NotNull World my) {
+        super(callback, enemy, my);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class AIDummy extends AI {
             idx += 2;
         }
         isPlaceShips = false;
-        callback.shipsPlaced(id);
+        callback.shipsPlaced();
     }
 
     @Override
@@ -33,6 +33,11 @@ public class AIDummy extends AI {
             i = random.nextInt(enemy.getHeight());
             j = random.nextInt(enemy.getWidth());
         }
-        callback.turnFinished(id, i, j);
+        callback.turnFinished(i, j);
+    }
+
+    @Override
+    public void setCallback(@NotNull PlayerFinished callback) {
+        this.callback = callback;
     }
 }

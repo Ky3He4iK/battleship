@@ -8,13 +8,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import dev.ky3he4ik.battleship.World;
-import dev.ky3he4ik.battleship.ai.AI;
 import dev.ky3he4ik.battleship.ai.AIDummy;
+import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
-import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-public class GameStage extends Stage implements PlayerFinished {
+public class GameStage extends Stage{
     public final static int TURN_LEFT = 0;
     public final static int TURN_RIGHT = 1;
 
@@ -24,9 +23,6 @@ public class GameStage extends Stage implements PlayerFinished {
     private Field rightPlayer;
     @NotNull
     private final GameConfig config;
-
-    @Nullable
-    private AI ai = null;
 
     private int turn = TURN_LEFT;
     private int readyCnt = 0;
@@ -43,24 +39,23 @@ public class GameStage extends Stage implements PlayerFinished {
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
-        leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P);
-        rightPlayer = new Field(rightWorld, cellSize, false);
-
+        leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null);
         leftPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
         leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(true);
         addActor(leftPlayer);
 
+        Communication rightComm = null;
+        if (config.getGameType() == GameConfig.GameType.AI) {
+            rightComm = new AIDummy( leftPlayer.getWorld(), rightPlayer.getWorld());
+            rightComm.init();
+            rightComm.setPlaceShips();
+        }
+        rightPlayer = new Field(rightWorld, cellSize, false, rightComm);
         rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(true);
         addActor(rightPlayer);
-
-        if (config.getGameType() == GameConfig.GameType.AI) {
-            ai = new AIDummy(this, leftPlayer.getWorld(), rightPlayer.getWorld(), TURN_RIGHT);
-            ai.start();
-            ai.setPlaceShips();
-        }
     }
 
     @Override
@@ -70,8 +65,7 @@ public class GameStage extends Stage implements PlayerFinished {
             aiReady = false;
             if (leftPlayer.open(aiX, aiY))
                 turn();
-            if (ai != null)
-                ai.setTurn();
+            rightPlayer.setTurn();
         }
     }
 
@@ -98,11 +92,13 @@ public class GameStage extends Stage implements PlayerFinished {
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
     }
 
-    @Override
     public void turnFinished(int playerId, int i, int j) {
+//        switch (config.getGameType())
         if (isMyTurn(playerId)) {
             if (getOpponent(playerId).open(i, j))
                 turn();
+            if (!getOpponent(playerId).getWorld().isAlive())
+                Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
         } else if (playerId == TURN_RIGHT && config.getGameType() == GameConfig.GameType.AI) {
             aiReady = true;
             aiX = i;
@@ -110,7 +106,6 @@ public class GameStage extends Stage implements PlayerFinished {
         }
     }
 
-    @Override
     public void shipsPlaced(int playerId) {
         readyCnt++;
     }

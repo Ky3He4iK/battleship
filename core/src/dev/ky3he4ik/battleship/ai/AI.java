@@ -5,18 +5,22 @@ import com.badlogic.gdx.Gdx;
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
-abstract public class AI extends Thread {
+abstract public class AI extends Thread implements Communication {
     protected PlayerFinished callback;
+
+    @NotNull
     protected final World enemy;
+
+    @NotNull
     protected final World my;
     protected boolean isMyTurn;
     protected boolean isPlaceShips;
     protected boolean running;
-    protected int id;
 
-    protected AI(@NotNull PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, int id) {
+    protected AI(@NotNull PlayerFinished callback, @NotNull final World enemy, @NotNull final World my) {
         super();
         this.callback = callback;
         isPlaceShips = false;
@@ -24,7 +28,6 @@ abstract public class AI extends Thread {
         running = true;
         this.enemy = enemy;
         this.my = my;
-        this.id = id;
     }
 
     @Override
@@ -53,15 +56,23 @@ abstract public class AI extends Thread {
         this.callback = callback;
     }
 
+    @Override
     public void setTurn() {
         isMyTurn = true;
     }
 
+    @Override
     public void setPlaceShips() {
         isPlaceShips = true;
     }
 
+    @Override
     public void dispose() {
         running = false;
+    }
+
+    @Override
+    public void init() {
+        start();
     }
 }

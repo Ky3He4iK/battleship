@@ -5,8 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.Communication;
+import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 import static dev.ky3he4ik.battleship.World.ROTATION_HORIZONTAL;
 
@@ -19,11 +22,20 @@ public class Field extends Group {
     private boolean clicked = false;
     private boolean showShips;
     private float cellSize;
+    private Communication communication;
+    private int playerId;
 
-    public Field(@NotNull final World world, float cellSize, boolean showShips) {
+    @NotNull
+    private GameStage callback;
+
+    public Field(@NotNull final World world, float cellSize, boolean showShips, @Nullable final Communication communication, int playerId, @NotNull  GameStage callback) {
         this.world = world;
         this.cellSize = cellSize;
         this.showShips = showShips;
+        this.communication = communication;
+        this.playerId = playerId;
+        this.callback = callback;
+
         cells = new Cell[world.getHeight()][];
         for (int i = 0; i < world.getHeight(); i++) {
             cells[i] = new Cell[world.getWidth()];
@@ -101,5 +113,15 @@ public class Field extends Group {
         //todo: animation
         world.open(idx, idy);
         return world.getState(idx, idy) != World.STATE_EMPTY;
+    }
+
+    public void setTurn() {
+        if (communication != null)
+            communication.setTurn();
+    }
+
+    public void setPlaceShips() {
+        if (communication != null)
+            communication.setPlaceShips();
     }
 }

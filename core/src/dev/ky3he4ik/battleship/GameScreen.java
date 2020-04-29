@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 
 import dev.ky3he4ik.battleship.ai.AI;
-import dev.ky3he4ik.battleship.ai.AIDummy;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.Constants;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 public class GameScreen implements Screen, PlayerFinished {
@@ -67,12 +67,14 @@ public class GameScreen implements Screen, PlayerFinished {
         this.game = game;
         player1 = new World(10, 10);
         player2 = new World(10, 10);
-        ai = new AIDummy(this, player1, player2, 1);
+//        ai = new AIDummy(this, player1, player2, 1);
+
 //        background = new Texture("Background_v01.jpg");
 
-        setConstants();
-        ai.start();
-        ai.setPlaceShips();
+//        setConstants();
+//        ai.start();
+//        ai.setPlaceShips();
+        throw new NotImplementedException(); // AI broken
     }
 
     @Override
@@ -253,14 +255,14 @@ public class GameScreen implements Screen, PlayerFinished {
     }
 
     @Override
-    public void turnFinished(int playerId, int i, int j) {
+    public void turnFinished(int i, int j) {
         aiX = i;
         aiY = j;
         aiFinished = true;
     }
 
     @Override
-    public void shipsPlaced(int playerId) {
+    public void shipsPlaced() {
         ai.setTurn();
     }
 }
