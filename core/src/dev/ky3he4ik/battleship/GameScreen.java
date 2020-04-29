@@ -11,13 +11,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-import dev.ky3he4ik.battleship.ai.AIComputationFinished;
 import dev.ky3he4ik.battleship.ai.AIThread;
+import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-import static dev.ky3he4ik.battleship.utils.Constants.CELLS_CNT_Y;
 
-public class GameScreen implements Screen, AIComputationFinished {
+public class GameScreen implements Screen, PlayerFinished {
     private @NotNull
     AIThread aiThread;
     private @NotNull
@@ -41,7 +40,7 @@ public class GameScreen implements Screen, AIComputationFinished {
     private void setConstants() {
         step = (int) Math.min((game.camera.viewportWidth - 1) / Constants.CELLS_CNT_X, (game.camera.viewportHeight - 1) / Constants.CELLS_CNT_Y);
         xMargin = (game.camera.viewportWidth - step * Constants.CELLS_CNT_X) / 2;
-        yMargin = (game.camera.viewportHeight - step * CELLS_CNT_Y) / 2;
+        yMargin = (game.camera.viewportHeight - step * Constants.CELLS_CNT_Y) / 2;
         if (xMargin * 2 + step * Constants.CELLS_CNT_X != game.camera.viewportWidth || yMargin * 2 + step * Constants.CELLS_CNT_Y != game.camera.viewportHeight)
             Gdx.app.error("GameScreen", "Screen constants invalid!\nx: {" + xMargin + ", " + step
                     + "}\ny: {" + yMargin + ", " + step + "}\nScreen: " + game.camera.viewportWidth + "x" + game.camera.viewportHeight);
@@ -124,7 +123,7 @@ public class GameScreen implements Screen, AIComputationFinished {
         game.shapeRenderer.setColor(.9f, .9f, .9f, .5f);
         for (int i = 0; i <= Constants.CELLS_CNT_X; i++)
             game.shapeRenderer.line(xMargin + step * i, 0, xMargin + step * i, game.camera.viewportHeight);
-        for (int i = 0; i <= CELLS_CNT_Y; i++)
+        for (int i = 0; i <= Constants.CELLS_CNT_Y; i++)
             game.shapeRenderer.line(0, yMargin + step * i, game.camera.viewportWidth, yMargin + step * i);
         game.shapeRenderer.end();
 
@@ -180,7 +179,7 @@ public class GameScreen implements Screen, AIComputationFinished {
                 game.shapeRenderer.rect(xMargin + (i + 2) * step + Constants.CELL_MARGIN,
                         yMargin + (j + 1) * step + Constants.CELL_MARGIN, step - Constants.CELL_MARGIN * 2, step - Constants.CELL_MARGIN * 2);
                 if (player2.isOpened(i, j))
-                   switch (player2.getState(i, j)) {
+                    switch (player2.getState(i, j)) {
                         case World.STATE_EMPTY:
                             game.shapeRenderer.setColor(World.COLOR_EMPTY);
                             break;

@@ -7,16 +7,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 public class AIThread extends Thread {
-    private AIComputationFinished callback;
+    private PlayerFinished callback;
     private final World enemy;
     private final World my;
     private boolean isMyTurn;
     private boolean isPlaceShips;
     private boolean running;
 
-    public AIThread(@NotNull AIComputationFinished callback, @NotNull final World enemy, @NotNull final World my) {
+    public AIThread(@NotNull PlayerFinished callback, @NotNull final World enemy, @NotNull final World my) {
         super();
         this.callback = callback;
         isPlaceShips = false;
@@ -31,7 +32,7 @@ public class AIThread extends Thread {
         while (running) {
             if (isPlaceShips) {
                 int idx = 0;
-                for (World.Ship ship: World.SHIPS_AVAILABLE) {
+                for (World.Ship ship : World.SHIPS_AVAILABLE) {
 //                    my.placeShip(ship, idx, 0, World.ROTATION_VERTICAL);
                     my.placeShip(ship, 2, idx, World.ROTATION_HORIZONTAL);
                     idx += 2;
@@ -58,7 +59,7 @@ public class AIThread extends Thread {
 
     }
 
-    public void updateCallback(@NotNull AIComputationFinished callback) {
+    public void updateCallback(@NotNull PlayerFinished callback) {
         this.callback = callback;
     }
 

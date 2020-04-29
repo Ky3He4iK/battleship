@@ -12,7 +12,7 @@ import static dev.ky3he4ik.battleship.World.ROTATION_HORIZONTAL;
 
 public class Field extends Group {
     private final World world;
-    private Cell cells[][];
+    private Cell[][] cells;
     private int clickX, clickY;
     private boolean clicked = false;
     private boolean showShips;
@@ -28,10 +28,11 @@ public class Field extends Group {
             for (int j = 0; j < world.getHeight(); j++) {
                 cells[i][j] = new Cell(this, i, j);
                 cells[i][j].setPosition(cellSize * i, cellSize * j);
+                cells[i][j].setSize(cellSize, cellSize);
                 addActor(cells[i][j]);
             }
         }
-        for (World.Ship ship: world.getShips())
+        for (World.Ship ship : world.getShips())
             SpriteManager.getInstance().initSprite(ship.name);
     }
 
@@ -39,7 +40,7 @@ public class Field extends Group {
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         if (showShips) {
-            for (World.Ship ship: world.getShips()) {
+            for (World.Ship ship : world.getShips()) {
                 batch.draw(SpriteManager.getInstance().getSprite(ship.name), getX() + ship.idy * cellSize, getY() + ship.idx, getOriginX(), getOriginY(),
                         getWidth(), getHeight(), getScaleX(), getScaleY(), ship.rotation == ROTATION_HORIZONTAL ? -90 : 0);
             }
@@ -80,10 +81,10 @@ public class Field extends Group {
     }
 
     public void dispose() {
-        for (World.Ship ship: world.getShips())
+        for (World.Ship ship : world.getShips())
             SpriteManager.getInstance().dispose(ship.name);
-        for (Cell[] cells1: cells) {
-            for (Cell cell: cells1) {
+        for (Cell[] cells1 : cells) {
+            for (Cell cell : cells1) {
                 cell.dispose();
                 cell.clearActions();
                 cell.clearListeners();

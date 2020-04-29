@@ -1,14 +1,15 @@
 package dev.ky3he4ik.battleship.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
-import dev.ky3he4ik.battleship.MyGdxGame;
+import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-public class MainView {
+public class MainView implements Screen, PlayerFinished {
     private Stage stage;
 
     public void create() {
@@ -16,6 +17,7 @@ public class MainView {
         Gdx.input.setInputProcessor(stage);
     }
 
+    @Override
     public void resize(int width, int height) {
         // See below for what true means.
         stage.getViewport().update(width, height, true);
@@ -28,7 +30,43 @@ public class MainView {
         stage.draw();
     }
 
+    @Override
     public void dispose() {
         stage.dispose();
+    }
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
+
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void aiTurnFinished(int i, int j) {
+
+    }
+
+    @Override
+    public void aiShipsPlaced() {
+
     }
 }

@@ -69,7 +69,7 @@ public class GameConfig {
         }
     }
 
-    enum GameType {
+    public enum GameType {
         LOCAL_2P,
         AI,
         LOCAL_INET,
@@ -91,7 +91,22 @@ public class GameConfig {
     @NotNull
     private ArrayList<Ship> ships;
 
-    public GameConfig(int width, int height, boolean movingEnabled, boolean multipleShots, boolean additionalShots, int movingPerTurn, int shotsPerTurn, int aiLevel, @NotNull GameType gameType, @NotNull ArrayList<Ship> ships) {
+    /**
+     *
+     * @param width - width of field (in cells). Default 10
+     * @param height - height of field (in cells). Default 10
+     * @param movingEnabled - is ships can be moved after each turn?
+     * @param multipleShots - if true each player will shoot several times each turn
+     * @param additionalShots - if true player will get one more shot after enemy's ship hit
+     * @param movingPerTurn - how many ships an be moved each turn
+     * @param shotsPerTurn - how many shoots each player gets (ignored if `multipleShots` s false)
+     * @param aiLevel - difficulty level (only GameType.AI)
+     * @param gameType - type of game
+     * @param ships - list of available ships
+     */
+    public GameConfig(int width, int height, boolean movingEnabled, boolean multipleShots,
+                      boolean additionalShots, int movingPerTurn, int shotsPerTurn, int aiLevel,
+                      @NotNull GameType gameType, @NotNull ArrayList<Ship> ships) {
         this.width = width;
         this.height = height;
         this.movingEnabled = movingEnabled;
@@ -136,6 +151,7 @@ public class GameConfig {
         return aiLevel;
     }
 
+    @NotNull
     public GameType getGameType() {
         return gameType;
     }
@@ -181,16 +197,18 @@ public class GameConfig {
 
     @NotNull
     public static GameConfig getSampleConfigWest() {
-        return new GameConfig(10, 10, false, false, false, 0, 0, 1, GameType.AI, Ship.getSampleShipsWest());
+        return new GameConfig(10, 10, false, false,
+                true, 0, 1, 1, GameType.AI, Ship.getSampleShipsWest());
     }
 
     @NotNull
     public static GameConfig getSampleConfigEast() {
-        return new GameConfig(10, 10, false, false, false, 0, 0, 1, GameType.AI, Ship.getSampleShipsEast());
+        return new GameConfig(10, 10, false, false,
+                true, 0, 1, 1, GameType.AI, Ship.getSampleShipsEast());
     }
 
     @NotNull
-    public static GameConfig fromJSON(String json) {
+    public static GameConfig fromJSON(@NotNull String json) {
         return new Gson().fromJson(json, GameConfig.class);
     }
 
