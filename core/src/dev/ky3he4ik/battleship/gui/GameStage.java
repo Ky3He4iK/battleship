@@ -1,5 +1,6 @@
 package dev.ky3he4ik.battleship.gui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
@@ -21,16 +22,32 @@ public class GameStage extends Stage {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
         this.config = config;
         float cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
+
+        Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
+
         leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P);
         rightPlayer = new Field(rightWorld, cellSize, false);
 
         leftPlayer.setPosition(cellSize, cellSize);
         leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
+        leftPlayer.setVisible(true);
         addActor(leftPlayer);
 
         rightPlayer.setPosition(cellSize * (config.getWidth() + 3), cellSize);
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
+        rightPlayer.setVisible(true);
         addActor(rightPlayer);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        leftPlayer.dispose();
+        leftPlayer.clearActions();
+        leftPlayer.clearListeners();
+        rightPlayer.clearActions();
+        rightPlayer.clearListeners();
+        rightPlayer.dispose();
     }
 
 //    @Override

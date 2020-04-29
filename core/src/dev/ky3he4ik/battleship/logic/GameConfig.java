@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import dev.ky3he4ik.battleship.utils.Constants;
+
 public class GameConfig {
     static class Ship {
         public final int length;
@@ -44,25 +46,25 @@ public class GameConfig {
 
         @NotNull
         public static ArrayList<Ship> getSampleShipsWest() {
-            return new ArrayList<>(Arrays.asList(new Ship(5, 5, "Carrier.png"),
-                    new Ship(4, 4, "Battleship.png"),
-                    new Ship(3, 3, "Destroyer.png"),
-                    new Ship(3, 2, "Submarine.png"),
-                    new Ship(2, 1, "Patrol_boat.png")));
+            return new ArrayList<>(Arrays.asList(new Ship(5, 5, Constants.SHIP_CARRIER_IMG),
+                    new Ship(4, 4, Constants.SHIP_BATTLESHIP_IMG),
+                    new Ship(3, 3, Constants.SHIP_DESTROYER_IMG),
+                    new Ship(3, 2, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 1, Constants.SHIP_PATROL_BOAT_IMG)));
         }
 
         @NotNull
         public static ArrayList<Ship> getSampleShipsEast() {
-            return new ArrayList<>(Arrays.asList(new Ship(4, 10, "Battleship.png"),
-                    new Ship(3, 9, "Submarine.png"),
-                    new Ship(3, 8, "Submarine.png"),
-                    new Ship(2, 7, "Patrol_boat.png"),
-                    new Ship(2, 6, "Patrol_boat.png"),
-                    new Ship(2, 5, "Patrol_boat.png"),
-                    new Ship(1, 4, "Rubber_boat.png"),
-                    new Ship(1, 3, "Rubber_boat.png"),
-                    new Ship(1, 2, "Rubber_boat.png"),
-                    new Ship(1, 1, "Rubber_boat.png")));
+            return new ArrayList<>(Arrays.asList(new Ship(4, 10, Constants.SHIP_BATTLESHIP_IMG),
+                    new Ship(3, 9, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(3, 8, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 7, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(2, 6, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(1, 4, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 3, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 2, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 1, Constants.SHIP_RUBBER_BOAT_IMG)));
         }
     }
 

@@ -4,21 +4,23 @@ package dev.ky3he4ik.battleship.gui;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.World;
 
 import static dev.ky3he4ik.battleship.World.ROTATION_HORIZONTAL;
 
 public class Field extends Group {
+    @NotNull
     private final World world;
+    @NotNull
     private Cell[][] cells;
     private int clickX, clickY;
     private boolean clicked = false;
     private boolean showShips;
     private float cellSize;
 
-    public Field(final World world, float cellSize, boolean showShips) {
+    public Field(@NotNull final World world, float cellSize, boolean showShips) {
         this.world = world;
         this.cellSize = cellSize;
         this.showShips = showShips;
@@ -29,6 +31,7 @@ public class Field extends Group {
                 cells[i][j] = new Cell(this, i, j);
                 cells[i][j].setPosition(cellSize * i, cellSize * j);
                 cells[i][j].setSize(cellSize, cellSize);
+                cells[i][j].setVisible(true);
                 addActor(cells[i][j]);
             }
         }
@@ -37,7 +40,7 @@ public class Field extends Group {
     }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
+    public void draw(@NotNull Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         if (showShips) {
             for (World.Ship ship : world.getShips()) {
@@ -67,7 +70,7 @@ public class Field extends Group {
         clickY = idy;
     }
 
-    @Nullable
+    @NotNull
     public int[] getClick() {
         return new int[]{(clicked ? 1 : 0), clickX, clickY};
     }
@@ -76,6 +79,7 @@ public class Field extends Group {
         clicked = false;
     }
 
+    @NotNull
     public World getWorld() {
         return world;
     }

@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.ArrayList;
 import java.util.BitSet;
 
+import dev.ky3he4ik.battleship.utils.Constants;
+
 public class World {
     public static class Ship {
         public final int len;
@@ -58,11 +60,11 @@ public class World {
     public static final int SHIP_SUBMARINE = 0x400;
     public static final int SHIP_PATROL_BOAT = 0x500;
 
-    public static final Ship[] SHIPS_AVAILABLE = {new Ship(5, SHIP_CARRIER, "Carrier.png", 0, 0, 0),
-            new Ship(4, SHIP_BATTLESHIP, "Battleship.png", 0, 0, 0),
-            new Ship(3, SHIP_DESTROYER, "Destroyer.png", 0, 0, 0),
-            new Ship(3, SHIP_SUBMARINE, "Submarine.png", 0, 0, 0),
-            new Ship(2, SHIP_PATROL_BOAT, "Patrol_boat.png", 0, 0, 0),
+    public static final Ship[] SHIPS_AVAILABLE = {new Ship(5, SHIP_CARRIER, Constants.SHIP_CARRIER_IMG, 0, 0, 0),
+            new Ship(4, SHIP_BATTLESHIP, Constants.SHIP_BATTLESHIP_IMG, 0, 0, 0),
+            new Ship(3, SHIP_DESTROYER, Constants.SHIP_DESTROYER_IMG, 0, 0, 0),
+            new Ship(3, SHIP_SUBMARINE, Constants.SHIP_SUBMARINE_IMG, 0, 0, 0),
+            new Ship(2, SHIP_PATROL_BOAT, Constants.SHIP_PATROL_BOAT_IMG, 0, 0, 0),
     };
 
     private BitSet[] opened;
