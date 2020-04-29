@@ -35,7 +35,8 @@ public class Field extends Group implements PlayerFinished {
         this.communication = communication;
         this.playerId = playerId;
         this.callback = callback;
-        communication.setCallback(this);
+        if (communication != null)
+            communication.setCallback(this);
 
         cells = new Cell[world.getHeight()][];
         for (int i = 0; i < world.getHeight(); i++) {
@@ -81,6 +82,8 @@ public class Field extends Group implements PlayerFinished {
         clicked = false;
         clickX = idx;
         clickY = idy;
+        if (communication == null)
+            callback.turnFinished(playerId, idx, idy);
     }
 
     @NotNull

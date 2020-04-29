@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.ai.AIDummy;
@@ -13,7 +12,7 @@ import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-public class GameStage extends Stage{
+public class GameStage extends Stage {
     public final static int TURN_LEFT = 0;
     public final static int TURN_RIGHT = 1;
 
@@ -30,7 +29,7 @@ public class GameStage extends Stage{
     private int aiX = -1;
     private int aiY = -1;
 
-    GameStage(@NotNull final GameConfig config, final World leftWorld, final World rightWorld) {
+    GameStage(@NotNull final GameConfig config, @NotNull final World leftWorld, @NotNull final World rightWorld) {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
         this.config = config;
         float cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
@@ -47,7 +46,7 @@ public class GameStage extends Stage{
 
         Communication rightComm = null;
         if (config.getGameType() == GameConfig.GameType.AI) {
-            rightComm = new AIDummy( leftPlayer.getWorld(), rightPlayer.getWorld());
+            rightComm = new AIDummy(leftPlayer.getWorld(), rightWorld);
             rightComm.init();
             rightComm.setPlaceShips();
         }

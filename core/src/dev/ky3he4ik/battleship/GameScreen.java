@@ -14,7 +14,6 @@ import java.util.HashMap;
 import dev.ky3he4ik.battleship.ai.AI;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.Constants;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 public class GameScreen implements Screen, PlayerFinished {
@@ -74,7 +73,7 @@ public class GameScreen implements Screen, PlayerFinished {
 //        setConstants();
 //        ai.start();
 //        ai.setPlaceShips();
-        throw new NotImplementedException(); // AI broken
+        Gdx.app.error("GameScreen", "You are in danger zone! Leave now!"); // AI broken
     }
 
     @Override
