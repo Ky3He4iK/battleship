@@ -39,7 +39,7 @@ public class GameStage extends Stage{
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
-        leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null);
+        leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null, TURN_LEFT, this);
         leftPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
         leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(true);
@@ -51,7 +51,7 @@ public class GameStage extends Stage{
             rightComm.init();
             rightComm.setPlaceShips();
         }
-        rightPlayer = new Field(rightWorld, cellSize, false, rightComm);
+        rightPlayer = new Field(rightWorld, cellSize, false, rightComm, TURN_RIGHT, this);
         rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(true);

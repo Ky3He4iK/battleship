@@ -3,12 +3,14 @@ package dev.ky3he4ik.battleship.ai;
 import com.badlogic.gdx.Gdx;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 abstract public class AI extends Thread implements Communication {
+    @Nullable
     protected PlayerFinished callback;
 
     @NotNull
@@ -20,7 +22,7 @@ abstract public class AI extends Thread implements Communication {
     protected boolean isPlaceShips;
     protected boolean running;
 
-    protected AI(@NotNull PlayerFinished callback, @NotNull final World enemy, @NotNull final World my) {
+    protected AI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my) {
         super();
         this.callback = callback;
         isPlaceShips = false;

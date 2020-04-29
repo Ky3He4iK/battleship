@@ -13,7 +13,7 @@ import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 import static dev.ky3he4ik.battleship.World.ROTATION_HORIZONTAL;
 
-public class Field extends Group {
+public class Field extends Group implements PlayerFinished {
     @NotNull
     private final World world;
     @NotNull
@@ -28,13 +28,14 @@ public class Field extends Group {
     @NotNull
     private GameStage callback;
 
-    public Field(@NotNull final World world, float cellSize, boolean showShips, @Nullable final Communication communication, int playerId, @NotNull  GameStage callback) {
+    public Field(@NotNull final World world, float cellSize, boolean showShips, @Nullable final Communication communication, int playerId, @NotNull GameStage callback) {
         this.world = world;
         this.cellSize = cellSize;
         this.showShips = showShips;
         this.communication = communication;
         this.playerId = playerId;
         this.callback = callback;
+        communication.setCallback(this);
 
         cells = new Cell[world.getHeight()][];
         for (int i = 0; i < world.getHeight(); i++) {
@@ -123,5 +124,15 @@ public class Field extends Group {
     public void setPlaceShips() {
         if (communication != null)
             communication.setPlaceShips();
+    }
+
+    @Override
+    public void turnFinished(int i, int j) {
+        callback.turnFinished(playerId, i, j);
+    }
+
+    @Override
+    public void shipsPlaced() {
+        callback.shipsPlaced(playerId);
     }
 }
