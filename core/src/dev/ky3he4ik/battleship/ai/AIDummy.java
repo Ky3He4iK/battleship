@@ -24,8 +24,9 @@ public class AIDummy extends AI {
         do {
             my.reset(my.getWidth(), my.getHeight());
             ArrayList<GameConfig.Ship> availableShips = config.getShips();
-            for (int i = 0; i < availableShips.size(); i++) {
-                boolean success = false;
+            boolean success = true;
+            for (int i = 0; success && i < availableShips.size(); i++) {
+                success = false;
                 for (int j = 0; !success && j < my.getHeight() * my.getWidth() * 2; j++) {
                     int x = random.nextInt(my.getWidth()), y = random.nextInt(my.getHeight());
                     int rotation = random.nextBoolean() ? World.ROTATION_VERTICAL : World.ROTATION_HORIZONTAL;
@@ -39,8 +40,6 @@ public class AIDummy extends AI {
                     success = my.placeShip(availableShips.get(i).convert(), j / my.getWidth(), j % my.getHeight(), World.ROTATION_HORIZONTAL)
                             || my.placeShip(availableShips.get(i).convert(), j / my.getWidth(), j % my.getHeight(), World.ROTATION_VERTICAL);
                 }
-                if (!success)
-                    break;
             }
             if (my.getShips().size() == availableShips.size())
                 done = true;
