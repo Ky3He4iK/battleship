@@ -5,7 +5,7 @@ public class Constants {
     public static final int CELLS_CNT_X = 25;
     public static final int CELLS_CNT_Y = 15;
 
-    public static final boolean DEBUG_MODE = true;
+    public static final boolean DEBUG_MODE = Boolean.getBoolean("debug");
 
     public static final String GAME_NAME = "Advanced sea battle";
 

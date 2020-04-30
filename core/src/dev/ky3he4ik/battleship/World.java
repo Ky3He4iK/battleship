@@ -158,7 +158,7 @@ public class World {
 
             // check ship
             outerLoop:
-            for (int iter = i + 1; iter < height; iter++) {
+            for (int iter = i + 1; iter < width; iter++) {
                 switch (getState(iter, j)) {
                     case STATE_UNDAMAGED:
                         return;
@@ -176,7 +176,7 @@ public class World {
                 }
             }
             outerLoop:
-            for (int iter = j + 1; iter < width; iter++) {
+            for (int iter = j + 1; iter < height; iter++) {
                 switch (getState(i, iter)) {
                     case STATE_UNDAMAGED:
                         return;
@@ -196,7 +196,7 @@ public class World {
 
             // kill ship
             outerLoop:
-            for (int iter = i + 1; iter < height; iter++) {
+            for (int iter = i + 1; iter < width; iter++) {
                 switch (getState(iter, j)) {
                     case STATE_DAMAGED:
                         setState(iter, j, STATE_SUNK);
@@ -216,7 +216,7 @@ public class World {
                 }
             }
             outerLoop:
-            for (int iter = j + 1; iter < width; iter++) {
+            for (int iter = j + 1; iter < height; iter++) {
                 switch (getState(i, iter)) {
                     case STATE_DAMAGED:
                         setState(i, iter, STATE_SUNK);
@@ -240,7 +240,9 @@ public class World {
     }
 
     public boolean isOpened(int idx, int idy) {
-        return opened[idx].get(idy);
+        if (inBounds(idx, idy))
+            return opened[idx].get(idy);
+        return false;
     }
 
     @Contract(pure = true)
@@ -266,7 +268,7 @@ public class World {
             ships.clear();
         System.gc();
 
-        for (int i = 0; i < height; i++) {
+        for (int i = 0; i < width; i++) {
             if (field[i] == null || field.length != height)
                 field[i] = new int[height];
             if (opened[i] == null || opened.length != height)
@@ -311,7 +313,7 @@ public class World {
     }
 
     @Contract(pure = true)
-    private boolean inBounds(int idx, int idy) {
+    public boolean inBounds(int idx, int idy) {
         return idx >= 0 && idy >= 0 && idx <= width && idy <= height;
     }
 }
