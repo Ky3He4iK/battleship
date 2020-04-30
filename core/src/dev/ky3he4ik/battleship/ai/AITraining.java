@@ -2,12 +2,11 @@ package dev.ky3he4ik.battleship.ai;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
-import dev.ky3he4ik.battleship.utils.Helpers;
+import dev.ky3he4ik.battleship.utils.H;
 
 public class AITraining extends AI {
     public AITraining(@NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
@@ -16,7 +15,7 @@ public class AITraining extends AI {
 
     @Override
     protected void placeShips() {
-        Helpers.placeShipsLines(my, config);
+        H.placeShipsLines(my, config);
     }
 
     @Override

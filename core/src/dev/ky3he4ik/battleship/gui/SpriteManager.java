@@ -73,7 +73,7 @@ public class SpriteManager {
         int cnt = usageCnt.get(name);
         if (cnt <= 1) {
             usageCnt.remove(name);
-            sprites.remove(name);
+            sprites.remove(name).getTexture().dispose();
         } else
             usageCnt.put(name, cnt - 1);
     }

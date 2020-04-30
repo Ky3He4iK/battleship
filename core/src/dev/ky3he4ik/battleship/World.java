@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 
 import dev.ky3he4ik.battleship.utils.Constants;
+import dev.ky3he4ik.battleship.utils.H;
 
 public class World {
     public static class Ship {
@@ -159,7 +160,7 @@ public class World {
     }
 
     public void open(int i, int j) {
-        if (!inBounds(i, j) && opened[i].get(j))
+        if (!inBounds(i, j) || opened[i].get(j))
             return;
         opened[i].set(j);
         if (getState(i, j) == STATE_UNDAMAGED) {
@@ -202,12 +203,14 @@ public class World {
                         break outerLoop;
                 }
             }
-
+            int x = i, y = j, rot = ROTATION_VERTICAL, len = 1;
             // kill ship
             outerLoop:
             for (int iter = i + 1; iter < width; iter++) {
                 switch (getState(iter, j)) {
                     case STATE_DAMAGED:
+                        rot = ROTATION_HORIZONTAL;
+                        len++;
                         setState(iter, j, STATE_SUNK);
                         break;
                     case STATE_EMPTY:
@@ -218,6 +221,9 @@ public class World {
             for (int iter = i - 1; iter >= 0; iter--) {
                 switch (getState(iter, j)) {
                     case STATE_DAMAGED:
+                        x = iter;
+                        rot = ROTATION_HORIZONTAL;
+                        len++;
                         setState(iter, j, STATE_SUNK);
                         break;
                     case STATE_EMPTY:
@@ -228,6 +234,8 @@ public class World {
             for (int iter = j + 1; iter < height; iter++) {
                 switch (getState(i, iter)) {
                     case STATE_DAMAGED:
+                        rot = ROTATION_VERTICAL;
+                        len++;
                         setState(i, iter, STATE_SUNK);
                         break;
                     case STATE_EMPTY:
@@ -238,6 +246,9 @@ public class World {
             for (int iter = j - 1; iter >= 0; iter--) {
                 switch (getState(i, iter)) {
                     case STATE_DAMAGED:
+                        y = iter;
+                        rot = ROTATION_VERTICAL;
+                        len++;
                         setState(i, iter, STATE_SUNK);
                         break;
                     case STATE_EMPTY:
@@ -245,6 +256,17 @@ public class World {
                 }
             }
             setState(i, j, STATE_SUNK);
+            for (int it = -1; it <= len; it++) {
+                if (rot == ROTATION_VERTICAL) {
+                    open(x + 1, y + it);
+                    open(x - 1, y + it);
+                    open(x, y + it);
+                } else {
+                    open(x + it, y + 1);
+                    open(x + it, y - 1);
+                    open(x + it, y);
+                }
+            }
         }
     }
 
@@ -258,7 +280,7 @@ public class World {
     public boolean isDead() {
         for (Ship ship : ships) {
             for (int i = 0; i < ship.len; i++)
-                if (getState(ship.idy + (ship.rotation == ROTATION_VERTICAL ? i : 0), ship.idx + (ship.rotation == ROTATION_HORIZONTAL ? i : 0)) == STATE_UNDAMAGED)
+                if (getState(ship.idy + H.I(ship.rotation == ROTATION_VERTICAL) * i, ship.idx + H.I(ship.rotation == ROTATION_VERTICAL) * i) == STATE_UNDAMAGED)
                     return false;
         }
         return true;

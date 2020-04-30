@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
+import dev.ky3he4ik.battleship.utils.H;
 
 public class Field extends Group implements PlayerFinished {
     @NotNull
@@ -91,7 +92,7 @@ public class Field extends Group implements PlayerFinished {
 
     @NotNull
     public int[] getClick() {
-        return new int[]{(clicked ? 1 : 0), clickX, clickY};
+        return new int[]{(H.I(clicked)), clickX, clickY};
     }
 
     public void clearClick() {

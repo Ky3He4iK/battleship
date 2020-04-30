@@ -12,7 +12,7 @@ import dev.ky3he4ik.battleship.ai.AIDummy;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
-import dev.ky3he4ik.battleship.utils.Helpers;
+import dev.ky3he4ik.battleship.utils.H;
 
 public class GameStage extends Stage {
     public final static int TURN_LEFT = 0;
@@ -66,7 +66,7 @@ public class GameStage extends Stage {
         leftPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
         leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(true);
-        Helpers.placeShipsRandom(leftWorld, config);
+        H.placeShipsRandom(leftWorld, config);
         addActor(leftPlayer);
 
         Communication rightComm = null;

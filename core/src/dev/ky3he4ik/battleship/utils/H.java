@@ -10,8 +10,11 @@ import java.util.Random;
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 
-public final class Helpers {
-    private Helpers() {
+/**
+ * Class with several useful functions
+ */
+public final class H {
+    private H() {
     }
 
     public static void placeShipsRandom(@NotNull World world, @NotNull GameConfig config) {
@@ -65,5 +68,12 @@ public final class Helpers {
             if (success)
                 i++;
         }
+    }
+
+    /**
+     * Indicator function. @return `1` if @param i is true and `0` otherwise
+     */
+    public static int I(boolean i) {
+        return i ? 1 : 0;
     }
 }
