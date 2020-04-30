@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.ai.AIDummy;
-import dev.ky3he4ik.battleship.ai.AITraining;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -16,6 +15,12 @@ import dev.ky3he4ik.battleship.utils.Constants;
 public class GameStage extends Stage {
     public final static int TURN_LEFT = 0;
     public final static int TURN_RIGHT = 1;
+
+    public final static int STEP_CHOOSE_CONFIG = 1;
+    public final static int STEP_PLACEMENT = 2;
+    public final static int STEP_GAME = 3;
+    public final static int STEP_AFTERMATH = 4;
+
 
     @NotNull
     private Field leftPlayer;
@@ -29,6 +34,8 @@ public class GameStage extends Stage {
     private boolean aiReady = false;
     private int aiX = -1;
     private int aiY = -1;
+
+    private int step = STEP_PLACEMENT;
 
     GameStage(@NotNull final GameConfig config, @NotNull final World leftWorld, @NotNull final World rightWorld) {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
@@ -94,7 +101,6 @@ public class GameStage extends Stage {
     }
 
     public void turnFinished(int playerId, int i, int j) {
-//        switch (config.getGameType())
         if (isMyTurn(playerId)) {
             if (getOpponent(playerId).open(i, j))
                 getPlayer(playerId).setTurn();
@@ -146,5 +152,9 @@ public class GameStage extends Stage {
             turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
         }
         //todo
+    }
+
+    public int getStep() {
+        return step;
     }
 }
