@@ -7,10 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class GameConfig {
-    static class Ship {
+    public static class Ship {
         public final int length;
         public final int id;
 
@@ -64,6 +65,10 @@ public class GameConfig {
                     new Ship(1, 3, Constants.SHIP_RUBBER_BOAT_IMG),
                     new Ship(1, 2, Constants.SHIP_RUBBER_BOAT_IMG),
                     new Ship(1, 1, Constants.SHIP_RUBBER_BOAT_IMG)));
+        }
+
+        public World.Ship convert() {
+            return new World.Ship(length, id, name, 0, 0, 0);
         }
     }
 

@@ -7,26 +7,30 @@ import org.jetbrains.annotations.Nullable;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.Communication;
+import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 abstract public class AI extends Thread implements Communication {
     @Nullable
-    protected PlayerFinished callback;
+    private PlayerFinished callback;
 
     @NotNull
     protected final World enemy;
 
     @NotNull
     protected final World my;
-    protected boolean isMyTurn;
-    protected boolean isPlaceShips;
-    protected boolean running;
+    private boolean isMyTurn;
+    private boolean isPlaceShips;
+    private boolean running;
+
+    @NotNull
+    protected GameConfig config;
 
     protected int turnX, turnY;
     private boolean turn = false;
     private boolean shipsPlaced = false;
 
-    protected AI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my) {
+    protected AI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
         super();
         this.callback = callback;
         isPlaceShips = false;
@@ -34,6 +38,7 @@ abstract public class AI extends Thread implements Communication {
         running = true;
         this.enemy = enemy;
         this.my = my;
+        this.config = config;
     }
 
     @Override
@@ -41,6 +46,7 @@ abstract public class AI extends Thread implements Communication {
         while (running) {
             if (isPlaceShips) {
                 placeShips();
+                isPlaceShips = false;
                 if (callback != null)
                     callback.shipsPlaced();
                 else
@@ -48,6 +54,7 @@ abstract public class AI extends Thread implements Communication {
             }
             if (isMyTurn) {
                 turn();
+                isMyTurn = false;
                 if (callback != null)
                     callback.turnFinished(turnX, turnY);
                 else
@@ -65,10 +72,6 @@ abstract public class AI extends Thread implements Communication {
     protected abstract void placeShips();
 
     protected abstract void turn();
-
-    public void updateCallback(@NotNull PlayerFinished callback) {
-        this.callback = callback;
-    }
 
     @Override
     public void setTurn() {

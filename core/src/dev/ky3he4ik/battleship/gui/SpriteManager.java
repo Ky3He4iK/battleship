@@ -8,9 +8,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 
 public class SpriteManager {
+    @NotNull
     private HashMap<String, Sprite> sprites;
+
+    @NotNull
     private HashMap<String, Integer> usageCnt;
-    private static SpriteManager manager;
+
+    @NotNull
+    private static SpriteManager manager = new SpriteManager();
 
     private SpriteManager() {
         sprites = new HashMap<>();
@@ -83,8 +88,6 @@ public class SpriteManager {
 
     @NotNull
     public static SpriteManager getInstance() {
-        if (manager == null)
-            manager = new SpriteManager();
         return manager;
     }
 }

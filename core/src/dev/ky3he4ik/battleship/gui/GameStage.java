@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.World;
-import dev.ky3he4ik.battleship.ai.AIDummy;
+import dev.ky3he4ik.battleship.ai.AITraining;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -46,7 +46,7 @@ public class GameStage extends Stage {
 
         Communication rightComm = null;
         if (config.getGameType() == GameConfig.GameType.AI) {
-            rightComm = new AIDummy(leftPlayer.getWorld(), rightWorld);
+            rightComm = new AITraining(leftPlayer.getWorld(), rightWorld, config);
             rightComm.init();
             rightComm.setPlaceShips();
         }
@@ -99,7 +99,7 @@ public class GameStage extends Stage {
                 getPlayer(playerId).setTurn();
             else
                 turn();
-            if (!getOpponent(playerId).getWorld().isAlive())
+            if (getOpponent(playerId).getWorld().isDead())
                 Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
         } else if (playerId == TURN_RIGHT && config.getGameType() == GameConfig.GameType.AI) {
             aiReady = true;

@@ -56,7 +56,7 @@ public class GameScreen implements Screen, PlayerFinished {
             return;
         if (!player2.isOpened(xCell, yCell)) {
             player2.open(xCell, yCell);
-            if (!player2.isAlive())
+            if (player2.isDead())
                 Gdx.app.error("GameScreen", "P1 won!");
             p1turn = player2.getState(xCell, yCell) != World.STATE_EMPTY;
         }
@@ -101,7 +101,7 @@ public class GameScreen implements Screen, PlayerFinished {
                 return;
             }
             player1.open(aiX, aiY);
-            if (!player1.isAlive())
+            if (player1.isDead())
                 Gdx.app.error("GameScreen", "P2 won!");
             p1turn = player1.getState(aiX, aiY) == World.STATE_EMPTY;
             aiFinished = false;
