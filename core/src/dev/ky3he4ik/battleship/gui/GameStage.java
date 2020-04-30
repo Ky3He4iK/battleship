@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.ai.AIDummy;
 import dev.ky3he4ik.battleship.ai.AITraining;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
@@ -46,7 +47,7 @@ public class GameStage extends Stage {
 
         Communication rightComm = null;
         if (config.getGameType() == GameConfig.GameType.AI) {
-            rightComm = new AITraining(leftPlayer.getWorld(), rightWorld, config);
+            rightComm = new AIDummy(leftPlayer.getWorld(), rightWorld, config);
             rightComm.init();
             rightComm.setPlaceShips();
         }

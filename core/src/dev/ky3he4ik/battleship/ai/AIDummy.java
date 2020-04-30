@@ -3,20 +3,18 @@ package dev.ky3he4ik.battleship.ai;
 import com.badlogic.gdx.Gdx;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
-import dev.ky3he4ik.battleship.logic.PlayerFinished;
 
 public class AIDummy extends AI {
     private int hitX = -1, hitY = -1;
 
-    protected AIDummy(@Nullable PlayerFinished callback, @NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
-        super(callback, enemy, my, config);
+    public AIDummy(@NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
+        super(null, enemy, my, config);
     }
 
     @Override
@@ -35,6 +33,8 @@ public class AIDummy extends AI {
                         Gdx.app.error("AIDummy", "random.nextInt(bound) == bound!");
                     success = my.placeShip(availableShips.get(i).convert(), x, y, rotation);
                 }
+                if (!success)
+                    Gdx.app.debug("AIDummy", "Random placement failed. Using fallback");
                 for (int j = 0; !success && j < my.getHeight() * my.getWidth(); j++) {
                     success = my.placeShip(availableShips.get(i).convert(), j / my.getWidth(), j % my.getHeight(), World.ROTATION_HORIZONTAL)
                             || my.placeShip(availableShips.get(i).convert(), j / my.getWidth(), j % my.getHeight(), World.ROTATION_VERTICAL);
@@ -44,6 +44,8 @@ public class AIDummy extends AI {
             }
             if (my.getShips().size() == availableShips.size())
                 done = true;
+            else
+                Gdx.app.error("AIDummy", "Ships placement failed. Retrying...");
         } while (!done);
     }
 

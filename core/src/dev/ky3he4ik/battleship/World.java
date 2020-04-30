@@ -314,6 +314,6 @@ public class World {
 
     @Contract(pure = true)
     public boolean inBounds(int idx, int idy) {
-        return idx >= 0 && idy >= 0 && idx <= width && idy <= height;
+        return idx >= 0 && idy >= 0 && idx < width && idy < height;
     }
 }
