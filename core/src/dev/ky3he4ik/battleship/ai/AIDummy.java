@@ -2,6 +2,8 @@ package dev.ky3he4ik.battleship.ai;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.World;
@@ -10,9 +12,12 @@ import dev.ky3he4ik.battleship.utils.Helpers;
 
 public class AIDummy extends AI {
     private int hitX = -1, hitY = -1;
+    private Queue<int[]> queue;
 
     public AIDummy(@NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
         super(null, enemy, my, config);
+        queue = new LinkedList<>();
+
     }
 
     @Override
@@ -23,6 +28,15 @@ public class AIDummy extends AI {
     @Override
     protected void turn() {
         if (hitX == -1) {
+            while (!queue.isEmpty()) {
+                int[] pair = queue.poll();
+                if (!enemy.isOpened(pair[0], pair[1])) {
+                    turnX = pair[0];
+                    turnY = pair[1];
+                    rememberCell();
+                    return;
+                }
+            }
             Random random = new Random();
             turnX = random.nextInt(enemy.getHeight());
             turnY = random.nextInt(enemy.getWidth());
@@ -32,39 +46,16 @@ public class AIDummy extends AI {
             }
             rememberCell();
         } else {
-            // check ship
-            for (int iter = hitX + 1; iter < enemy.getWidth(); iter++) {
-                if (!enemy.isOpened(iter, hitY)) {
-                    turnX = iter;
-                    turnY = hitY;
-                    rememberCell();
-                    return;
-                }
-            }
-            for (int iter = hitX - 1; iter >= 0; iter--) {
-                if (!enemy.isOpened(iter, hitY)) {
-                    turnX = iter;
-                    turnY = hitY;
-                    rememberCell();
-                    return;
-                }
-            }
-            for (int iter = hitY + 1; iter < enemy.getHeight(); iter++) {
-                if (!enemy.isOpened(hitX, iter)) {
-                    turnX = iter;
-                    turnY = hitY;
-                    rememberCell();
-                    return;
-                }
-            }
-            for (int iter = hitY - 1; iter >= 0; iter--) {
-                if (!enemy.isOpened(hitX, iter)) {
-                    turnX = iter;
-                    turnY = hitY;
-                    rememberCell();
-                    return;
-                }
-            }
+            if (hitX > 0)
+                queue.add(new int[]{hitX - 1, turnY});
+            if (hitY > 0)
+                queue.add(new int[]{hitX, turnY - 1});
+            if (hitX + 1 < enemy.getWidth())
+                queue.add(new int[]{hitX + 1, turnY});
+            if (hitY + 1 < enemy.getHeight())
+                queue.add(new int[]{hitX, turnY + 1});
+            hitX = -1;
+            turn();
         }
     }
 

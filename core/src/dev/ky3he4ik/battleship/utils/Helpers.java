@@ -10,7 +10,7 @@ import java.util.Random;
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 
-public class Helpers {
+public final class Helpers {
     private Helpers() {
     }
 
@@ -33,8 +33,12 @@ public class Helpers {
                 if (!success)
                     Gdx.app.debug("Helpers/placeShipsRandom", "Random placement failed. Using fallback");
                 for (int j = 0; !success && j < world.getHeight() * world.getWidth(); j++) {
-                    success = world.placeShip(availableShips.get(i).convert(), j / world.getWidth(), j % world.getHeight(), World.ROTATION_HORIZONTAL)
-                            || world.placeShip(availableShips.get(i).convert(), j / world.getWidth(), j % world.getHeight(), World.ROTATION_VERTICAL);
+                    if (random.nextBoolean())
+                        success = world.placeShip(availableShips.get(i).convert(), j / world.getWidth(), j % world.getHeight(), World.ROTATION_HORIZONTAL)
+                                || world.placeShip(availableShips.get(i).convert(), j / world.getWidth(), j % world.getHeight(), World.ROTATION_VERTICAL);
+                    else
+                        success = world.placeShip(availableShips.get(i).convert(), j / world.getWidth(), j % world.getHeight(), World.ROTATION_VERTICAL)
+                                || world.placeShip(availableShips.get(i).convert(), j / world.getWidth(), j % world.getHeight(), World.ROTATION_HORIZONTAL);
                 }
             }
             if (world.getShips().size() == availableShips.size())
@@ -42,5 +46,24 @@ public class Helpers {
             else
                 Gdx.app.error("Helpers/placeShipsRandom", "Ships placement failed. Retrying...");
         } while (!done);
+    }
+
+    public static void placeShipsLines(@NotNull World world, @NotNull GameConfig config) {
+        int idx = 0;
+        int idy = 0;
+        int step = 0;
+        ArrayList<GameConfig.Ship> availableShips = config.getShips();
+        for (int i = 0; i < availableShips.size(); ) {
+            boolean success = world.placeShip(availableShips.get(i).convert(), idx, idy, World.ROTATION_HORIZONTAL);
+            idy += 2;
+            step = Math.max(step, availableShips.get(i).length);
+            if (idy >= config.getHeight()) {
+                idy -= config.getHeight();
+                idx += step + 1;
+                step = 0;
+            }
+            if (success)
+                i++;
+        }
     }
 }

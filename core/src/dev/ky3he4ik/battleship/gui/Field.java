@@ -48,23 +48,6 @@ public class Field extends Group implements PlayerFinished {
                 addActor(cells[i][j]);
             }
         }
-        for (int i = 0; i < world.getShips().size(); i++) {
-            World.Ship ship = world.getShips().get(i);
-            if (ship.rotation == World.ROTATION_VERTICAL) {
-                Sprite sprite = SpriteManager.getInstance().initSprite(ship.name);
-                sprite.setSize(1, ship.len);
-                sprite.setOrigin(.5f, .5f);
-                sprite.setRotation(0);
-            } else {
-                Sprite sprite = SpriteManager.getInstance().cloneSprite(ship.name, ship.name + "_rot");
-                sprite.setOrigin(.5f, .5f);
-                sprite.setSize(1, ship.len);
-                sprite.setRotation(-90);
-
-                sprite.setFlip(true, false);
-                world.getShips().set(i, new World.Ship(ship.len, ship.code, ship.name + "_rot", ship.idx, ship.idy, ship.rotation));
-            }
-        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
@@ -11,15 +12,17 @@ import dev.ky3he4ik.battleship.ai.AIDummy;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
+import dev.ky3he4ik.battleship.utils.Helpers;
 
 public class GameStage extends Stage {
     public final static int TURN_LEFT = 0;
     public final static int TURN_RIGHT = 1;
 
     public final static int STEP_CHOOSE_CONFIG = 1;
-    public final static int STEP_PLACEMENT = 2;
-    public final static int STEP_GAME = 3;
-    public final static int STEP_AFTERMATH = 4;
+    public final static int STEP_PLACEMENT_L = 2;
+    public final static int STEP_PLACEMENT_R = 3;
+    public final static int STEP_GAME = 4;
+    public final static int STEP_AFTERMATH = 5;
 
 
     @NotNull
@@ -35,7 +38,7 @@ public class GameStage extends Stage {
     private int aiX = -1;
     private int aiY = -1;
 
-    private int step = STEP_PLACEMENT;
+    private int step = STEP_PLACEMENT_L;
 
     GameStage(@NotNull final GameConfig config, @NotNull final World leftWorld, @NotNull final World rightWorld) {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
@@ -46,10 +49,24 @@ public class GameStage extends Stage {
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
+        for (int i = 0; i < config.getShips().size(); i++) {
+            GameConfig.Ship ship = config.getShips().get(i);
+            Sprite sprite = SpriteManager.getInstance().initSprite(ship.name);
+            sprite.setSize(1, ship.length);
+            sprite.setOrigin(.5f, .5f);
+            sprite.setRotation(0);
+            Sprite sprite_rot = SpriteManager.getInstance().cloneSprite(ship.name, ship.name + Constants.ROTATED_SUFFIX);
+            sprite_rot.setOrigin(.5f, .5f);
+            sprite_rot.setSize(1, ship.length);
+            sprite_rot.setRotation(-90);
+            sprite_rot.setFlip(true, false);
+        }
+
         leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null, TURN_LEFT, this);
         leftPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
         leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(true);
+        Helpers.placeShipsRandom(leftWorld, config);
         addActor(leftPlayer);
 
         Communication rightComm = null;

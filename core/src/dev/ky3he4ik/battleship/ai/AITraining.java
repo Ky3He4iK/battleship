@@ -7,6 +7,7 @@ import java.util.Random;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.utils.Helpers;
 
 public class AITraining extends AI {
     public AITraining(@NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
@@ -15,22 +16,7 @@ public class AITraining extends AI {
 
     @Override
     protected void placeShips() {
-        int idx = 0;
-        int idy = 0;
-        int step = 0;
-        ArrayList<GameConfig.Ship> availableShips = config.getShips();
-        for (int i = 0; i < availableShips.size(); ) {
-            boolean success = my.placeShip(availableShips.get(i).convert(), idx, idy, World.ROTATION_HORIZONTAL);
-            idy += 2;
-            step = Math.max(step, availableShips.get(i).length);
-            if (idy >= config.getHeight()) {
-                idy -= config.getHeight();
-                idx += step + 1;
-                step = 0;
-            }
-            if (success)
-                i++;
-        }
+        Helpers.placeShipsLines(my, config);
     }
 
     @Override

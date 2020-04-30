@@ -33,7 +33,9 @@ public class World {
         }
 
         public Ship move(int idx, int idy, int rotation) {
-            return new Ship(len, code, name, idx, idy, rotation);
+
+            return new Ship(len, code, name + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
+                    idx, idy, rotation);
         }
 
         public boolean containsCell(int i, int j) {

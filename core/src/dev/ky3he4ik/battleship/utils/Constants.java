@@ -24,4 +24,6 @@ public class Constants {
     public static final String SHIP_SUBMARINE_IMG = "Submarine.png";
     public static final String SHIP_PATROL_BOAT_IMG = "Patrol_boat.png";
     public static final String SHIP_RUBBER_BOAT_IMG = "Rubber_boat.png";
+
+    public static final String ROTATED_SUFFIX = "_rot";
 }
