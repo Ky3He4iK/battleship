@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.ai.AIDummy;
+import dev.ky3he4ik.battleship.gui.placing.ShipPlacer;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -34,7 +35,7 @@ public class GameStage extends Stage {
     @NotNull
     private final GameConfig config;
     @NotNull
-    private ShipPlacer shipPlacer;
+    private dev.ky3he4ik.battleship.gui.placing.ShipPlacer shipPlacer;
     @NotNull
     private BitmapFont font;
     @NotNull
@@ -76,8 +77,7 @@ public class GameStage extends Stage {
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
-        for (int i = 0; i < config.getShips().size(); i++) {
-            GameConfig.Ship ship = config.getShips().get(i);
+        for (GameConfig.Ship ship : config.getShips()) {
             Sprite sprite = SpriteManager.getInstance().initSprite(ship.name);
             sprite.setSize(1, ship.length);
             sprite.setOrigin(.5f, .5f);
