@@ -215,7 +215,6 @@ public class GameScreen implements Screen, PlayerFinished {
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.debug("GameScreen", "Back button pressed");
 //            game.setScreen(new MainScreen(game));
-            //todo: main screen
 //            dispose();
         }
 

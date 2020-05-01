@@ -54,12 +54,12 @@ public class MainView implements Screen {
 
     @Override
     public void pause() {
-
+        Gdx.graphics.setContinuousRendering(false);
     }
 
     @Override
     public void resume() {
-
+        Gdx.graphics.setContinuousRendering(true);
     }
 
     @Override
