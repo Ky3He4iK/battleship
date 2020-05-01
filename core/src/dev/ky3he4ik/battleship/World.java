@@ -3,6 +3,7 @@ package dev.ky3he4ik.battleship;
 import com.badlogic.gdx.graphics.Color;
 
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -159,10 +160,18 @@ public class World {
         return -1;
     }
 
-    public void open(int i, int j) {
+    /**
+     * Shoot to `i`x`j` cell
+     *
+     * @return array of opened cells
+     */
+    @NotNull
+    public ArrayList<int[]> open(int i, int j) {
+        ArrayList<int[]> openedCells = new ArrayList<>();
         if (!inBounds(i, j) || opened[i].get(j))
-            return;
+            return openedCells;
         opened[i].set(j);
+        openedCells.add(new int[]{i, j});
         if (getState(i, j) == STATE_UNDAMAGED) {
             setState(i, j, STATE_DAMAGED);
 
@@ -171,7 +180,7 @@ public class World {
             for (int iter = i + 1; iter < width; iter++) {
                 switch (getState(iter, j)) {
                     case STATE_UNDAMAGED:
-                        return;
+                        return openedCells;
                     case STATE_EMPTY:
                         break outerLoop;
                 }
@@ -180,7 +189,7 @@ public class World {
             for (int iter = i - 1; iter >= 0; iter--) {
                 switch (getState(iter, j)) {
                     case STATE_UNDAMAGED:
-                        return;
+                        return openedCells;
                     case STATE_EMPTY:
                         break outerLoop;
                 }
@@ -189,7 +198,7 @@ public class World {
             for (int iter = j + 1; iter < height; iter++) {
                 switch (getState(i, iter)) {
                     case STATE_UNDAMAGED:
-                        return;
+                        return openedCells;
                     case STATE_EMPTY:
                         break outerLoop;
                 }
@@ -198,7 +207,7 @@ public class World {
             for (int iter = j - 1; iter >= 0; iter--) {
                 switch (getState(i, iter)) {
                     case STATE_UNDAMAGED:
-                        return;
+                        return openedCells;
                     case STATE_EMPTY:
                         break outerLoop;
                 }
@@ -258,16 +267,17 @@ public class World {
             setState(i, j, STATE_SUNK);
             for (int it = -1; it <= len; it++) {
                 if (rot == ROTATION_VERTICAL) {
-                    open(x + 1, y + it);
-                    open(x - 1, y + it);
-                    open(x, y + it);
+                    openedCells.addAll(open(x + 1, y + it));
+                    openedCells.addAll(open(x - 1, y + it));
+                    openedCells.addAll(open(x, y + it));
                 } else {
-                    open(x + it, y + 1);
-                    open(x + it, y - 1);
-                    open(x + it, y);
+                    openedCells.addAll(open(x + it, y + 1));
+                    openedCells.addAll(open(x + it, y - 1));
+                    openedCells.addAll(open(x + it, y));
                 }
             }
         }
+        return openedCells;
     }
 
     public boolean isOpened(int idx, int idy) {
@@ -309,6 +319,10 @@ public class World {
             for (int j = 0; j < height; j++)
                 field[i][j] = STATE_EMPTY;
         }
+    }
+
+    public void reset() {
+        reset(width, height);
     }
 
     public boolean placeShip(Ship ship, int idx, int idy, int rotation) {

@@ -14,6 +14,12 @@ public class AIDummy extends AI {
     private int hitX = -1, hitY = -1;
     private Queue<int[]> queue;
 
+    @Override
+    public void restart() {
+        queue.clear();
+        hitX = -1;
+    }
+
     public AIDummy(@NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
         super(null, enemy, my, config);
         queue = new LinkedList<>();

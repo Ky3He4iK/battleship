@@ -2,11 +2,15 @@ package dev.ky3he4ik.battleship.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+
+import org.jetbrains.annotations.Nullable;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -16,6 +20,11 @@ public class Cell extends Actor {
     private Sprite sprite;
     private int idx, idy, state = -1;
     private boolean isOpened = false;
+
+    @Nullable
+    private Animation<TextureRegion> animation = null;
+    private boolean isWaterBlow = false;
+    private float animationPassed = 0;
 
     public int getIdx() {
         return idx;
@@ -125,6 +134,19 @@ public class Cell extends Actor {
             batch.setColor(1, 1, 1, 1);
         batch.draw(sprite, getX(), getY(), getOriginX(), getOriginY(),
                 getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        if (animation != null) {
+            animationPassed += Gdx.graphics.getDeltaTime();
+            if (animation.isAnimationFinished(animationPassed))
+                animation = null;
+            else {
+                TextureRegion currentFrame = animation.getKeyFrame(animationPassed);
+//                if (!isWaterBlow)
+//                    batch.setColor(1, .6f, .6f, 1);
+                batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+            }
+        }
+
+
         batch.setColor(1, 1, 1, 1);
     }
 
@@ -160,5 +182,14 @@ public class Cell extends Actor {
         manager.dispose(Constants.CELL_UNDAMAGED_IMG);
         manager.dispose(Constants.CELL_DAMAGED_IMG);
         manager.dispose(Constants.CELL_CLOSED_IMG);
+    }
+
+    public void blow(boolean isWater) {
+        isWaterBlow = isWater;
+        if (isWaterBlow)
+            animation = AnimationManager.getInstance().getAnimation(Constants.WATER_BLOW_ANIMATION);
+        else
+            animation = AnimationManager.getInstance().getAnimation(Constants.BLOW_ANIMATION);
+        animationPassed = 0;
     }
 }

@@ -28,4 +28,9 @@ public class AITraining extends AI {
             turnY = random.nextInt(enemy.getWidth());
         }
     }
+
+    @Override
+    public void restart() {
+
+    }
 }

@@ -12,4 +12,6 @@ public interface Communication {
     void dispose();
 
     void setCallback(@NotNull PlayerFinished callback);
+
+    void restart();
 }

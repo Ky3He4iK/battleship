@@ -18,6 +18,7 @@ public class GameStage extends Stage {
     public final static int TURN_LEFT = 0;
     public final static int TURN_RIGHT = 1;
 
+    public final static int STEP_BEGINNING = 0;
     public final static int STEP_CHOOSE_CONFIG = 1;
     public final static int STEP_PLACEMENT_L = 2;
     public final static int STEP_PLACEMENT_R = 3;
@@ -38,14 +39,18 @@ public class GameStage extends Stage {
     private int aiX = -1;
     private int aiY = -1;
 
-    private int step = STEP_PLACEMENT_L;
+    private float cellSize;
+    private float redundantX;
+    private float redundantY;
+
+    private int step;
 
     GameStage(@NotNull final GameConfig config, @NotNull final World leftWorld, @NotNull final World rightWorld) {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
         this.config = config;
-        float cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
-        float redundantX = (getWidth() - cellSize * (config.getWidth() * 2 + 4)) / 2;
-        float redundantY = (getHeight() - cellSize * (config.getHeight() + 3)) / 2;
+        cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
+        redundantX = (getWidth() - cellSize * (config.getWidth() * 2 + 4)) / 2;
+        redundantY = (getHeight() - cellSize * (config.getHeight() + 3)) / 2;
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
@@ -70,16 +75,22 @@ public class GameStage extends Stage {
         addActor(leftPlayer);
 
         Communication rightComm = null;
-        if (config.getGameType() == GameConfig.GameType.AI) {
+        if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             rightComm = new AIDummy(leftPlayer.getWorld(), rightWorld, config);
             rightComm.init();
             rightComm.setPlaceShips();
         }
-        rightPlayer = new Field(rightWorld, cellSize, Constants.DEBUG_MODE, rightComm, TURN_RIGHT, this);
+        rightPlayer = new Field(rightWorld, cellSize, Constants.DEBUG_MODE || config.getGameType() == GameConfig.GameType.AI_VS_AI, rightComm, TURN_RIGHT, this);
         rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(true);
         addActor(rightPlayer);
+
+        step = STEP_GAME;
+
+        AnimationManager.getInstance().initAnimation(Constants.BLOW_ANIMATION);
+        AnimationManager.getInstance().initAnimation(Constants.WATER_ANIMATION);
+        AnimationManager.getInstance().initAnimation(Constants.WATER_BLOW_ANIMATION);
     }
 
     @Override
@@ -107,13 +118,16 @@ public class GameStage extends Stage {
 
     public void resize(int width, int height) {
         getViewport().update(width, height, true);
-        float cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
-        float redundantX = (getWidth() - cellSize * (config.getWidth() * 2 + 4)) / 2;
-        float redundantY = (getHeight() - cellSize * (config.getHeight() + 3)) / 2;
+        cellSize = Math.min(getWidth() / (config.getWidth() * 2 + 4), getHeight() / (config.getHeight() + 3));
+        redundantX = (getWidth() - cellSize * (config.getWidth() * 2 + 4)) / 2;
+        redundantY = (getHeight() - cellSize * (config.getHeight() + 3)) / 2;
 
         leftPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
         leftPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
-        rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
+        if (step == STEP_PLACEMENT_R)
+            rightPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
+        else
+            rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
     }
 
@@ -169,6 +183,52 @@ public class GameStage extends Stage {
             turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
         }
         //todo
+    }
+
+    private void nextStep() {
+        switch (step) {
+            case STEP_BEGINNING:
+                //todo: config screen
+                break;
+            case STEP_CHOOSE_CONFIG:
+                rightPlayer.setVisible(false);
+                break;
+            case STEP_PLACEMENT_L:
+                if (config.getGameType() != GameConfig.GameType.LOCAL_2P)
+                    step++;
+                else {
+                    leftPlayer.setVisible(false);
+                    rightPlayer.setVisible(true);
+                    rightPlayer.setPosition(redundantX + cellSize, redundantY + cellSize);
+                }
+                break;
+            case STEP_PLACEMENT_R:
+                rightPlayer.setPosition(redundantX + cellSize * (config.getWidth() + 3), redundantY + cellSize);
+                leftPlayer.setVisible(true);
+                rightPlayer.setVisible(true);
+                break;
+            case STEP_GAME:
+                //todo: aftermath screen
+                break;
+            case STEP_AFTERMATH:
+                restart();
+                break;
+            default:
+                Gdx.app.error("GameStage", "Unknown step " + step);
+        }
+        step++;
+    }
+
+    private void restart() {
+        leftPlayer.restart();
+        H.placeShipsRandom(leftPlayer.getWorld(), config);
+
+
+        if (rightPlayer.getCommunication() != null && (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI))
+            rightPlayer.getCommunication().restart();
+
+        rightPlayer.restart();
+        step = STEP_BEGINNING;
     }
 
     public int getStep() {

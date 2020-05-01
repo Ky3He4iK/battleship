@@ -8,6 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
@@ -22,6 +24,8 @@ public class Field extends Group implements PlayerFinished {
     private boolean clicked = false;
     private boolean showShips;
     private float cellSize;
+
+    @Nullable
     private Communication communication;
     private int playerId;
 
@@ -118,8 +122,9 @@ public class Field extends Group implements PlayerFinished {
     }
 
     public boolean open(int idx, int idy) {
-        //todo: animation
-        world.open(idx, idy);
+        ArrayList<int[]> openedCells = world.open(idx, idy);
+        for (int[] pair : openedCells)
+            cells[pair[0]][pair[1]].blow(world.getState(pair[0], pair[1]) == World.STATE_EMPTY);
         return world.getState(idx, idy) != World.STATE_EMPTY;
     }
 
@@ -146,4 +151,16 @@ public class Field extends Group implements PlayerFinished {
     public int getPlayerId() {
         return playerId;
     }
+
+    public void restart() {
+        if (communication != null)
+            communication.setPlaceShips();
+        world.reset();
+    }
+
+    @Nullable
+    public Communication getCommunication() {
+        return communication;
+    }
+
 }

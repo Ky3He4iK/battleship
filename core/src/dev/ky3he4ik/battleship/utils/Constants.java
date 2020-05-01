@@ -1,5 +1,7 @@
 package dev.ky3he4ik.battleship.utils;
 
+import dev.ky3he4ik.battleship.gui.AnimationManager;
+
 public class Constants {
     public static final int CELL_MARGIN = 2;
     public static final int CELLS_CNT_X = 25;
@@ -26,4 +28,8 @@ public class Constants {
     public static final String SHIP_RUBBER_BOAT_IMG = "Rubber_boat.png";
 
     public static final String ROTATED_SUFFIX = "_rot";
+
+    public static final AnimationManager.AnimationInfo BLOW_ANIMATION = new AnimationManager.AnimationInfo(1f / 18, "explosion_animation_4_3.png", 4, 3, false);
+    public static final AnimationManager.AnimationInfo WATER_BLOW_ANIMATION = new AnimationManager.AnimationInfo(1f / 32, "water_blow_animation_6_4.png", 6, 4, false);
+    public static final AnimationManager.AnimationInfo WATER_ANIMATION = new AnimationManager.AnimationInfo(1f / 32, "water_animation_8_4.jpg", 8, 4, true);
 }

@@ -1,5 +1,6 @@
 package dev.ky3he4ik.battleship.gui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -50,7 +51,10 @@ public class AnimationManager {
         if (animations.containsKey(animationInfo.name))
             usageCnt.put(animationInfo.name, usageCnt.get(animationInfo.name) + 1);
         else {
-            animations.put(animationInfo.name, new Animation<>(animationInfo.frameLength, loadFrames(animationInfo.name, animationInfo.colons, animationInfo.rows)));
+            Animation<TextureRegion> animation = new Animation<>(animationInfo.frameLength, loadFrames(animationInfo.name, animationInfo.colons, animationInfo.rows));
+            animation.setPlayMode(animationInfo.isLooped ? Animation.PlayMode.LOOP : Animation.PlayMode.NORMAL);
+            animations.put(animationInfo.name, animation);
+
             usageCnt.put(animationInfo.name, 1);
         }
         return animations.get(animationInfo.name);
@@ -91,6 +95,7 @@ public class AnimationManager {
                 animation = new Animation<>(animation.getFrameDuration(), animation.getKeyFrames());
             } else
                 animation = new Animation<>(animationInfo.frameLength, loadFrames(animationInfo.name, animationInfo.colons, animationInfo.rows));
+            animation.setPlayMode(animationInfo.isLooped ? Animation.PlayMode.LOOP : Animation.PlayMode.NORMAL);
 
             animations.put(newName, animation);
             usageCnt.put(newName, 1);
@@ -113,8 +118,8 @@ public class AnimationManager {
                 sheet.getHeight() / rows);
         TextureRegion[] frames = new TextureRegion[colons * rows];
         int index = 0;
-        for (int i = 0; i < colons; i++)
-            for (int j = 0; j < rows; j++)
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < colons; j++)
                 frames[index++] = tmp[i][j];
         return frames;
     }
