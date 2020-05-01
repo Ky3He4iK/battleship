@@ -192,4 +192,8 @@ public class Cell extends Actor {
             animation = AnimationManager.getInstance().getAnimation(Constants.BLOW_ANIMATION);
         animationPassed = 0;
     }
+
+    public void clearAnimation() {
+        animation = null;
+    }
 }

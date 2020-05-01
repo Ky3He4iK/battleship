@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -33,7 +34,11 @@ public class GameStage extends Stage {
     @NotNull
     private final GameConfig config;
     @NotNull
-    ShipPlacer shipPlacer;
+    private ShipPlacer shipPlacer;
+    @NotNull
+    private BitmapFont font;
+    @NotNull
+    private RelayTouch touchListener;
 
     private int turn = TURN_LEFT;
     private int readyCnt = 0;
@@ -65,6 +70,8 @@ public class GameStage extends Stage {
     GameStage(@NotNull final GameConfig config, @NotNull final World leftWorld, @NotNull final World rightWorld) {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
         this.config = config;
+        this.font = new BitmapFont();
+        font.setColor(.2f, .2f, .2f, 1);
         calcCellSize();
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
@@ -84,7 +91,7 @@ public class GameStage extends Stage {
 
         leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null, TURN_LEFT, this);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
-        leftPlayer.setVisible(true);
+        leftPlayer.setVisible(false);
         H.placeShipsRandom(leftWorld, config);
         addActor(leftPlayer);
 
@@ -109,6 +116,9 @@ public class GameStage extends Stage {
         AnimationManager.getInstance().initAnimation(Constants.BLOW_ANIMATION);
         AnimationManager.getInstance().initAnimation(Constants.WATER_ANIMATION);
         AnimationManager.getInstance().initAnimation(Constants.WATER_BLOW_ANIMATION);
+
+        touchListener = new RelayTouch(this);
+        addListener(touchListener);
     }
 
     @Override
@@ -116,8 +126,9 @@ public class GameStage extends Stage {
         super.draw();
         switch (step) {
             case STEP_BEGINNING:
-                //todo
-                nextStep();
+                getBatch().begin();
+                font.draw(getBatch(), "Press any key", getWidth() / 2, getHeight() / 2);
+                getBatch().end();
                 break;
             case STEP_CHOOSE_CONFIG:
                 //todo
@@ -146,7 +157,9 @@ public class GameStage extends Stage {
                     nextStep();
                 break;
             case STEP_AFTERMATH:
-                //todo
+                getBatch().begin();
+                font.draw(getBatch(), (leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!", getWidth() / 2, getHeight() / 2);
+                getBatch().end();
                 break;
             default:
                 Gdx.app.error("GameStage", "Unknown step: " + step);
@@ -162,6 +175,7 @@ public class GameStage extends Stage {
         rightPlayer.clearActions();
         rightPlayer.clearListeners();
         rightPlayer.dispose();
+        font.dispose();
         AnimationManager.getInstance().dispose(Constants.BLOW_ANIMATION.name);
         AnimationManager.getInstance().dispose(Constants.WATER_ANIMATION.name);
         AnimationManager.getInstance().dispose(Constants.WATER_BLOW_ANIMATION.name);
@@ -183,12 +197,15 @@ public class GameStage extends Stage {
 
     public void turnFinished(int playerId, int i, int j) {
         if (isMyTurn(playerId)) {
-            if (getOpponent(playerId).open(i, j))
+            boolean res = getOpponent(playerId).open(i, j);
+
+            if (getOpponent(playerId).getWorld().isDead()) {
+                Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
+                nextStep();
+            } else if (res)
                 getPlayer(playerId).setTurn();
             else
                 turn();
-            if (getOpponent(playerId).getWorld().isDead())
-                Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
         } else if (playerId == TURN_RIGHT && config.getGameType() == GameConfig.GameType.AI) {
             aiReady = true;
             aiX = i;
@@ -239,35 +256,47 @@ public class GameStage extends Stage {
         switch (step) {
             case STEP_BEGINNING:
                 //todo: config screen
-                shipPlacer.setVisible(true);
-                shipPlacer.start();
                 break;
             case STEP_CHOOSE_CONFIG:
-                if (config.getGameType() == GameConfig.GameType.AI_VS_AI)
-                    step += 2;
-                else
+                if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+                    step = STEP_GAME - 1;
+                    rightPlayer.setVisible(true);
+                    shipPlacer.setVisible(false);
+                    leftPlayer.setVisible(true);
+                } else {
                     rightPlayer.setVisible(false);
+                    shipPlacer.setVisible(true);
+                    leftPlayer.setVisible(true);
+                    shipPlacer.start();
+                }
                 break;
             case STEP_PLACEMENT_L:
                 if (config.getGameType() != GameConfig.GameType.LOCAL_2P) {
-                    step++;
+                    step = STEP_GAME - 1;
                     rightPlayer.setVisible(true);
+                    leftPlayer.setVisible(true);
+                    shipPlacer.setVisible(false);
                 } else {
                     leftPlayer.setVisible(false);
                     rightPlayer.setVisible(true);
                     rightPlayer.setPosition(sideWidth + redundantX, redundantY);
+                    shipPlacer.restart();
                 }
                 break;
             case STEP_PLACEMENT_R:
                 rightPlayer.setPosition(sideWidth + middleGap + redundantX + cellSize * config.getWidth(), redundantY);
                 leftPlayer.setVisible(true);
                 rightPlayer.setVisible(true);
+                shipPlacer.setVisible(false);
                 break;
             case STEP_GAME:
+                leftPlayer.setVisible(false);
+                rightPlayer.setVisible(false);
                 //todo: aftermath screen
                 break;
             case STEP_AFTERMATH:
                 restart();
+                step--;
                 break;
             default:
                 Gdx.app.error("GameStage", "Unknown step " + step);
@@ -289,4 +318,17 @@ public class GameStage extends Stage {
         return step;
     }
 
+    public boolean touchDown() {
+        if (step == STEP_BEGINNING || step == STEP_AFTERMATH) {
+            nextStep();
+            return true;
+        }
+        return false;
+    }
+
+//    public void touchDragged(InputEvent event, float x, float y, int pointer) {
+//    }
+//
+//    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+//    }
 }

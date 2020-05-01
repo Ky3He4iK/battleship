@@ -155,6 +155,10 @@ public class Field extends Group implements PlayerFinished {
         if (communication != null)
             communication.setPlaceShips();
         world.reset();
+        clicked = false;
+        for (Cell[] cells1 : cells)
+            for (Cell cell : cells1)
+                cell.clearAnimation();
     }
 
     @Nullable
