@@ -28,8 +28,11 @@ public class AloneShip extends Actor implements EventListener {
     @NotNull
     private Sprite sprite;
 
-    AloneShip(@NotNull final ShipPlacer shipPlacer, @NotNull String name) {
+    public final int length;
+
+    AloneShip(@NotNull final ShipPlacer shipPlacer, @NotNull String name, int length) {
         callback = shipPlacer;
+        this.length = length;
         this.names = new String[]{
                 name + Constants.ROTATED_SUFFIX, name
         };
@@ -70,6 +73,7 @@ public class AloneShip extends Actor implements EventListener {
                 return false;
             case touchDragged:
                 setPosition(Gdx.input.getX() - callback.getX() - getWidth() / 2, (Gdx.graphics.getHeight() - Gdx.input.getY()) - callback.getY() - getHeight() / 2);
+                callback.hover(Gdx.input.getX(), Gdx.input.getY(), this);
                 return true;
             case scrolled:
                 rotate();
@@ -77,5 +81,9 @@ public class AloneShip extends Actor implements EventListener {
             default:
                 return false;
         }
+    }
+
+    public int getShipRotation() {
+        return rotation;
     }
 }

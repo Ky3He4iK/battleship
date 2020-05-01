@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.logic.Communication;
+import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.H;
 
@@ -24,6 +26,9 @@ public class Field extends Group implements PlayerFinished {
     private boolean clicked = false;
     private boolean showShips;
     private float cellSize;
+
+    private boolean shadow = false;
+    private int shadowUX, shadowUY, shadowLX, shadowLY;
 
     @Nullable
     private Communication communication;
@@ -165,4 +170,58 @@ public class Field extends Group implements PlayerFinished {
         return communication;
     }
 
+    public boolean placeShip(GameConfig.Ship ship, int idx, int idy, int rotation) {
+        return world.placeShip(ship.convert(), idx, idy, rotation);
+    }
+
+    // return: ship id
+    public int removeShip(float x, float y) {
+        return 0;
+        //todo
+    }
+
+    public void highlight(float x, float y, int rotation, int length) {
+        shadow = true;
+        shadowLX = innerCellX(x) - (1 - rotation) * (length / 2);
+        shadowLY = innerCellY(y) - rotation * (length / 2);
+        shadowUX = shadowLX + (1 - rotation) * (length - 1);
+        shadowUY = shadowLY + rotation * (length - 1);
+    }
+
+    public void unHighlight() {
+        shadow = false;
+    }
+
+    @NotNull
+    public float[] getRectPos(int idx, int idy) {
+        return new float[]{getX() + idx * cellSize, getY() + idy * cellSize};
+    }
+
+    private int innerCellX(float x) {
+        return Math.round((x - getX() - cellSize / 2) / cellSize);
+    }
+
+    private int innerCellY(float y) {
+        return Math.round((Gdx.graphics.getHeight() - y - getY() - cellSize / 2) / cellSize);
+    }
+
+    public boolean getShadow() {
+        return shadow;
+    }
+
+    public int getShadowUX() {
+        return shadowUX;
+    }
+
+    public int getShadowUY() {
+        return shadowUY;
+    }
+
+    public int getShadowLX() {
+        return shadowLX;
+    }
+
+    public int getShadowLY() {
+        return shadowLY;
+    }
 }

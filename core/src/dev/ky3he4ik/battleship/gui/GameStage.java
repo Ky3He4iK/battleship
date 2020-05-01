@@ -280,7 +280,7 @@ public class GameStage extends Stage {
                     rightPlayer.setVisible(false);
                     shipPlacer.setVisible(true);
                     leftPlayer.setVisible(true);
-                    shipPlacer.start();
+                    shipPlacer.start(leftPlayer);
                     rightPlayer.setTouchable(Touchable.disabled);
                     leftPlayer.setTouchable(Touchable.disabled);
                     shipPlacer.setTouchable(Touchable.enabled);
@@ -303,7 +303,7 @@ public class GameStage extends Stage {
                     shipPlacer.setTouchable(Touchable.enabled);
                     rightPlayer.setPosition(sideWidth + redundantX, redundantY);
                     shipPlacer.restart();
-                    shipPlacer.start();
+                    shipPlacer.start(rightPlayer);
                 }
                 break;
             case STEP_PLACEMENT_R:

@@ -130,7 +130,10 @@ public class Cell extends Actor {
             } else {
                 batch.setColor(0.5f, 0.5f, 0.7f, 1);
             }
-        } else
+        } else if (field.getShadow() && field.getShadowLX() <= idx && idx <= field.getShadowUX()
+                && field.getShadowLY() <= idy && idy <= field.getShadowUY())
+            batch.setColor(0.3f, 0.3f, 0.3f, 1);
+        else
             batch.setColor(1, 1, 1, 1);
         batch.draw(sprite, getX(), getY(), getOriginX(), getOriginY(),
                 getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
