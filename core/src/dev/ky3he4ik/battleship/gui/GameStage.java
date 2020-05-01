@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +42,9 @@ public class GameStage extends Stage {
     @NotNull
     private RelayTouch touchListener;
 
+    @NotNull
+    private SpriteManager manager;
+
     private int turn = TURN_LEFT;
     private int readyCnt = 0;
     private boolean aiReady = false;
@@ -70,24 +74,13 @@ public class GameStage extends Stage {
 
     GameStage(@NotNull final GameConfig config, @NotNull final World leftWorld, @NotNull final World rightWorld) {
         super(new ExtendViewport(Constants.APP_WIDTH, Constants.APP_HEIGHT));
+        manager = SpriteManager.getInstance();
         this.config = config;
         this.font = new BitmapFont();
         font.setColor(.2f, .2f, .2f, 1);
         calcCellSize();
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
-
-        for (GameConfig.Ship ship : config.getShips()) {
-            Sprite sprite = SpriteManager.getInstance().initSprite(ship.name);
-            sprite.setSize(1, ship.length);
-            sprite.setOrigin(.5f, .5f);
-            sprite.setRotation(0);
-            Sprite sprite_rot = SpriteManager.getInstance().cloneSprite(ship.name, ship.name + Constants.ROTATED_SUFFIX);
-            sprite_rot.setOrigin(.5f, .5f);
-            sprite_rot.setSize(1, ship.length);
-            sprite_rot.setRotation(-90);
-            sprite_rot.setFlip(true, false);
-        }
 
         leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null, TURN_LEFT, this);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
@@ -106,9 +99,10 @@ public class GameStage extends Stage {
         rightPlayer.setVisible(false);
         addActor(rightPlayer);
 
-        shipPlacer = new ShipPlacer(config.getShips());
+        shipPlacer = new ShipPlacer(config.getShips(), cellSize);
         shipPlacer.setVisible(false);
-        shipPlacer.setBounds(redundantX + sideWidth, redundantY + footerHeight, middleGap + cellSize * config.getWidth() * 2, cellSize * config.getHeight());
+//        shipPlacer.setBounds(redundantX + sideWidth, redundantY + footerHeight, middleGap + cellSize * config.getWidth() * 2, cellSize * config.getHeight());
+        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         addActor(shipPlacer);
 
         step = STEP_BEGINNING;
@@ -136,7 +130,7 @@ public class GameStage extends Stage {
                 break;
             case STEP_PLACEMENT_L:
                 //todo
-                nextStep();
+//                nextStep();
                 break;
             case STEP_PLACEMENT_R:
                 //todo
@@ -192,7 +186,23 @@ public class GameStage extends Stage {
         else
             rightPlayer.setX(sideWidth + redundantX + middleGap + cellSize * config.getWidth());
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
-        shipPlacer.setBounds(sideWidth + redundantX, redundantY + footerHeight, middleGap + cellSize * config.getWidth() * 2, cellSize * config.getHeight());
+//        shipPlacer.setBounds(sideWidth + redundantX, redundantY + footerHeight, middleGap + cellSize * config.getWidth() * 2, cellSize * config.getHeight());
+        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+
+
+        for (GameConfig.Ship ship : config.getShips()) {
+            Sprite sprite = manager.getSprite(ship.name);
+            sprite.setSize(cellSize, ship.length * cellSize);
+            sprite.setOrigin(cellSize / 2, cellSize / 2);
+            sprite.setRotation(0);
+            if (!manager.contains(ship.name + Constants.ROTATED_SUFFIX))
+                manager.cloneSprite(ship.name, ship.name + Constants.ROTATED_SUFFIX);
+            sprite = manager.getSprite(ship.name + Constants.ROTATED_SUFFIX);
+            sprite.setSize(cellSize, ship.length * cellSize);
+            sprite.setOrigin(cellSize / 2, cellSize / 2);
+            sprite.setRotation(-90);
+            sprite.setFlip(true, false);
+        }
     }
 
     public void turnFinished(int playerId, int i, int j) {
@@ -263,11 +273,17 @@ public class GameStage extends Stage {
                     rightPlayer.setVisible(true);
                     shipPlacer.setVisible(false);
                     leftPlayer.setVisible(true);
+                    rightPlayer.setTouchable(Touchable.enabled);
+                    leftPlayer.setTouchable(Touchable.enabled);
+                    shipPlacer.setTouchable(Touchable.disabled);
                 } else {
                     rightPlayer.setVisible(false);
                     shipPlacer.setVisible(true);
                     leftPlayer.setVisible(true);
                     shipPlacer.start();
+                    rightPlayer.setTouchable(Touchable.disabled);
+                    leftPlayer.setTouchable(Touchable.disabled);
+                    shipPlacer.setTouchable(Touchable.enabled);
                 }
                 break;
             case STEP_PLACEMENT_L:
@@ -276,11 +292,18 @@ public class GameStage extends Stage {
                     rightPlayer.setVisible(true);
                     leftPlayer.setVisible(true);
                     shipPlacer.setVisible(false);
+                    rightPlayer.setTouchable(Touchable.enabled);
+                    leftPlayer.setTouchable(Touchable.enabled);
+                    shipPlacer.setTouchable(Touchable.disabled);
                 } else {
                     leftPlayer.setVisible(false);
                     rightPlayer.setVisible(true);
+                    rightPlayer.setTouchable(Touchable.disabled);
+                    leftPlayer.setTouchable(Touchable.disabled);
+                    shipPlacer.setTouchable(Touchable.enabled);
                     rightPlayer.setPosition(sideWidth + redundantX, redundantY);
                     shipPlacer.restart();
+                    shipPlacer.start();
                 }
                 break;
             case STEP_PLACEMENT_R:
@@ -288,6 +311,9 @@ public class GameStage extends Stage {
                 leftPlayer.setVisible(true);
                 rightPlayer.setVisible(true);
                 shipPlacer.setVisible(false);
+                rightPlayer.setTouchable(Touchable.enabled);
+                leftPlayer.setTouchable(Touchable.enabled);
+                shipPlacer.setTouchable(Touchable.disabled);
                 break;
             case STEP_GAME:
                 leftPlayer.setVisible(false);

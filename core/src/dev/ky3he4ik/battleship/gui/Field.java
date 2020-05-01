@@ -61,10 +61,9 @@ public class Field extends Group implements PlayerFinished {
             for (World.Ship ship : world.getShips()) {
                 Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
                 batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
-                        sprite.getOriginX() * cellSize, sprite.getOriginY() * cellSize,
-                        sprite.getWidth() * cellSize, sprite.getHeight() * cellSize,
+                        sprite.getOriginX(), sprite.getOriginY(),
+                        sprite.getWidth(), sprite.getHeight(),
                         1, 1, sprite.getRotation());
-
             }
         }
     }
