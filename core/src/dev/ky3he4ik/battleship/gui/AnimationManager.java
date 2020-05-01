@@ -1,6 +1,5 @@
 package dev.ky3he4ik.battleship.gui;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -18,12 +17,22 @@ public class AnimationManager {
         public final int rows;
         public final boolean isLooped;
 
-        public AnimationInfo(float frameLength, String name, int colons, int rows, boolean isLooped) {
+        public AnimationInfo(float frameLength, @NotNull String name, int colons, int rows, boolean isLooped) {
             this.frameLength = frameLength;
             this.name = name;
             this.colons = colons;
             this.rows = rows;
             this.isLooped = isLooped;
+        }
+
+        @NotNull
+        public static AnimationInfo byFPS(float fps, @NotNull String name, int colons, int rows, boolean isLooped) {
+            return new AnimationInfo(1 / fps, name, colons, rows, isLooped);
+        }
+
+        @NotNull
+        public static AnimationInfo byDuration(float duration, @NotNull String name, int colons, int rows, boolean isLooped) {
+            return new AnimationInfo(duration / (colons * rows), name, colons, rows, isLooped);
         }
     }
 
@@ -122,5 +131,29 @@ public class AnimationManager {
             for (int j = 0; j < colons; j++)
                 frames[index++] = tmp[i][j];
         return frames;
+    }
+
+    public void dispose(@NotNull String name) {
+        dispose(name, false);
+    }
+
+    private void dispose(@NotNull String name, boolean force) {
+        if (!contains(name))
+            return;
+        int cnt = usageCnt.get(name);
+        if (cnt <= 1 || force) {
+            usageCnt.remove(name);
+            TextureRegion[] frames = animations.remove(name).getKeyFrames();
+            for (TextureRegion frame : frames)
+                frame.getTexture().dispose();
+        } else
+            usageCnt.put(name, cnt - 1);
+    }
+
+    public void dispose() {
+        for (String name : usageCnt.keySet())
+            dispose(name, true);
+        usageCnt.clear();
+        animations.clear();
     }
 }

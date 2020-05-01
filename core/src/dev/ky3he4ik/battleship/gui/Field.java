@@ -47,8 +47,7 @@ public class Field extends Group implements PlayerFinished {
             cells[i] = new Cell[world.getWidth()];
             for (int j = 0; j < world.getHeight(); j++) {
                 cells[i][j] = new Cell(this, i, j);
-                cells[i][j].setPosition(cellSize * i, cellSize * j);
-                cells[i][j].setSize(cellSize, cellSize);
+                cells[i][j].setBounds(cellSize * i, cellSize * j, cellSize, cellSize);
                 cells[i][j].setVisible(true);
                 addActor(cells[i][j]);
             }

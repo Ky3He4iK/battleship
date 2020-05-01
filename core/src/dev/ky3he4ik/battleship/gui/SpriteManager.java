@@ -70,12 +70,25 @@ public class SpriteManager {
     }
 
     public void dispose(@NotNull String name) {
+        dispose(name, false);
+    }
+
+    public void dispose(@NotNull String name, boolean force) {
+        if (!contains(name))
+            return;
         int cnt = usageCnt.get(name);
-        if (cnt <= 1) {
+        if (cnt <= 1 || force) {
             usageCnt.remove(name);
             sprites.remove(name).getTexture().dispose();
         } else
             usageCnt.put(name, cnt - 1);
+    }
+
+    public void dispose() {
+        for (String name : usageCnt.keySet())
+            dispose(name, true);
+        usageCnt.clear();
+        sprites.clear();
     }
 
     public boolean contains(@NotNull String name) {
