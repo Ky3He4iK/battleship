@@ -280,7 +280,7 @@ public class World {
     public boolean isDead() {
         for (Ship ship : ships) {
             for (int i = 0; i < ship.len; i++)
-                if (getState(ship.idy + H.I(ship.rotation == ROTATION_VERTICAL) * i, ship.idx + H.I(ship.rotation == ROTATION_VERTICAL) * i) == STATE_UNDAMAGED)
+                if (getState(ship.idx + H.I(ship.rotation == ROTATION_HORIZONTAL) * i, ship.idy + H.I(ship.rotation == ROTATION_VERTICAL) * i) == STATE_UNDAMAGED)
                     return false;
         }
         return true;
