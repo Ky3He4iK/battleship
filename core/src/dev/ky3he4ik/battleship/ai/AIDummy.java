@@ -34,6 +34,7 @@ public class AIDummy extends AI {
     @Override
     protected void turn() {
         if (hitX == -1) {
+            Random random = new Random();
             while (!queue.isEmpty()) {
                 int[] pair = queue.poll();
                 if (!enemy.isOpened(pair[0], pair[1])) {
@@ -43,7 +44,7 @@ public class AIDummy extends AI {
                     return;
                 }
             }
-            Random random = new Random();
+
             turnX = random.nextInt(enemy.getHeight());
             turnY = random.nextInt(enemy.getWidth());
             while (enemy.isOpened(turnX, turnY)) {

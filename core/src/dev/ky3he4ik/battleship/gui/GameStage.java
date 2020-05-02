@@ -60,6 +60,9 @@ public class GameStage extends Stage {
 
     private int step;
 
+    private int leftScore = 0;
+    private int rightScore = 0;
+
     private void calcCellSize() {
         middleGap = getWidth() * Constants.MIDDLE_GAP_PART;
         sideWidth = getWidth() * Constants.SIDE_PART;
@@ -100,7 +103,6 @@ public class GameStage extends Stage {
 
         shipPlacer = new ShipPlacer(this, config.getShips(), cellSize);
         shipPlacer.setVisible(false);
-//        shipPlacer.setBounds(redundantX + sideWidth, redundantY + footerHeight, middleGap + cellSize * config.getWidth() * 2, cellSize * config.getHeight());
         shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         addActor(shipPlacer);
 
@@ -128,12 +130,7 @@ public class GameStage extends Stage {
                 nextStep();
                 break;
             case STEP_PLACEMENT_L:
-                //todo
-//                nextStep();
-                break;
             case STEP_PLACEMENT_R:
-                //todo
-                nextStep();
                 break;
             case STEP_GAME:
                 if (aiReady && turn == TURN_RIGHT) {
@@ -146,12 +143,13 @@ public class GameStage extends Stage {
                     else
                         turn();
                 }
-                if (turn == TURN_LEFT && rightPlayer.getWorld().isDead())
+                if (turn == TURN_LEFT && rightPlayer.getWorld().isDead()) {
                     nextStep();
+                }
                 break;
             case STEP_AFTERMATH:
                 getBatch().begin();
-                font.draw(getBatch(), (leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!", getWidth() / 2, getHeight() / 2);
+                font.draw(getBatch(), (leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + leftScore + " : " + rightScore, getWidth() / 2, getHeight() / 2);
                 getBatch().end();
                 break;
             default:
@@ -226,6 +224,7 @@ public class GameStage extends Stage {
         readyCnt++;
         if (playerId == TURN_LEFT || (playerId == TURN_RIGHT && config.getGameType() == GameConfig.GameType.LOCAL_2P))
             nextStep();
+        Gdx.app.debug("GameStage", "" + playerId + " is ready");
     }
 
     public boolean isMyTurn(int playerId) {
@@ -257,16 +256,15 @@ public class GameStage extends Stage {
     }
 
     public void cellPressed(int playerId, int idx, int idy) {
-        if ((playerId == TURN_RIGHT || config.getGameType() == GameConfig.GameType.LOCAL_2P) && turn != playerId) {
+        if ((playerId == TURN_RIGHT || config.getGameType() == GameConfig.GameType.LOCAL_2P) && turn != playerId)
             turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
-        }
-        //todo
     }
 
     private void nextStep() {
         switch (step) {
             case STEP_BEGINNING:
                 //todo: config screen
+                turn = TURN_LEFT;
                 break;
             case STEP_CHOOSE_CONFIG:
                 if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
@@ -300,6 +298,7 @@ public class GameStage extends Stage {
                 } else {
                     leftPlayer.setVisible(false);
                     rightPlayer.setVisible(true);
+                    shipPlacer.setVisible(true);
                     rightPlayer.setTouchable(Touchable.disabled);
                     leftPlayer.setTouchable(Touchable.disabled);
                     shipPlacer.setTouchable(Touchable.enabled);
@@ -318,12 +317,20 @@ public class GameStage extends Stage {
                 shipPlacer.setTouchable(Touchable.disabled);
                 break;
             case STEP_GAME:
-                leftPlayer.setVisible(false);
-                rightPlayer.setVisible(false);
+                leftPlayer.setTouchable(Touchable.disabled);
+                rightPlayer.setTouchable(Touchable.disabled);
+//                leftPlayer.setVisible(false);
+//                rightPlayer.setVisible(false);
                 //todo: aftermath screen
+                if (leftPlayer.getWorld().isDead())
+                    rightScore++;
+                else if (rightPlayer.getWorld().isDead())
+                    leftScore++;
                 break;
             case STEP_AFTERMATH:
                 restart();
+                leftPlayer.setVisible(false);
+                rightPlayer.setVisible(false);
                 step--;
                 break;
             default:
