@@ -281,6 +281,7 @@ public class GameStage extends Stage {
                     rightPlayer.setVisible(false);
                     shipPlacer.setVisible(true);
                     leftPlayer.setVisible(true);
+                    shipPlacer.restart();
                     shipPlacer.start(leftPlayer);
                     rightPlayer.setTouchable(Touchable.disabled);
                     leftPlayer.setTouchable(Touchable.disabled);

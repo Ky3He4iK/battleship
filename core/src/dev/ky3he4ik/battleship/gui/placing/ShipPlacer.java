@@ -70,8 +70,10 @@ public class ShipPlacer extends Group {
 
     public void restart() {
         usedShips.set(0, availableShips.size(), false);
-        for (AloneShip ship : ships)
+        for (AloneShip ship : ships) {
+            ship.setVisible(false);
             removeActor(ship);
+        }
         ships.clear();
         process = false;
     }
@@ -83,7 +85,6 @@ public class ShipPlacer extends Group {
         for (GameConfig.Ship ship : availableShips) {
             if (ship.length > maxLen)
                 maxLen = ship.length;
-
             AloneShip aShip = new AloneShip(this, ship.name, ship.length, ship.id);
             aShip.setBounds(posX * cellSize, posY * cellSize, cellSize * ship.length, cellSize);
             addActor(aShip);
