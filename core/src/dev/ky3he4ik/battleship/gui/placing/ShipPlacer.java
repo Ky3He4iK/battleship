@@ -13,6 +13,7 @@ import java.util.BitSet;
 
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.gui.Field;
+import dev.ky3he4ik.battleship.gui.GameStage;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.H;
 
@@ -28,15 +29,18 @@ public class ShipPlacer extends Group {
     private Field field = null;
     @NotNull
     private ArrayList<Actor> childrens;
+    @NotNull
+    private GameStage callback;
 
     private boolean process = false;
     private float cellSize;
 
     private int lastAcessId = -1;
 
-    public ShipPlacer(@NotNull ArrayList<GameConfig.Ship> availableShips, float cellSize) {
+    public ShipPlacer(@NotNull GameStage callback, @NotNull ArrayList<GameConfig.Ship> availableShips, float cellSize) {
         this.availableShips = availableShips;
         this.cellSize = cellSize;
+        this.callback = callback;
         usedShips = new BitSet(availableShips.size());
         ships = new ArrayList<>(availableShips.size());
         childrens = new ArrayList<>();
@@ -46,8 +50,12 @@ public class ShipPlacer extends Group {
         childrens.add(button);
         addActor(button);
 
-        button = new DoneButton(this);
+        button = new ButtonRandom(this);
         button.setBounds(0, getY() - cellSize, cellSize * 3, cellSize);
+        childrens.add(button);
+        addActor(button);
+        button = new ButtonDone(this);
+        button.setBounds(cellSize * 4, getY() - cellSize, cellSize, cellSize);
         childrens.add(button);
         addActor(button);
     }
@@ -141,7 +149,7 @@ public class ShipPlacer extends Group {
                     else
                         ship.moveBy(-cellSize / 4, -cellSize / 4);
                 } else {
-                    if (Math.abs(res[0] + 99999) > .1f ) {
+                    if (Math.abs(res[0] + 99999) > .1f) {
                         ship.setPosition(res[0] - getX(), res[1] - getY());
                     }
                 }
@@ -150,8 +158,18 @@ public class ShipPlacer extends Group {
     }
 
     public void randomPressed() {
-        if (field != null)
+        if (field != null) {
             H.placeShipsRandom(field.getWorld(), availableShips);
-        Gdx.app.debug("ShipPlacer", "Place randomly");
+            for (World.Ship ship : field.getWorld().getShips()) {
+                ships.get(ship.code - 1).setPosition(field.globalCellX(ship.idx) - getX(), field.globalCellY(ship.idy) - getY());
+                ships.get(ship.code - 1).setShipRotation(ship.rotation);
+            }
+        }
+        Gdx.app.debug("ShipPlacer", "Placed randomly");
+    }
+
+    public void donePressed() {
+        if (field != null && field.getWorld().getShips().size() == availableShips.size())
+            callback.shipsPlaced(field.getPlayerId());
     }
 }

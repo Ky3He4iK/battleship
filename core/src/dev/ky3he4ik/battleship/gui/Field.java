@@ -200,11 +200,11 @@ public class Field extends Group implements PlayerFinished {
         return Math.round((x - getX()) / cellSize);
     }
 
-    private float globalCellX(int idx) {
+    public float globalCellX(int idx) {
         return getX() + cellSize * idx;
     }
 
-    private float globalCellY(int idy) {
+    public float globalCellY(int idy) {
         return getY() + cellSize * idy;
     }
 

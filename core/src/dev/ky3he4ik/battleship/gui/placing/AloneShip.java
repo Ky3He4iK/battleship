@@ -114,4 +114,9 @@ public class AloneShip extends Actor implements EventListener {
     public String getShipName() {
         return names[rotation];
     }
+
+    public void setShipRotation(int rotation) {
+        if (this.rotation != rotation)
+            rotate();
+    }
 }

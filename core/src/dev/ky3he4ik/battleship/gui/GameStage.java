@@ -98,7 +98,7 @@ public class GameStage extends Stage {
         rightPlayer.setVisible(false);
         addActor(rightPlayer);
 
-        shipPlacer = new ShipPlacer(config.getShips(), cellSize);
+        shipPlacer = new ShipPlacer(this, config.getShips(), cellSize);
         shipPlacer.setVisible(false);
 //        shipPlacer.setBounds(redundantX + sideWidth, redundantY + footerHeight, middleGap + cellSize * config.getWidth() * 2, cellSize * config.getHeight());
         shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
