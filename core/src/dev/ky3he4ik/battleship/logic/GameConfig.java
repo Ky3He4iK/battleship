@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class GameConfig {

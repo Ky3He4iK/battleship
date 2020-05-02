@@ -10,17 +10,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.gui.placing.AloneShip;
+import dev.ky3he4ik.battleship.gui.placing.AloneShipListener;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.utils.H;
 
-public class Field extends Group implements PlayerFinished {
+public class Field extends Group implements PlayerFinished, AloneShipListener {
     @NotNull
     private final World world;
     @NotNull
     private Cell[][] cells;
+    @NotNull
+    private ArrayList<AloneShip> children;
+
     private int clickX, clickY;
     private boolean clicked = false;
     private boolean showShips;
@@ -44,6 +49,8 @@ public class Field extends Group implements PlayerFinished {
         this.communication = communication;
         this.playerId = playerId;
         this.callback = callback;
+        children = new ArrayList<>();
+
         if (communication != null)
             communication.setCallback(this);
 
@@ -56,6 +63,14 @@ public class Field extends Group implements PlayerFinished {
                 cells[i][j].setVisible(true);
                 addActor(cells[i][j]);
             }
+        }
+    }
+
+    public void init() {
+        for (World.Ship ship : world.getShips()) {
+            AloneShip child = new AloneShip(this, ship.name, ship.len, ship.code);
+            child.setRotation(ship.rotation);
+            child.setPlaced(true);
         }
     }
 
@@ -247,5 +262,21 @@ public class Field extends Group implements PlayerFinished {
             return null;
         } else
             return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
+    }
+
+    @Override
+    public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
+        //todo
+        return false;
+    }
+
+    @Override
+    public void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship) {
+        //todo
+    }
+
+    @Override
+    public void shipMoved(@NotNull float[] pos, @NotNull AloneShip ship) {
+        //todo
     }
 }

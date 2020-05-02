@@ -12,14 +12,14 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import org.jetbrains.annotations.NotNull;
 
-import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
 public class AloneShip extends Actor implements EventListener {
     @NotNull
-    private final ShipPlacer callback;
+    private final AloneShipListener callback;
 
     @NotNull
     private String[] names;
@@ -33,8 +33,9 @@ public class AloneShip extends Actor implements EventListener {
     public final int id;
 
     private boolean placed = false;
+    private boolean canBeMoved = false;
 
-    AloneShip(@NotNull final ShipPlacer shipPlacer, @NotNull String name, int length, int id) {
+    public AloneShip(@NotNull final AloneShipListener shipPlacer, @NotNull String name, int length, int id) {
         callback = shipPlacer;
         this.length = length;
         this.names = new String[]{
@@ -72,19 +73,22 @@ public class AloneShip extends Actor implements EventListener {
         switch (event.getType()) {
             case touchDown:
                 if (event.getButton() == Input.Buttons.LEFT) {
-                    callback.pressed(H.getAbsCoord(this), this);
+                    canBeMoved = callback.shipPressed(H.getAbsCoord(this), this);
                     return true;
                 }
                 return false;
             case touchUp:
-                if (event.getButton() == Input.Buttons.LEFT) {
-                    callback.released(H.getAbsCoord(this), this);
+                if (event.getButton() == Input.Buttons.LEFT && canBeMoved) {
+                    callback.shipReleased(H.getAbsCoord(this), this);
                     return true;
                 }
                 return false;
             case touchDragged:
-                setPosition(Gdx.input.getX() - callback.getX() - getWidth() / 2, (Gdx.graphics.getHeight() - Gdx.input.getY()) - callback.getY() - getHeight() / 2);
-                callback.hover(getX(), getY(), this);
+                if (canBeMoved) {
+                    setPosition(Gdx.input.getX() - callback.getX() - getWidth() / 2,
+                            Gdx.graphics.getHeight() - Gdx.input.getY() - callback.getY() - getHeight() / 2);
+                    callback.shipMoved(H.getAbsCoord(this), this);
+                }
                 return true;
             case scrolled:
                 rotate();

@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class Cell extends Actor {

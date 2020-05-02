@@ -1,26 +1,10 @@
 package dev.ky3he4ik.battleship;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-
-import dev.ky3he4ik.battleship.ai.AI;
-import dev.ky3he4ik.battleship.logic.PlayerFinished;
-import dev.ky3he4ik.battleship.utils.Constants;
-
-
-public class GameScreen implements Screen, PlayerFinished {
-    private @NotNull
+public class GameScreen { // implements Screen, PlayerFinished {
+    /*private @NotNull
     AI ai;
     private @NotNull
-    World player1, player2;
+    dev.ky3he4ik.battleship.logic.World player1, player2;
     private final MyGdxGame game;
 
     private Texture background;
@@ -58,14 +42,14 @@ public class GameScreen implements Screen, PlayerFinished {
             player2.open(xCell, yCell);
             if (player2.isDead())
                 Gdx.app.error("GameScreen", "P1 won!");
-            p1turn = player2.getState(xCell, yCell) != World.STATE_EMPTY;
+            p1turn = player2.getState(xCell, yCell) != dev.ky3he4ik.battleship.logic.World.STATE_EMPTY;
         }
     }
 
     public GameScreen(final MyGdxGame game) {
         this.game = game;
-        player1 = new World(10, 10);
-        player2 = new World(10, 10);
+        player1 = new dev.ky3he4ik.battleship.logic.World(10, 10);
+        player2 = new dev.ky3he4ik.battleship.logic.World(10, 10);
 //        ai = new AIDummy(this, player1, player2, 1);
 
 //        background = new Texture("Background_v01.jpg");
@@ -103,7 +87,7 @@ public class GameScreen implements Screen, PlayerFinished {
             player1.open(aiX, aiY);
             if (player1.isDead())
                 Gdx.app.error("GameScreen", "P2 won!");
-            p1turn = player1.getState(aiX, aiY) == World.STATE_EMPTY;
+            p1turn = player1.getState(aiX, aiY) == dev.ky3he4ik.battleship.logic.World.STATE_EMPTY;
             aiFinished = false;
             ai.setTurn();
         }
@@ -163,36 +147,36 @@ public class GameScreen implements Screen, PlayerFinished {
             for (int j = 0; j < 10; j++) {
                 if (player1.isOpened(i, j))
                     switch (player1.getState(i, j)) {
-                        case World.STATE_EMPTY:
-                            game.shapeRenderer.setColor(World.COLOR_EMPTY);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_EMPTY:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_EMPTY);
                             break;
-                        case World.STATE_UNDAMAGED:
-                            game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_UNDAMAGED:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_UNDAMAGED);
                             break;
-                        case World.STATE_DAMAGED:
-                            game.shapeRenderer.setColor(World.COLOR_DAMAGED);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_DAMAGED:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_DAMAGED);
                             break;
-                        case World.STATE_SUNK:
-                            game.shapeRenderer.setColor(World.COLOR_SUNK);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_SUNK:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_SUNK);
                             break;
                     }
                 else
-                    game.shapeRenderer.setColor(World.COLOR_UNKNOWN);
+                    game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_UNKNOWN);
                 game.shapeRenderer.rect(xMargin + (i + 2) * step + Constants.CELL_MARGIN,
                         yMargin + (j + 1) * step + Constants.CELL_MARGIN, step - Constants.CELL_MARGIN * 2, step - Constants.CELL_MARGIN * 2);
                 if (player2.isOpened(i, j))
                     switch (player2.getState(i, j)) {
-                        case World.STATE_EMPTY:
-                            game.shapeRenderer.setColor(World.COLOR_EMPTY);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_EMPTY:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_EMPTY);
                             break;
-                        case World.STATE_UNDAMAGED:
-                            game.shapeRenderer.setColor(World.COLOR_UNDAMAGED);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_UNDAMAGED:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_UNDAMAGED);
                             break;
-                        case World.STATE_DAMAGED:
-                            game.shapeRenderer.setColor(World.COLOR_DAMAGED);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_DAMAGED:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_DAMAGED);
                             break;
-                        case World.STATE_SUNK:
-                            game.shapeRenderer.setColor(World.COLOR_SUNK);
+                        case dev.ky3he4ik.battleship.logic.World.STATE_SUNK:
+                            game.shapeRenderer.setColor(dev.ky3he4ik.battleship.logic.World.COLOR_SUNK);
                             break;
                     }
                 else
@@ -262,5 +246,5 @@ public class GameScreen implements Screen, PlayerFinished {
     @Override
     public void shipsPlaced() {
         ai.setTurn();
-    }
+    }*/
 }

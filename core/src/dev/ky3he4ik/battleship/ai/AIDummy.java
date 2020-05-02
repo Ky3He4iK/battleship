@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
-import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.H;
 

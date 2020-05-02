@@ -7,10 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
-import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 
 /**

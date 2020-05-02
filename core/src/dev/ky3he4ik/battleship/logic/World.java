@@ -1,4 +1,4 @@
-package dev.ky3he4ik.battleship;
+package dev.ky3he4ik.battleship.logic;
 
 import com.badlogic.gdx.graphics.Color;
 

@@ -11,13 +11,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import dev.ky3he4ik.battleship.World;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.GameStage;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.H;
 
-public class ShipPlacer extends Group {
+public class ShipPlacer extends Group implements AloneShipListener {
 
     @NotNull
     private ArrayList<GameConfig.Ship> availableShips;
@@ -99,40 +99,6 @@ public class ShipPlacer extends Group {
         }
     }
 
-    public void released(@NotNull float[] coord, @NotNull AloneShip ship) {
-        Gdx.app.debug("ShipPlacer", "Release at " + coord[0] + "x" + coord[1]);
-        lastAcessId = ship.id - 1;
-        if (availableShips.get(ship.id - 1).id != ship.id) {
-            Gdx.app.error("ShipPlacer", "Error: ship with id " + availableShips.get(ship.id - 1).id + " at pos " + ship.id);
-            Gdx.app.debug("ShipPlacer", "Ship id:");
-            for (int i = 0; i < availableShips.size(); i++) {
-                Gdx.app.debug("ShipPlacer", "" + i + ": " + availableShips.get(i).id);
-            }
-        }
-        if (field != null) {
-            float[] pos = field.unHighlight(availableShips.get(ship.id - 1), coord[0], coord[1], ship.getShipRotation());
-            if (pos != null) {
-                ship.setPlaced(true);
-                Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
-                ship.setPosition(pos[0] - getX(), pos[1] - getY());
-            } else
-                ship.setPlaced(false);
-        }
-    }
-
-    public void pressed(@NotNull float[] coord, @NotNull AloneShip ship) {
-        lastAcessId = ship.id - 1;
-        if (field != null)
-            field.removeShip(coord[0], coord[1], ship.id);
-    }
-
-    public void hover(float x, float y, @NotNull AloneShip ship) {
-        Gdx.app.debug("ShipPlacer", "Hover at " + x + "x" + y);
-        lastAcessId = ship.id - 1;
-        if (field != null)
-            field.highlight(x + getX(), y + getY(), ship.getShipRotation(), ship.length);
-    }
-
     public void rotate() {
         if (lastAcessId != -1) {
             Gdx.app.debug("ShipPlacer", "rotating " + lastAcessId);
@@ -178,5 +144,44 @@ public class ShipPlacer extends Group {
     public void donePressed() {
         if (field != null && field.getWorld().getShips().size() == availableShips.size())
             callback.shipsPlaced(field.getPlayerId());
+    }
+
+    @Override
+    public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
+        lastAcessId = ship.id - 1;
+        if (field != null)
+            field.removeShip(pos[0], pos[1], ship.id);
+        return true;
+    }
+
+    @Override
+    public void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship) {
+        Gdx.app.debug("ShipPlacer", "Release at " + pos[0] + "x" + pos[1]);
+        lastAcessId = ship.id - 1;
+        if (availableShips.get(ship.id - 1).id != ship.id) {
+            Gdx.app.error("ShipPlacer", "Error: ship with id " + availableShips.get(ship.id - 1).id + " at pos " + ship.id);
+            Gdx.app.debug("ShipPlacer", "Ship id:");
+            for (int i = 0; i < availableShips.size(); i++) {
+                Gdx.app.debug("ShipPlacer", "" + i + ": " + availableShips.get(i).id);
+            }
+        }
+        if (field != null) {
+            float[] newPos = field.unHighlight(availableShips.get(ship.id - 1), pos[0], pos[1], ship.getShipRotation());
+            float[] curPos = H.getAbsCoord(this);
+            if (newPos != null) {
+                ship.setPlaced(true);
+                Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
+                ship.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);
+            } else
+                ship.setPlaced(false);
+        }
+    }
+
+    @Override
+    public void shipMoved(@NotNull float[] pos, @NotNull AloneShip ship) {
+        Gdx.app.debug("ShipPlacer", "Hover at " + pos[1] + "x" + pos[1]);
+        lastAcessId = ship.id - 1;
+        if (field != null)
+            field.highlight(pos[0], pos[1], ship.getShipRotation(), ship.length);
     }
 }
