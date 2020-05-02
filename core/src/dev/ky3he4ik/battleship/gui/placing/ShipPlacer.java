@@ -81,11 +81,12 @@ public class ShipPlacer extends Group {
     public void start(@NotNull Field field) {
         process = true;
         this.field = field;
-        int posY = 0, maxLen = 0, posX = 0;
+        int posY = 1, maxLen = 0, posX = 0;
         for (GameConfig.Ship ship : availableShips) {
             if (ship.length > maxLen)
                 maxLen = ship.length;
             AloneShip aShip = new AloneShip(this, ship.name, ship.length, ship.id);
+            aShip.setPlaced(true);
             aShip.setBounds(posX * cellSize, posY * cellSize, cellSize * ship.length, cellSize);
             addActor(aShip);
             ships.add(ship.id - 1, aShip);
@@ -109,11 +110,13 @@ public class ShipPlacer extends Group {
             }
         }
         if (field != null) {
-            float[] pos = field.unHighlight(availableShips.get(ship.id - 1));
+            float[] pos = field.unHighlight(availableShips.get(ship.id - 1), x, y, ship.getShipRotation());
             if (pos != null) {
+                ship.setPlaced(true);
                 Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
                 ship.setPosition(pos[0] - getX(), pos[1] - getY());
-            }
+            } else
+                ship.setPlaced(false);
         }
     }
 
@@ -146,10 +149,12 @@ public class ShipPlacer extends Group {
                 float[] res = field.rotate(availableShips.get(lastAcessId), ship.getGlobalX(), ship.getGlobalY(), ship.getShipRotation());
                 if (res == null) {
                     if (ship.getShipRotation() == World.ROTATION_VERTICAL)
-                        ship.moveBy(cellSize / 4, cellSize / 4);
+                        ship.moveBy(cellSize / 4, -cellSize / 4);
                     else
-                        ship.moveBy(-cellSize / 4, -cellSize / 4);
+                        ship.moveBy(-cellSize / 4, cellSize / 4);
+                    ship.setPlaced(false);
                 } else {
+                    ship.setPlaced(true);
                     if (Math.abs(res[0] + 99999) > .1f) {
                         ship.setPosition(res[0] - getX(), res[1] - getY());
                     }
@@ -164,6 +169,7 @@ public class ShipPlacer extends Group {
             for (World.Ship ship : field.getWorld().getShips()) {
                 ships.get(ship.code - 1).setPosition(field.globalCellX(ship.idx) - getX(), field.globalCellY(ship.idy) - getY());
                 ships.get(ship.code - 1).setShipRotation(ship.rotation);
+                ships.get(ship.code - 1).setPlaced(true);
             }
         }
         Gdx.app.debug("ShipPlacer", "Placed randomly");

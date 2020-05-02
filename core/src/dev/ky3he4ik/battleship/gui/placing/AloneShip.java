@@ -47,8 +47,11 @@ public class AloneShip extends Actor implements EventListener {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        if (!placed)
+            batch.setColor(1, .5f, .5f, 1);
         batch.draw(sprite, getX(), getY(), sprite.getOriginX(), sprite.getOriginY(),
                 sprite.getWidth(), sprite.getHeight(), 1, 1, sprite.getRotation());
+        batch.setColor(1, 1, 1, 1);
     }
 
     public void rotate() {
@@ -103,11 +106,11 @@ public class AloneShip extends Actor implements EventListener {
     }
 
     public float getGlobalX() {
-        return getX();
+        return getX() + getParent().getX();
     }
 
     public float getGlobalY() {
-        return getY();
+        return getY() + getParent().getY();
     }
 
     @NotNull

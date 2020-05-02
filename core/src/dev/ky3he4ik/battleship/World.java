@@ -334,6 +334,8 @@ public class World {
         else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.len - 1))
             return false;
 
+        removeShip(ship.code);
+
         for (int i = -1; i <= ship.len; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
                 if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1))
@@ -379,7 +381,8 @@ public class World {
             if (ships.get(i).code == shipId) {
                 Ship ship = ships.get(i);
                 for (int j = 0; j < ship.len; j++)
-                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
+                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)]
+                            [ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
                 ships.remove(i);
                 return placeShip(ship, ship.idx, ship.idy, 1 - ship.rotation);
             }

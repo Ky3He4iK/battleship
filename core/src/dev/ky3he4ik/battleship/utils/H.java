@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.World;

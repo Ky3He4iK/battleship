@@ -184,8 +184,14 @@ public class Field extends Group implements PlayerFinished {
     }
 
     @Nullable
-    public float[] unHighlight(@NotNull GameConfig.Ship ship) {
-        shadow = false;
+    public float[] unHighlight(@NotNull GameConfig.Ship ship, float x, float y, int rotation) {
+        if (shadow)
+            shadow = false;
+        else {
+            shadowLX = innerCellX(x);
+            shadowLY = innerCellY(y);
+            shadowRot = rotation;
+        }
         if (world.placeShip(ship.convert(), shadowLX, shadowLY, shadowRot))
             return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
         return null;
