@@ -99,8 +99,8 @@ public class ShipPlacer extends Group {
         }
     }
 
-    public void released(float x, float y, @NotNull AloneShip ship) {
-        Gdx.app.debug("ShipPlacer", "Release at " + x + "x" + y);
+    public void released(@NotNull float[] coord, @NotNull AloneShip ship) {
+        Gdx.app.debug("ShipPlacer", "Release at " + coord[0] + "x" + coord[1]);
         lastAcessId = ship.id - 1;
         if (availableShips.get(ship.id - 1).id != ship.id) {
             Gdx.app.error("ShipPlacer", "Error: ship with id " + availableShips.get(ship.id - 1).id + " at pos " + ship.id);
@@ -110,7 +110,7 @@ public class ShipPlacer extends Group {
             }
         }
         if (field != null) {
-            float[] pos = field.unHighlight(availableShips.get(ship.id - 1), x, y, ship.getShipRotation());
+            float[] pos = field.unHighlight(availableShips.get(ship.id - 1), coord[0], coord[1], ship.getShipRotation());
             if (pos != null) {
                 ship.setPlaced(true);
                 Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
@@ -120,10 +120,10 @@ public class ShipPlacer extends Group {
         }
     }
 
-    public void pressed(float x, float y, @NotNull AloneShip ship) {
+    public void pressed(@NotNull float[] coord, @NotNull AloneShip ship) {
         lastAcessId = ship.id - 1;
         if (field != null)
-            field.removeShip(x, y, ship.id);
+            field.removeShip(coord[0], coord[1], ship.id);
     }
 
     public void hover(float x, float y, @NotNull AloneShip ship) {
@@ -146,7 +146,7 @@ public class ShipPlacer extends Group {
             ships.get(lastAcessId).rotate();
             if (field != null) {
                 AloneShip ship = ships.get(lastAcessId);
-                float[] res = field.rotate(availableShips.get(lastAcessId), ship.getGlobalX(), ship.getGlobalY(), ship.getShipRotation());
+                float[] res = field.rotate(availableShips.get(lastAcessId), H.getAbsCoord(ship), ship.getShipRotation());
                 if (res == null) {
                     if (ship.getShipRotation() == World.ROTATION_VERTICAL)
                         ship.moveBy(cellSize / 4, -cellSize / 4);

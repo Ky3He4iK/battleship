@@ -1,8 +1,10 @@
 package dev.ky3he4ik.battleship.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -75,5 +77,16 @@ public final class H {
      */
     public static int I(boolean i) {
         return i ? 1 : 0;
+    }
+
+    @NotNull
+    public static float[] getAbsCoord(@Nullable Actor actor) {
+        float[] coord = new float[] {0, 0};
+        while (actor != null) {
+            coord[0] += actor.getX();
+            coord[1] += actor.getY();
+            actor = actor.getParent();
+        }
+        return coord;
     }
 }

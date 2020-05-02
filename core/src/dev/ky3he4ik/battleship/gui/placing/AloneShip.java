@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import dev.ky3he4ik.battleship.World;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.utils.Constants;
+import dev.ky3he4ik.battleship.utils.H;
 
 public class AloneShip extends Actor implements EventListener {
     @NotNull
@@ -71,13 +72,13 @@ public class AloneShip extends Actor implements EventListener {
         switch (event.getType()) {
             case touchDown:
                 if (event.getButton() == Input.Buttons.LEFT) {
-                    callback.pressed(getGlobalX(), getGlobalY(), this);
+                    callback.pressed(H.getAbsCoord(this), this);
                     return true;
                 }
                 return false;
             case touchUp:
                 if (event.getButton() == Input.Buttons.LEFT) {
-                    callback.released(getGlobalX(), getGlobalY(), this);
+                    callback.released(H.getAbsCoord(this), this);
                     return true;
                 }
                 return false;

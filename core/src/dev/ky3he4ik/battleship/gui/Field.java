@@ -203,7 +203,7 @@ public class Field extends Group implements PlayerFinished {
     }
 
     private int innerCellX(float x) {
-        return Math.round((x - getX()) / cellSize);
+        return Math.round((x - H.getAbsCoord(this)[0]) / cellSize);
     }
 
     public float globalCellX(int idx) {
@@ -215,7 +215,7 @@ public class Field extends Group implements PlayerFinished {
     }
 
     private int innerCellY(float y) {
-        return Math.round((y - getY()) / cellSize);
+        return Math.round((y - H.getAbsCoord(this)[1]) / cellSize);
     }
 
     public boolean getShadow() {
@@ -239,10 +239,10 @@ public class Field extends Group implements PlayerFinished {
     }
 
     @Nullable
-    public float[] rotate(@NotNull GameConfig.Ship ship, float x, float y, int rotation) {
+    public float[] rotate(@NotNull GameConfig.Ship ship, @NotNull float coord[], int rotation) {
         if (!world.rotate(ship.id)) {
             shadow = false;
-            if (world.placeShip(ship.convert(), innerCellX(x), innerCellY(y), rotation))
+            if (world.placeShip(ship.convert(), innerCellX(coord[0]), innerCellY(coord[1]), rotation))
                 return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
             return null;
         } else
