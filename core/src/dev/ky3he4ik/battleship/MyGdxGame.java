@@ -38,9 +38,6 @@ public class MyGdxGame extends Game {
             Gdx.app.setLogLevel(Application.LOG_DEBUG);
         else
             Gdx.app.setLogLevel(Application.LOG_ERROR);
-//        this.setScreen(new MainScreen(this));
-        Gdx.gl.glLineWidth(Constants.CELL_MARGIN * 2);
-//        setScreen(new GameScreen(this));
         setScreen(new MainView(this));
     }
 

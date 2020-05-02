@@ -254,7 +254,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     @Nullable
-    public float[] rotate(@NotNull GameConfig.Ship ship, @NotNull float coord[], int rotation) {
+    public float[] rotate(@NotNull GameConfig.Ship ship, @NotNull float[] coord, int rotation) {
         if (!world.rotate(ship.id)) {
             shadow = false;
             if (world.placeShip(ship.convert(), innerCellX(coord[0]), innerCellY(coord[1]), rotation))
@@ -266,12 +266,12 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     @Override
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
-        //todo
-        return false;
+        return world.shipAlive(ship.id);
     }
 
     @Override
     public void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship) {
+
         //todo
     }
 

@@ -3,15 +3,10 @@ package dev.ky3he4ik.battleship.utils;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
 
 public class Constants {
-    public static final int CELL_MARGIN = 2;
-    public static final int CELLS_CNT_X = 25;
-    public static final int CELLS_CNT_Y = 15;
-    public static final int MIDDLE_GAP = 3;
-
-    public static final float HEADER_PART = .25f;
+    public static final float HEADER_PART = .1f;
     public static final float FOOTER_PART = .1f;
-    public static final float SIDE_PART = .1f;
-    public static final float MIDDLE_GAP_PART = .15f;
+    public static final float SIDE_PART = .05f;
+    public static final float MIDDLE_GAP_PART = .1f;
 
     public static final boolean DEBUG_MODE = Boolean.getBoolean("debug");
 

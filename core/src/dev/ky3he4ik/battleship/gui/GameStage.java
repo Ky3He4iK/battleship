@@ -9,11 +9,11 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import org.jetbrains.annotations.NotNull;
 
-import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.ai.AIDummy;
 import dev.ky3he4ik.battleship.gui.placing.ShipPlacer;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class GameStage extends Stage {
@@ -114,6 +114,8 @@ public class GameStage extends Stage {
 
         touchListener = new RelayTouch(this);
         addListener(touchListener);
+
+        initStep();
     }
 
     @Override
@@ -126,7 +128,7 @@ public class GameStage extends Stage {
                 getBatch().end();
                 break;
             case STEP_CHOOSE_CONFIG:
-                //todo
+                //todo: config screen
                 nextStep();
                 break;
             case STEP_PLACEMENT_L:
@@ -262,85 +264,84 @@ public class GameStage extends Stage {
     private void nextStep() {
         switch (step) {
             case STEP_BEGINNING:
-                //todo: config screen
-                turn = TURN_LEFT;
                 break;
             case STEP_CHOOSE_CONFIG:
-                if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+                if (config.getGameType() == GameConfig.GameType.AI_VS_AI)
                     step = STEP_GAME - 1;
-                    rightPlayer.setVisible(true);
-                    shipPlacer.setVisible(false);
-                    leftPlayer.setVisible(true);
-                    rightPlayer.setTouchable(Touchable.enabled);
-                    leftPlayer.setTouchable(Touchable.enabled);
-                    shipPlacer.setTouchable(Touchable.disabled);
-                } else {
-                    rightPlayer.setVisible(false);
-                    shipPlacer.setVisible(true);
-                    leftPlayer.setVisible(true);
-                    shipPlacer.restart();
-                    shipPlacer.start(leftPlayer);
-                    rightPlayer.setTouchable(Touchable.disabled);
-                    leftPlayer.setTouchable(Touchable.disabled);
-                    shipPlacer.setTouchable(Touchable.enabled);
-                }
                 break;
             case STEP_PLACEMENT_L:
-                if (config.getGameType() != GameConfig.GameType.LOCAL_2P) {
+                if (config.getGameType() != GameConfig.GameType.LOCAL_2P)
                     step = STEP_GAME - 1;
-                    rightPlayer.setVisible(true);
-                    leftPlayer.setVisible(true);
-                    shipPlacer.setVisible(false);
-                    rightPlayer.setTouchable(Touchable.enabled);
-                    leftPlayer.setTouchable(Touchable.enabled);
-                    shipPlacer.setTouchable(Touchable.disabled);
-                } else {
-                    leftPlayer.setVisible(false);
-                    rightPlayer.setVisible(true);
-                    shipPlacer.setVisible(true);
-                    rightPlayer.setTouchable(Touchable.disabled);
-                    leftPlayer.setTouchable(Touchable.disabled);
-                    shipPlacer.setTouchable(Touchable.enabled);
-                    rightPlayer.setPosition(sideWidth + redundantX, redundantY);
-                    shipPlacer.restart();
-                    shipPlacer.start(rightPlayer);
-                }
                 break;
             case STEP_PLACEMENT_R:
-                rightPlayer.setPosition(sideWidth + middleGap + redundantX + cellSize * config.getWidth(), redundantY);
-                leftPlayer.setVisible(true);
-                rightPlayer.setVisible(true);
-                shipPlacer.setVisible(false);
-                rightPlayer.setTouchable(Touchable.enabled);
-                leftPlayer.setTouchable(Touchable.enabled);
-                shipPlacer.setTouchable(Touchable.disabled);
-                break;
             case STEP_GAME:
-                leftPlayer.setTouchable(Touchable.disabled);
-                rightPlayer.setTouchable(Touchable.disabled);
-//                leftPlayer.setVisible(false);
-//                rightPlayer.setVisible(false);
-                //todo: aftermath screen
-                if (leftPlayer.getWorld().isDead())
-                    rightScore++;
-                else if (rightPlayer.getWorld().isDead())
-                    leftScore++;
                 break;
             case STEP_AFTERMATH:
                 restart();
-                leftPlayer.setVisible(false);
-                rightPlayer.setVisible(false);
                 step--;
                 break;
             default:
                 Gdx.app.error("GameStage", "Unknown step " + step);
         }
         step++;
+        initStep();
+    }
+
+    private void initStep() {
+        switch (step) {
+            case STEP_BEGINNING:
+                turn = TURN_LEFT;
+                leftPlayer.setVisible(false);
+                rightPlayer.setVisible(false);
+                restart();
+                break;
+            case STEP_CHOOSE_CONFIG:
+                //todo: config screen
+                break;
+            case STEP_PLACEMENT_L:
+                leftPlayer.setVisible(true);
+                rightPlayer.setVisible(false);
+                shipPlacer.setVisible(true);
+                rightPlayer.setTouchable(Touchable.enabled);
+                leftPlayer.setTouchable(Touchable.disabled);
+                shipPlacer.setTouchable(Touchable.enabled);
+                shipPlacer.restart();
+                shipPlacer.start(leftPlayer);
+                break;
+            case STEP_PLACEMENT_R:
+                leftPlayer.setVisible(false);
+                rightPlayer.setVisible(true);
+                shipPlacer.setVisible(true);
+                rightPlayer.setTouchable(Touchable.disabled);
+                leftPlayer.setTouchable(Touchable.disabled);
+                shipPlacer.setTouchable(Touchable.enabled);
+                shipPlacer.restart();
+                shipPlacer.start(rightPlayer);
+                rightPlayer.setPosition(redundantX + sideWidth, redundantY + footerHeight);
+                break;
+            case STEP_GAME:
+                rightPlayer.setPosition(sideWidth + middleGap + redundantX + cellSize * config.getWidth(), redundantY + footerHeight);
+                leftPlayer.setTouchable(Touchable.enabled);
+                rightPlayer.setTouchable(Touchable.enabled);
+                shipPlacer.setTouchable(Touchable.disabled);
+                leftPlayer.setVisible(true);
+                rightPlayer.setVisible(true);
+                shipPlacer.setVisible(false);
+                break;
+            case STEP_AFTERMATH:
+                //todo: aftermath screen
+                if (leftPlayer.getWorld().isDead())
+                    rightScore++;
+                else if (rightPlayer.getWorld().isDead())
+                    leftScore++;
+                break;
+            default:
+                Gdx.app.error("GameStage", "Unknown step " + step);
+        }
     }
 
     private void restart() {
         leftPlayer.restart();
-//        H.placeShipsRandom(leftPlayer.getWorld(), config.getShips());
         if (rightPlayer.getCommunication() != null && (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI))
             rightPlayer.getCommunication().restart();
 
@@ -359,10 +360,4 @@ public class GameStage extends Stage {
         }
         return false;
     }
-
-//    public void touchDragged(InputEvent event, float x, float y, int pointer) {
-//    }
-//
-//    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-//    }
 }
