@@ -224,6 +224,8 @@ public class GameStage extends Stage {
 
     public void shipsPlaced(int playerId) {
         readyCnt++;
+        if (playerId == TURN_LEFT || (playerId == TURN_RIGHT && config.getGameType() == GameConfig.GameType.LOCAL_2P))
+            nextStep();
     }
 
     public boolean isMyTurn(int playerId) {
