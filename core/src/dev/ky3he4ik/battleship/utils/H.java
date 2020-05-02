@@ -17,12 +17,11 @@ public final class H {
     private H() {
     }
 
-    public static void placeShipsRandom(@NotNull World world, @NotNull GameConfig config) {
+    public static void placeShipsRandom(@NotNull World world, @NotNull ArrayList<GameConfig.Ship> availableShips) {
         boolean done = false;
         Random random = new Random();
         do {
             world.reset(world.getWidth(), world.getHeight());
-            ArrayList<GameConfig.Ship> availableShips = config.getShips();
             boolean success = true;
             for (int i = 0; success && i < availableShips.size(); i++) {
                 success = false;

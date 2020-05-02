@@ -33,7 +33,10 @@ public class Constants {
     public static final String SHIP_PATROL_BOAT_IMG = "Patrol_boat.png";
     public static final String SHIP_RUBBER_BOAT_IMG = "Rubber_boat.png";
 
+
     public static final String ARROW_ROTATE = "rotate_arrow.png";
+    public static final String BUTTON_RND = "Button_rnd.png";
+    public static final String BUTTON_RND_SELECTED = "Button_rnd_selected.png";
 
     public static final String ROTATED_SUFFIX = "_rot";
 

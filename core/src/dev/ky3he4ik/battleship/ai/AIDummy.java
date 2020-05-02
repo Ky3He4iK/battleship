@@ -28,7 +28,7 @@ public class AIDummy extends AI {
 
     @Override
     protected void placeShips() {
-        H.placeShipsRandom(my, config);
+        H.placeShipsRandom(my, config.getShips());
     }
 
     @Override

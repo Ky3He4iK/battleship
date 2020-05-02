@@ -232,7 +232,14 @@ public class Field extends Group implements PlayerFinished {
         return shadowLY;
     }
 
-    public boolean rotate(@NotNull GameConfig.Ship ship) {
-        return world.rotate(ship.id);
+    @Nullable
+    public float[] rotate(@NotNull GameConfig.Ship ship, float x, float y, int rotation) {
+        if (!world.rotate(ship.id)) {
+            shadow = false;
+            if (world.placeShip(ship.convert(), innerCellX(x), innerCellY(y), rotation))
+                return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
+            return null;
+        } else
+            return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
     }
 }

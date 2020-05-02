@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -383,5 +384,13 @@ public class World {
                 return placeShip(ship, ship.idx, ship.idy, 1 - ship.rotation);
             }
         return false;
+    }
+
+    @Nullable
+    public Ship findShip(int shipId) {
+        for (Ship ship : ships)
+            if (ship.code == shipId)
+                return ship;
+        return null;
     }
 }

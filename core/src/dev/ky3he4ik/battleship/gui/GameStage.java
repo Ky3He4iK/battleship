@@ -15,7 +15,6 @@ import dev.ky3he4ik.battleship.gui.placing.ShipPlacer;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
-import dev.ky3he4ik.battleship.utils.H;
 
 public class GameStage extends Stage {
     public final static int TURN_LEFT = 0;
@@ -332,7 +331,7 @@ public class GameStage extends Stage {
 
     private void restart() {
         leftPlayer.restart();
-        H.placeShipsRandom(leftPlayer.getWorld(), config);
+//        H.placeShipsRandom(leftPlayer.getWorld(), config.getShips());
         if (rightPlayer.getCommunication() != null && (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI))
             rightPlayer.getCommunication().restart();
 
