@@ -89,8 +89,13 @@ public class ShipPlacer extends Group {
                 Gdx.app.debug("ShipPlacer", "" + i + ": " + availableShips.get(i).id);
             }
         }
-        if (field != null)
-            field.unHighlight(availableShips.get(ship.id - 1));
+        if (field != null) {
+            float[] pos = field.unHighlight(availableShips.get(ship.id - 1));
+            if (pos != null) {
+                Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
+                ship.setPosition(pos[0] - getX(), pos[1] - getY());
+            }
+        }
     }
 
     public void pressed(float x, float y, @NotNull AloneShip ship) {
@@ -117,8 +122,9 @@ public class ShipPlacer extends Group {
                 }
             }
             ships.get(lastAcessId).rotate();
-            if (field != null)
-                field.rotateAt(ships.get(lastAcessId).getGlobalX(), ships.get(lastAcessId).getGlobalY());
+            if (field != null && !field.rotate(availableShips.get(lastAcessId))) {
+                ships.get(lastAcessId).moveBy(cellSize / 4, cellSize / 4);
+            }
         }
     }
 }

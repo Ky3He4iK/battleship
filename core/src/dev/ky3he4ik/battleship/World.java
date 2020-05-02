@@ -35,8 +35,8 @@ public class World {
         }
 
         public Ship move(int idx, int idy, int rotation) {
-
-            return new Ship(len, code, name + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
+            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+            return new Ship(len, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
                     idx, idy, rotation);
         }
 
@@ -328,9 +328,9 @@ public class World {
     public boolean placeShip(Ship ship, int idx, int idy, int rotation) {
         if (!inBounds(idx, idy))
             return false;
-        else if (rotation == ROTATION_HORIZONTAL && !inBounds(idx + ship.len, idy))
+        else if (rotation == ROTATION_HORIZONTAL && !inBounds(idx + ship.len - 1, idy))
             return false;
-        else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.len))
+        else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.len - 1))
             return false;
 
         for (int i = -1; i <= ship.len; i++) {
@@ -362,14 +362,26 @@ public class World {
         return idx >= 0 && idy >= 0 && idx < width && idy < height;
     }
 
-    public void removeShip(int idx, int idy, int shipId) {
+    public void removeShip(int shipId) {
         for (int i = 0; i < ships.size(); i++)
             if (ships.get(i).code == shipId) {
                 Ship ship = ships.get(i);
                 for (int j = 0; j < ship.len; j++)
-                    field[idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][idy + j * H.I(ship.rotation == ROTATION_HORIZONTAL)] = STATE_EMPTY;
+                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
                 ships.remove(i);
                 return;
             }
+    }
+
+    public boolean rotate(int shipId) {
+        for (int i = 0; i < ships.size(); i++)
+            if (ships.get(i).code == shipId) {
+                Ship ship = ships.get(i);
+                for (int j = 0; j < ship.len; j++)
+                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
+                ships.remove(i);
+                return placeShip(ship, ship.idx, ship.idy, 1 - ship.rotation);
+            }
+        return false;
     }
 }

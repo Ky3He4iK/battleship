@@ -1,7 +1,6 @@
 package dev.ky3he4ik.battleship.gui;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -29,6 +28,7 @@ public class Field extends Group implements PlayerFinished {
 
     private boolean shadow = false;
     private int shadowUX, shadowUY, shadowLX, shadowLY;
+    private int shadowRot;
 
     @Nullable
     private Communication communication;
@@ -170,25 +170,25 @@ public class Field extends Group implements PlayerFinished {
         return communication;
     }
 
-    public boolean placeShip(@NotNull GameConfig.Ship ship, int idx, int idy, int rotation) {
-        return world.placeShip(ship.convert(), idx, idy, rotation);
-    }
-
     public void removeShip(float x, float y, int shipId) {
-        //todo
+        world.removeShip(shipId);
     }
 
     public void highlight(float x, float y, int rotation, int length) {
         shadow = true;
-        shadowLX = innerCellX(x);// + (1 - rotation);// * (length / 2);
-        shadowLY = innerCellY(y);// + rotation;// * (length / 2);
+        shadowLX = innerCellX(x);
+        shadowLY = innerCellY(y);
         shadowUX = shadowLX + (1 - rotation) * (length - 1);
         shadowUY = shadowLY + rotation * (length - 1);
+        shadowRot = rotation;
     }
 
-    public boolean unHighlight(@NotNull GameConfig.Ship ship) {
+    @Nullable
+    public float[] unHighlight(@NotNull GameConfig.Ship ship) {
         shadow = false;
-        return world.placeShip(ship.convert(), shadowLX, shadowLY, (shadowLX == shadowUX) ? World.ROTATION_VERTICAL : World.ROTATION_HORIZONTAL);
+        if (world.placeShip(ship.convert(), shadowLX, shadowLY, shadowRot))
+            return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
+        return null;
     }
 
     @NotNull
@@ -198,6 +198,14 @@ public class Field extends Group implements PlayerFinished {
 
     private int innerCellX(float x) {
         return Math.round((x - getX()) / cellSize);
+    }
+
+    private float globalCellX(int idx) {
+        return getX() + cellSize * idx;
+    }
+
+    private float globalCellY(int idy) {
+        return getY() + cellSize * idy;
     }
 
     private int innerCellY(float y) {
@@ -224,7 +232,7 @@ public class Field extends Group implements PlayerFinished {
         return shadowLY;
     }
 
-    public void rotateAt(float x, float y) {
-        //todo
+    public boolean rotate(@NotNull GameConfig.Ship ship) {
+        return world.rotate(ship.id);
     }
 }

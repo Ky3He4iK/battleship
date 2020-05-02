@@ -109,4 +109,9 @@ public class AloneShip extends Actor implements EventListener {
     public float getGlobalY() {
         return getY();
     }
+
+    @NotNull
+    public String getShipName() {
+        return names[rotation];
+    }
 }
