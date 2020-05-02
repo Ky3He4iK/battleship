@@ -183,7 +183,6 @@ public class GameStage extends Stage {
         else
             rightPlayer.setX(sideWidth + redundantX + middleGap + cellSize * config.getWidth());
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
-//        shipPlacer.setBounds(sideWidth + redundantX, redundantY + footerHeight, middleGap + cellSize * config.getWidth() * 2, cellSize * config.getHeight());
         shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
 
 
