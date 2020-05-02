@@ -85,7 +85,7 @@ public class GameStage extends Stage {
         leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null, TURN_LEFT, this);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(false);
-        H.placeShipsRandom(leftWorld, config);
+//        H.placeShipsRandom(leftWorld, config);
         addActor(leftPlayer);
 
         Communication rightComm = null;

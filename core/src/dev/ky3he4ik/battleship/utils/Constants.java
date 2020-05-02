@@ -33,6 +33,8 @@ public class Constants {
     public static final String SHIP_PATROL_BOAT_IMG = "Patrol_boat.png";
     public static final String SHIP_RUBBER_BOAT_IMG = "Rubber_boat.png";
 
+    public static final String ARROW_ROTATE = "rotate_arrow.png";
+
     public static final String ROTATED_SUFFIX = "_rot";
 
     public static final AnimationManager.AnimationInfo BLOW_ANIMATION = AnimationManager.AnimationInfo.byDuration(1, "explosion_animation_4_3.png", 4, 3, false);

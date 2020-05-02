@@ -46,25 +46,25 @@ public class GameConfig {
 
         @NotNull
         public static ArrayList<Ship> getSampleShipsWest() {
-            return new ArrayList<>(Arrays.asList(new Ship(5, 5, Constants.SHIP_CARRIER_IMG),
-                    new Ship(4, 4, Constants.SHIP_BATTLESHIP_IMG),
+            return new ArrayList<>(Arrays.asList(new Ship(5, 1, Constants.SHIP_CARRIER_IMG),
+                    new Ship(4, 2, Constants.SHIP_BATTLESHIP_IMG),
                     new Ship(3, 3, Constants.SHIP_DESTROYER_IMG),
-                    new Ship(3, 2, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(2, 1, Constants.SHIP_PATROL_BOAT_IMG)));
+                    new Ship(3, 4, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG)));
         }
 
         @NotNull
         public static ArrayList<Ship> getSampleShipsEast() {
-            return new ArrayList<>(Arrays.asList(new Ship(4, 10, Constants.SHIP_BATTLESHIP_IMG),
-                    new Ship(3, 9, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(3, 8, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(2, 7, Constants.SHIP_PATROL_BOAT_IMG),
-                    new Ship(2, 6, Constants.SHIP_PATROL_BOAT_IMG),
+            return new ArrayList<>(Arrays.asList(new Ship(4, 1, Constants.SHIP_BATTLESHIP_IMG),
+                    new Ship(3, 2, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 4, Constants.SHIP_PATROL_BOAT_IMG),
                     new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG),
-                    new Ship(1, 4, Constants.SHIP_RUBBER_BOAT_IMG),
-                    new Ship(1, 3, Constants.SHIP_RUBBER_BOAT_IMG),
-                    new Ship(1, 2, Constants.SHIP_RUBBER_BOAT_IMG),
-                    new Ship(1, 1, Constants.SHIP_RUBBER_BOAT_IMG)));
+                    new Ship(2, 6, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(1, 7, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 8, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 9, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 10, Constants.SHIP_RUBBER_BOAT_IMG)));
         }
 
         public World.Ship convert() {

@@ -170,26 +170,25 @@ public class Field extends Group implements PlayerFinished {
         return communication;
     }
 
-    public boolean placeShip(GameConfig.Ship ship, int idx, int idy, int rotation) {
+    public boolean placeShip(@NotNull GameConfig.Ship ship, int idx, int idy, int rotation) {
         return world.placeShip(ship.convert(), idx, idy, rotation);
     }
 
-    // return: ship id
-    public int removeShip(float x, float y) {
-        return 0;
+    public void removeShip(float x, float y, int shipId) {
         //todo
     }
 
     public void highlight(float x, float y, int rotation, int length) {
         shadow = true;
-        shadowLX = innerCellX(x) - (1 - rotation) * (length / 2);
-        shadowLY = innerCellY(y) - rotation * (length / 2);
+        shadowLX = innerCellX(x);// + (1 - rotation);// * (length / 2);
+        shadowLY = innerCellY(y);// + rotation;// * (length / 2);
         shadowUX = shadowLX + (1 - rotation) * (length - 1);
         shadowUY = shadowLY + rotation * (length - 1);
     }
 
-    public void unHighlight() {
+    public boolean unHighlight(@NotNull GameConfig.Ship ship) {
         shadow = false;
+        return world.placeShip(ship.convert(), shadowLX, shadowLY, (shadowLX == shadowUX) ? World.ROTATION_VERTICAL : World.ROTATION_HORIZONTAL);
     }
 
     @NotNull
@@ -198,11 +197,11 @@ public class Field extends Group implements PlayerFinished {
     }
 
     private int innerCellX(float x) {
-        return Math.round((x - getX() - cellSize / 2) / cellSize);
+        return Math.round((x - getX()) / cellSize);
     }
 
     private int innerCellY(float y) {
-        return Math.round((Gdx.graphics.getHeight() - y - getY() - cellSize / 2) / cellSize);
+        return Math.round((y - getY()) / cellSize);
     }
 
     public boolean getShadow() {
@@ -223,5 +222,9 @@ public class Field extends Group implements PlayerFinished {
 
     public int getShadowLY() {
         return shadowLY;
+    }
+
+    public void rotateAt(float x, float y) {
+        //todo
     }
 }

@@ -361,4 +361,15 @@ public class World {
     public boolean inBounds(int idx, int idy) {
         return idx >= 0 && idy >= 0 && idx < width && idy < height;
     }
+
+    public void removeShip(int idx, int idy, int shipId) {
+        for (int i = 0; i < ships.size(); i++)
+            if (ships.get(i).code == shipId) {
+                Ship ship = ships.get(i);
+                for (int j = 0; j < ship.len; j++)
+                    field[idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][idy + j * H.I(ship.rotation == ROTATION_HORIZONTAL)] = STATE_EMPTY;
+                ships.remove(i);
+                return;
+            }
+    }
 }

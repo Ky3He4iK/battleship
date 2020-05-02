@@ -29,13 +29,17 @@ public class AloneShip extends Actor implements EventListener {
     private Sprite sprite;
 
     public final int length;
+    public final int id;
 
-    AloneShip(@NotNull final ShipPlacer shipPlacer, @NotNull String name, int length) {
+    private boolean placed = false;
+
+    AloneShip(@NotNull final ShipPlacer shipPlacer, @NotNull String name, int length, int id) {
         callback = shipPlacer;
         this.length = length;
         this.names = new String[]{
                 name + Constants.ROTATED_SUFFIX, name
         };
+        this.id = id;
         rotation = World.ROTATION_HORIZONTAL;
         sprite = SpriteManager.getInstance().getSprite(names[rotation]);
         addListener(this);
@@ -51,7 +55,6 @@ public class AloneShip extends Actor implements EventListener {
         setSize(getHeight(), getWidth());
         rotation = 1 - rotation;
         sprite = SpriteManager.getInstance().getSprite(names[rotation]);
-        Gdx.app.debug("AloneShip", "rotating to " + rotation);
     }
 
     @Override
@@ -64,16 +67,20 @@ public class AloneShip extends Actor implements EventListener {
 
         switch (event.getType()) {
             case touchDown:
-                return event.getButton() == Input.Buttons.LEFT;
+                if (event.getButton() == Input.Buttons.LEFT) {
+                    callback.pressed(getGlobalX(), getGlobalY(), this);
+                    return true;
+                }
+                return false;
             case touchUp:
                 if (event.getButton() == Input.Buttons.LEFT) {
-                    callback.released(getX(), getY(), this);
+                    callback.released(getGlobalX(), getGlobalY(), this);
                     return true;
                 }
                 return false;
             case touchDragged:
                 setPosition(Gdx.input.getX() - callback.getX() - getWidth() / 2, (Gdx.graphics.getHeight() - Gdx.input.getY()) - callback.getY() - getHeight() / 2);
-                callback.hover(Gdx.input.getX(), Gdx.input.getY(), this);
+                callback.hover(getX(), getY(), this);
                 return true;
             case scrolled:
                 rotate();
@@ -85,5 +92,21 @@ public class AloneShip extends Actor implements EventListener {
 
     public int getShipRotation() {
         return rotation;
+    }
+
+    public boolean isPlaced() {
+        return placed;
+    }
+
+    public void setPlaced(boolean placed) {
+        this.placed = placed;
+    }
+
+    public float getGlobalX() {
+        return getX();
+    }
+
+    public float getGlobalY() {
+        return getY();
     }
 }
