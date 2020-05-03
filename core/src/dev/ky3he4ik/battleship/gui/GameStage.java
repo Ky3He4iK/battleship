@@ -46,9 +46,12 @@ public class GameStage extends Stage {
 
     private int turn = TURN_LEFT;
     private int readyCnt = 0;
-    private boolean aiReady = false;
-    private int aiX = -1;
-    private int aiY = -1;
+    private boolean aiReadyR = false;
+    private int aiXR = -1;
+    private int aiYR = -1;
+    private boolean aiReadyL = false;
+    private int aiXL = -1;
+    private int aiYL = -1;
 
     private float cellSize;
     private float redundantX;
@@ -84,10 +87,15 @@ public class GameStage extends Stage {
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
-        leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, null, TURN_LEFT, this);
+        Communication leftComm = null;
+        if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+            leftComm = new AIDummy(rightWorld, leftWorld, config);
+            leftComm.init();
+            leftComm.setPlaceShips();
+        }
+        leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, leftComm, TURN_LEFT, this);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(false);
-//        H.placeShipsRandom(leftWorld, config);
         addActor(leftPlayer);
 
         Communication rightComm = null;
@@ -135,17 +143,26 @@ public class GameStage extends Stage {
             case STEP_PLACEMENT_R:
                 break;
             case STEP_GAME:
-                if (aiReady && turn == TURN_RIGHT) {
-                    aiReady = false;
-                    boolean res = leftPlayer.open(aiX, aiY);
+                if (aiReadyR && turn == TURN_RIGHT) {
+                    aiReadyR = false;
+                    boolean res = leftPlayer.open(aiXR, aiYR);
                     if (leftPlayer.getWorld().isDead())
                         nextStep();
                     if (res)
                         rightPlayer.setTurn();
                     else
                         turn();
+                } else if (aiReadyL && turn == TURN_LEFT) {
+                    aiReadyL = false;
+                    boolean res = leftPlayer.open(aiXL, aiYL);
+                    if (rightPlayer.getWorld().isDead())
+                        nextStep();
+                    if (res)
+                        leftPlayer.setTurn();
+                    else
+                        turn();
                 }
-                if (turn == TURN_LEFT && rightPlayer.getWorld().isDead()) {
+                if ((turn == TURN_LEFT && rightPlayer.getWorld().isDead()) || (turn == TURN_RIGHT && leftPlayer.getWorld().isDead())) {
                     nextStep();
                 }
                 break;
@@ -214,16 +231,20 @@ public class GameStage extends Stage {
                 getPlayer(playerId).setTurn();
             else
                 turn();
-        } else if (playerId == TURN_RIGHT && config.getGameType() == GameConfig.GameType.AI) {
-            aiReady = true;
-            aiX = i;
-            aiY = j;
+        } else if (playerId == TURN_RIGHT && (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI)) {
+            aiReadyR = true;
+            aiXR = i;
+            aiYR = j;
+        } else if (playerId == TURN_LEFT && (config.getGameType() == GameConfig.GameType.AI_VS_AI)) {
+            aiReadyL = true;
+            aiXL = i;
+            aiYL = j;
         }
     }
 
     public void shipsPlaced(int playerId) {
         readyCnt++;
-        if (playerId == TURN_LEFT || (playerId == TURN_RIGHT && config.getGameType() == GameConfig.GameType.LOCAL_2P))
+        if ((playerId == TURN_LEFT && (config.getGameType() != GameConfig.GameType.LOCAL_2P && config.getGameType() != GameConfig.GameType.AI_VS_AI)) || readyCnt == 2)
             nextStep();
         Gdx.app.debug("GameStage", "" + playerId + " is ready");
     }
@@ -341,10 +362,11 @@ public class GameStage extends Stage {
     }
 
     private void restart() {
-        leftPlayer.restart();
-        if (rightPlayer.getCommunication() != null && (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI))
+        if (rightPlayer.getCommunication() != null)
             rightPlayer.getCommunication().restart();
-
+        if (leftPlayer.getCommunication() != null)
+            leftPlayer.getCommunication().restart();
+        leftPlayer.restart();
         rightPlayer.restart();
         step = STEP_BEGINNING;
     }

@@ -15,7 +15,7 @@ public class ButtonRandom extends ActorWithSprite {
     }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
+    public void draw(@NotNull Batch batch, float parentAlpha) {
         batch.draw(sprite, getX(), getY(), getWidth(), getHeight());
     }
 
