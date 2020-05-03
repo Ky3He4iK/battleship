@@ -96,7 +96,7 @@ public final class H {
     }
 
     public static void setBoundsByHeight(@NotNull ActorWithSprite actor, float x, float y, float height) {
-        float scale = actor.getSprite().getWidth() / height;
+        float scale = actor.getSprite().getHeight() / height;
         actor.setBounds(x, y, actor.getSprite().getWidth() / scale, height);
     }
 }

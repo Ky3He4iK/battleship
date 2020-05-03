@@ -14,7 +14,6 @@ import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.GameStage;
-import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -52,7 +51,6 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         childrens = new ArrayList<>();
 
         ActorWithSprite button = new ActorWithSprite(this, Constants.ARROW_ROTATE, BUTTON_ROTATE);
-        H.setBoundsByHeight(button, -cellSize * 1.5f, getY() + getHeight() / 2 + cellSize / 2, cellSize);
         childrens.add(button);
         addActor(button);
 
@@ -62,12 +60,12 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         addActor(button);
 
         button = new ActorWithSprite(this, Constants.BUTTON_DONE, BUTTON_DONE);
-        H.setBoundsByHeight(button, cellSize * 4, getY() - cellSize, cellSize);
+        button.setBounds(cellSize * 4, getY() - cellSize, cellSize, cellSize);
         childrens.add(button);
         addActor(button);
 
-        if (Constants.DEBUG_MODE)
-            setDebug(true, true);
+//        if (Constants.DEBUG_MODE)
+//            setDebug(true, true);
     }
 
     public void dispose() {
@@ -78,7 +76,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         super.draw(batch, parentAlpha);
     }
 
-    public void restart() {
+    public void restart(float middleGap) {
         usedShips.set(0, availableShips.size(), false);
         for (AloneShip ship : ships) {
             ship.setVisible(false);
@@ -86,6 +84,21 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         }
         ships.clear();
         process = false;
+        float shift = middleGap * 0.1f;
+        middleGap -= shift * 2;
+        for (ActorWithSprite child : childrens) {
+            switch (child.getButtonId()) {
+                case BUTTON_ROTATE:
+                    H.setBoundsByWidth(child, -middleGap - shift, getHeight() / 2 - middleGap / 2, middleGap);
+                    break;
+                case BUTTON_RANDOM:
+                    H.setBoundsByHeight(child, 0, -cellSize, cellSize);
+                    break;
+                case BUTTON_DONE:
+                    child.setBounds(getWidth() - cellSize, -cellSize, cellSize, cellSize);
+                    break;
+            }
+        }
     }
 
     public void start(@NotNull Field field) {
@@ -235,5 +248,9 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
             default:
                 Gdx.app.debug("ShipPlacer", "Unknown button: " + buttonId);
         }
+    }
+
+    public void setCellSize(float cellSize) {
+        this.cellSize = cellSize;
     }
 }

@@ -203,6 +203,7 @@ public class GameStage extends Stage {
             rightPlayer.setX(sideWidth + redundantX + middleGap + cellSize * config.getWidth());
         rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
         shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        shipPlacer.setCellSize(cellSize);
 
 
         for (GameConfig.Ship ship : config.getShips()) {
@@ -326,7 +327,7 @@ public class GameStage extends Stage {
                 rightPlayer.setTouchable(Touchable.enabled);
                 leftPlayer.setTouchable(Touchable.disabled);
                 shipPlacer.setTouchable(Touchable.enabled);
-                shipPlacer.restart();
+                shipPlacer.restart(middleGap);
                 shipPlacer.start(leftPlayer);
                 break;
             case STEP_PLACEMENT_R:
@@ -336,7 +337,7 @@ public class GameStage extends Stage {
                 rightPlayer.setTouchable(Touchable.disabled);
                 leftPlayer.setTouchable(Touchable.disabled);
                 shipPlacer.setTouchable(Touchable.enabled);
-                shipPlacer.restart();
+                shipPlacer.restart(middleGap);
                 shipPlacer.start(rightPlayer);
                 rightPlayer.setPosition(redundantX + sideWidth, redundantY + footerHeight);
                 break;
