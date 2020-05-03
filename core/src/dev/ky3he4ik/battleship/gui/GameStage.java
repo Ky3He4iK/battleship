@@ -42,6 +42,9 @@ public class GameStage extends Stage {
     private RelayTouch touchListener;
 
     @NotNull
+    private Sprite arrowSprite;
+
+    @NotNull
     private SpriteManager manager;
 
     private int turn = TURN_LEFT;
@@ -84,6 +87,7 @@ public class GameStage extends Stage {
         this.font = new BitmapFont();
         font.setColor(.2f, .2f, .2f, 1);
         calcCellSize();
+        arrowSprite = SpriteManager.getInstance().getSprite(Constants.ARROW_TURN);
 
         Gdx.app.debug("GameStage/init", "cellSize = " + cellSize);
 
@@ -162,6 +166,21 @@ public class GameStage extends Stage {
                     else
                         turn();
                 }
+                getBatch().begin();
+                if (turn == TURN_LEFT) {
+                    arrowSprite.setFlip(false, false);
+                    arrowSprite.setColor(0, 1, 0, 1);
+                    getBatch().setColor(0, 1, 0, 1);
+                } else {
+                    arrowSprite.setFlip(true, false);
+                    arrowSprite.setColor(1, 0, 0, 1);
+                    getBatch().setColor(1, 0, 0, 1);
+                }
+                float shift = middleGap * 0.1f;
+                float arrowSize = middleGap - shift * 2;
+                getBatch().draw(arrowSprite, redundantX + sideWidth + config.getWidth() * cellSize + shift, redundantY + footerHeight + config.getHeight() * cellSize / 2 - arrowSize / 2, arrowSize, arrowSize);
+                getBatch().setColor(1, 1, 1, 1);
+                getBatch().end();
                 if ((turn == TURN_LEFT && rightPlayer.getWorld().isDead()) || (turn == TURN_RIGHT && leftPlayer.getWorld().isDead())) {
                     nextStep();
                 }
