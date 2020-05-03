@@ -10,12 +10,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.gui.placing.AloneShip;
 import dev.ky3he4ik.battleship.gui.placing.AloneShipListener;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.H;
 
 public class Field extends Group implements PlayerFinished, AloneShipListener {
@@ -78,14 +78,26 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public void draw(@NotNull Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         if (showShips) {
-            for (World.Ship ship : world.getShips()) {
+            for (World.Ship ship : world.getShips())
+                if (!world.shipDead(ship.code)) {
+                    Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
+                    batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
+                            sprite.getOriginX(), sprite.getOriginY(),
+                            sprite.getWidth(), sprite.getHeight(),
+                            1, 1, sprite.getRotation());
+                }
+        }
+        batch.setColor(1, 0, 0, 1);
+        for (World.Ship ship : world.getShips())
+            if (world.shipDead(ship.code)) {
                 Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
                 batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
                         sprite.getOriginX(), sprite.getOriginY(),
                         sprite.getWidth(), sprite.getHeight(),
                         1, 1, sprite.getRotation());
             }
-        }
+
+        batch.setColor(1, 1, 1, 1);
     }
 
     public int getState(int idx, int idy) {
