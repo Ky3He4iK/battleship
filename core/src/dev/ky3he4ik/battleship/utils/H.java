@@ -9,8 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Random;
 
-import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.World;
 
 /**
  * Class with several useful functions
@@ -80,12 +81,22 @@ public final class H {
 
     @NotNull
     public static float[] getAbsCoord(@Nullable Actor actor) {
-        float[] coord = new float[] {0, 0};
+        float[] coord = new float[]{0, 0};
         while (actor != null) {
             coord[0] += actor.getX();
             coord[1] += actor.getY();
             actor = actor.getParent();
         }
         return coord;
+    }
+
+    public static void setBoundsByWidth(@NotNull ActorWithSprite actor, float x, float y, float width) {
+        float scale = actor.getSprite().getWidth() / width;
+        actor.setBounds(x, y, width, actor.getSprite().getHeight() / scale);
+    }
+
+    public static void setBoundsByHeight(@NotNull ActorWithSprite actor, float x, float y, float height) {
+        float scale = actor.getSprite().getWidth() / height;
+        actor.setBounds(x, y, actor.getSprite().getWidth() / scale, height);
     }
 }

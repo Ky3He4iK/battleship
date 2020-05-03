@@ -2,7 +2,6 @@ package dev.ky3he4ik.battleship.gui.placing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 import org.jetbrains.annotations.NotNull;
@@ -11,14 +10,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.gui.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.GameStage;
+import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
-public class ShipPlacer extends Group implements AloneShipListener {
-
+public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpriteListener {
     @NotNull
     private ArrayList<GameConfig.Ship> availableShips;
     @NotNull
@@ -28,14 +30,18 @@ public class ShipPlacer extends Group implements AloneShipListener {
     @Nullable
     private Field field = null;
     @NotNull
-    private ArrayList<Actor> childrens;
+    private ArrayList<ActorWithSprite> childrens;
     @NotNull
     private GameStage callback;
+
+    private static final int BUTTON_ROTATE = 1;
+    private static final int BUTTON_RANDOM = 2;
+    private static final int BUTTON_DONE = 3;
 
     private boolean process = false;
     private float cellSize;
 
-    private int lastAcessId = -1;
+    private int lastAcessId = 0;
 
     public ShipPlacer(@NotNull GameStage callback, @NotNull ArrayList<GameConfig.Ship> availableShips, float cellSize) {
         this.availableShips = availableShips;
@@ -45,19 +51,23 @@ public class ShipPlacer extends Group implements AloneShipListener {
         ships = new ArrayList<>(availableShips.size());
         childrens = new ArrayList<>();
 
-        Actor button = new RotateButton(this);
-        button.setBounds(-cellSize * 1.5f, getY() + getHeight() / 2 + cellSize / 2, cellSize, cellSize);
+        ActorWithSprite button = new ActorWithSprite(this, Constants.ARROW_ROTATE, BUTTON_ROTATE);
+        H.setBoundsByHeight(button, -cellSize * 1.5f, getY() + getHeight() / 2 + cellSize / 2, cellSize);
         childrens.add(button);
         addActor(button);
 
-        button = new ButtonRandom(this);
-        button.setBounds(0, getY() - cellSize, cellSize * 3, cellSize);
+        button = new ActorWithSprite(this, Constants.BUTTON_RND, BUTTON_RANDOM);
+        H.setBoundsByHeight(button, 0, getY() - cellSize, cellSize);
         childrens.add(button);
         addActor(button);
-        button = new ButtonDone(this);
-        button.setBounds(cellSize * 4, getY() - cellSize, cellSize, cellSize);
+
+        button = new ActorWithSprite(this, Constants.BUTTON_DONE, BUTTON_DONE);
+        H.setBoundsByHeight(button, cellSize * 4, getY() - cellSize, cellSize);
         childrens.add(button);
         addActor(button);
+
+        if (Constants.DEBUG_MODE)
+            setDebug(true, true);
     }
 
     public void dispose() {
@@ -99,53 +109,6 @@ public class ShipPlacer extends Group implements AloneShipListener {
         }
     }
 
-    public void rotate() {
-        if (lastAcessId != -1) {
-            Gdx.app.debug("ShipPlacer", "rotating " + lastAcessId);
-            if (availableShips.get(lastAcessId).id != lastAcessId + 1) {
-                Gdx.app.error("ShipPlacer", "Error: ship with id " + availableShips.get(lastAcessId).id + " at pos " + lastAcessId);
-                Gdx.app.debug("ShipPlacer", "Ship id:");
-                for (int i = 0; i < availableShips.size(); i++) {
-                    Gdx.app.debug("ShipPlacer", "" + i + ": " + availableShips.get(i).id);
-                }
-            }
-            ships.get(lastAcessId).rotate();
-            if (field != null) {
-                AloneShip ship = ships.get(lastAcessId);
-                float[] res = field.rotate(availableShips.get(lastAcessId), H.getAbsCoord(ship), ship.getShipRotation());
-                if (res == null) {
-                    if (ship.getShipRotation() == World.ROTATION_VERTICAL)
-                        ship.moveBy(cellSize / 4, -cellSize / 4);
-                    else
-                        ship.moveBy(-cellSize / 4, cellSize / 4);
-                    ship.setPlaced(false);
-                } else {
-                    ship.setPlaced(true);
-                    if (Math.abs(res[0] + 99999) > .1f) {
-                        ship.setPosition(res[0] - getX(), res[1] - getY());
-                    }
-                }
-            }
-        }
-    }
-
-    public void randomPressed() {
-        if (field != null) {
-            H.placeShipsRandom(field.getWorld(), availableShips);
-            for (World.Ship ship : field.getWorld().getShips()) {
-                ships.get(ship.code - 1).setPosition(field.globalCellX(ship.idx) - getX(), field.globalCellY(ship.idy) - getY());
-                ships.get(ship.code - 1).setShipRotation(ship.rotation);
-                ships.get(ship.code - 1).setPlaced(true);
-            }
-        }
-        Gdx.app.debug("ShipPlacer", "Placed randomly");
-    }
-
-    public void donePressed() {
-        if (field != null && field.getWorld().getShips().size() == availableShips.size())
-            callback.shipsPlaced(field.getPlayerId());
-    }
-
     @Override
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
         lastAcessId = ship.id - 1;
@@ -183,5 +146,94 @@ public class ShipPlacer extends Group implements AloneShipListener {
         lastAcessId = ship.id - 1;
         if (field != null)
             field.highlight(pos[0], pos[1], ship.getShipRotation(), ship.length);
+    }
+
+    @Override
+    public boolean buttonPressed(int buttonId) {
+        switch (buttonId) {
+            case BUTTON_ROTATE:
+
+                Gdx.app.debug("ShipPlacer", "rotating " + lastAcessId);
+                if (availableShips.get(lastAcessId).id != lastAcessId + 1) {
+                    Gdx.app.error("ShipPlacer", "Error: ship with id " + availableShips.get(lastAcessId).id + " at pos " + lastAcessId);
+                    Gdx.app.debug("ShipPlacer", "Ship id:");
+                    for (int i = 0; i < availableShips.size(); i++) {
+                        Gdx.app.debug("ShipPlacer", "" + i + ": " + availableShips.get(i).id);
+                    }
+                }
+                ships.get(lastAcessId).rotate();
+                if (field != null) {
+                    AloneShip ship = ships.get(lastAcessId);
+                    float[] res = field.rotate(availableShips.get(lastAcessId), H.getAbsCoord(ship), ship.getShipRotation());
+                    if (res == null) {
+                        if (ship.getShipRotation() == World.ROTATION_VERTICAL)
+                            ship.moveBy(cellSize / 4, -cellSize / 4);
+                        else
+                            ship.moveBy(-cellSize / 4, cellSize / 4);
+                        ship.setPlaced(false);
+                    } else {
+                        ship.setPlaced(true);
+                        if (Math.abs(res[0] + 99999) > .1f) {
+                            ship.setPosition(res[0] - getX(), res[1] - getY());
+                        }
+                    }
+                }
+                return true;
+            case BUTTON_RANDOM:
+                if (field != null) {
+                    H.placeShipsRandom(field.getWorld(), availableShips);
+                    for (World.Ship ship : field.getWorld().getShips()) {
+                        ships.get(ship.code - 1).setPosition(field.globalCellX(ship.idx) - getX(), field.globalCellY(ship.idy) - getY());
+                        ships.get(ship.code - 1).setShipRotation(ship.rotation);
+                        ships.get(ship.code - 1).setPlaced(true);
+                    }
+                    Gdx.app.debug("ShipPlacer", "Placed randomly");
+                    return true;
+                }
+                return false;
+            case BUTTON_DONE:
+                if (field != null && field.getWorld().getShips().size() == availableShips.size()) {
+                    callback.shipsPlaced(field.getPlayerId());
+                    return true;
+                }
+                return false;
+            default:
+                Gdx.app.debug("ShipPlacer", "Unknown button: " + buttonId);
+                return false;
+        }
+    }
+
+    @Override
+    public void buttonReleased(int buttonId) {
+        switch (buttonId) {
+            case BUTTON_ROTATE:
+                //todo
+                break;
+            case BUTTON_RANDOM:
+                //todo
+                break;
+            case BUTTON_DONE:
+                //todo
+                break;
+            default:
+                Gdx.app.debug("ShipPlacer", "Unknown button: " + buttonId);
+        }
+    }
+
+    @Override
+    public void buttonMoved(int buttonId) {
+        switch (buttonId) {
+            case BUTTON_ROTATE:
+                //todo
+                break;
+            case BUTTON_RANDOM:
+                //todo
+                break;
+            case BUTTON_DONE:
+                //todo
+                break;
+            default:
+                Gdx.app.debug("ShipPlacer", "Unknown button: " + buttonId);
+        }
     }
 }
