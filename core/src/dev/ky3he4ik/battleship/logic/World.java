@@ -407,4 +407,15 @@ public class World {
                     ship.idy + i * H.I(ship.rotation == ROTATION_VERTICAL)) == STATE_UNDAMAGED;
         return alive;
     }
+
+    public boolean shipDead(int shipId) {
+        Ship ship = findShip(shipId);
+        if (ship == null)
+            return false;
+        boolean alive = false;
+        for (int i = 0; i < ship.len; i++)
+            alive = alive || getState(ship.idx + i * H.I(ship.rotation == ROTATION_HORIZONTAL),
+                    ship.idy + i * H.I(ship.rotation == ROTATION_VERTICAL)) == STATE_UNDAMAGED;
+        return !alive;
+    }
 }
