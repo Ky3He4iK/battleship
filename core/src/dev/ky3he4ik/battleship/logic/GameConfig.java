@@ -84,6 +84,7 @@ public class GameConfig {
     private boolean movingEnabled;
     private boolean multipleShots;
     private boolean additionalShots;
+    private boolean decreasingField;
     private int movingPerTurn;
     private int shotsPerTurn;
     private int aiLevel;
@@ -101,6 +102,7 @@ public class GameConfig {
      * @param movingEnabled   - is ships can be moved after each turn?
      * @param multipleShots   - if true each player will shoot several times each turn
      * @param additionalShots - if true player will get one more shot after enemy's ship hit
+     * @param decreasingField - if true field will eventually shrink
      * @param movingPerTurn   - how many ships an be moved each turn
      * @param shotsPerTurn    - how many shoots each player gets (ignored if `multipleShots` s false)
      * @param aiLevel         - difficulty level (only GameType.AI)
@@ -108,13 +110,14 @@ public class GameConfig {
      * @param ships           - list of available ships
      */
     public GameConfig(int width, int height, boolean movingEnabled, boolean multipleShots,
-                      boolean additionalShots, int movingPerTurn, int shotsPerTurn, int aiLevel,
+                      boolean additionalShots, boolean decreasingField, int movingPerTurn, int shotsPerTurn, int aiLevel,
                       @NotNull GameType gameType, @NotNull ArrayList<Ship> ships) {
         this.width = width;
         this.height = height;
         this.movingEnabled = movingEnabled;
         this.multipleShots = multipleShots;
         this.additionalShots = additionalShots;
+        this.decreasingField = decreasingField;
         this.movingPerTurn = movingPerTurn;
         this.shotsPerTurn = shotsPerTurn;
         this.aiLevel = aiLevel;
@@ -140,6 +143,10 @@ public class GameConfig {
 
     public boolean isAdditionalShots() {
         return additionalShots;
+    }
+
+    public boolean isDecreasingField() {
+        return decreasingField;
     }
 
     public int getMovingPerTurn() {
@@ -176,6 +183,7 @@ public class GameConfig {
         if (movingEnabled != that.movingEnabled) return false;
         if (multipleShots != that.multipleShots) return false;
         if (additionalShots != that.additionalShots) return false;
+        if (decreasingField != that.decreasingField) return false;
         if (movingPerTurn != that.movingPerTurn) return false;
         if (shotsPerTurn != that.shotsPerTurn) return false;
         if (aiLevel != that.aiLevel) return false;
@@ -190,6 +198,7 @@ public class GameConfig {
         result = 31 * result + (movingEnabled ? 1 : 0);
         result = 31 * result + (multipleShots ? 1 : 0);
         result = 31 * result + (additionalShots ? 1 : 0);
+        result = 31 * result + (decreasingField ? 1 : 0);
         result = 31 * result + movingPerTurn;
         result = 31 * result + shotsPerTurn;
         result = 31 * result + aiLevel;
@@ -201,13 +210,13 @@ public class GameConfig {
     @NotNull
     public static GameConfig getSampleConfigWest() {
         return new GameConfig(10, 10, false, false,
-                true, 0, 1, 1, GameType.AI, Ship.getSampleShipsWest());
+                true, false, 0, 1, 1, GameType.AI, Ship.getSampleShipsWest());
     }
 
     @NotNull
     public static GameConfig getSampleConfigEast() {
         return new GameConfig(10, 10, false, false,
-                true, 0, 1, 1, GameType.AI, Ship.getSampleShipsEast());
+                true, false, 0, 1, 1, GameType.AI, Ship.getSampleShipsEast());
     }
 
     @NotNull
