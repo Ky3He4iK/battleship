@@ -44,10 +44,10 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     @NotNull
     private GameStage callback;
 
-    public Field(@NotNull final World world, float cellSize, boolean showShips, @Nullable final Communication communication, int playerId, @NotNull GameStage callback) {
+    public Field(@NotNull final World world, float cellSize, @Nullable final Communication communication, int playerId, @NotNull GameStage callback) {
         this.world = world;
         this.cellSize = cellSize;
-        this.showShips = showShips;
+        this.showShips = false;
         this.communication = communication;
         this.playerId = playerId;
         this.callback = callback;
@@ -158,9 +158,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 removeActor(cell);
             }
         }
-        for (AloneShip child : children) {
+        for (AloneShip child : children)
             removeActor(child);
-        }
     }
 
     public boolean open(int idx, int idy) {
@@ -202,6 +201,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         for (Cell[] cells1 : cells)
             for (Cell cell : cells1)
                 cell.clearAnimation();
+        for (AloneShip child : children)
+            removeActor(child);
     }
 
     @Nullable
@@ -313,5 +314,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     @Override
     public void shipMoved(@NotNull float[] pos, @NotNull AloneShip ship) {
         highlight(pos[0], pos[1], ship.getShipRotation(), ship.length);
+    }
+
+    public void setShowShips(boolean showShips) {
+        this.showShips = showShips;
     }
 }

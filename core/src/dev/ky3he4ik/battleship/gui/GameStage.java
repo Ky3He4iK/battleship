@@ -97,7 +97,7 @@ public class GameStage extends Stage {
             leftComm.init();
             leftComm.setPlaceShips();
         }
-        leftPlayer = new Field(leftWorld, cellSize, config.getGameType() != GameConfig.GameType.LOCAL_2P, leftComm, TURN_LEFT, this);
+        leftPlayer = new Field(leftWorld, cellSize, leftComm, TURN_LEFT, this);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(false);
         addActor(leftPlayer);
@@ -108,7 +108,7 @@ public class GameStage extends Stage {
             rightComm.init();
             rightComm.setPlaceShips();
         }
-        rightPlayer = new Field(rightWorld, cellSize, Constants.DEBUG_MODE || config.getGameType() == GameConfig.GameType.AI_VS_AI, rightComm, TURN_RIGHT, this);
+        rightPlayer = new Field(rightWorld, cellSize, rightComm, TURN_RIGHT, this);
         rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(false);
         addActor(rightPlayer);
@@ -147,11 +147,9 @@ public class GameStage extends Stage {
                 getBatch().begin();
                 if (turn == TURN_LEFT) {
                     arrowSprite.setFlip(false, false);
-                    arrowSprite.setColor(0, 1, 0, 1);
                     getBatch().setColor(0, 1, 0, 1);
                 } else {
                     arrowSprite.setFlip(true, false);
-                    arrowSprite.setColor(1, 0, 0, 1);
                     getBatch().setColor(1, 0, 0, 1);
                 }
                 float shift = middleGap * 0.1f;
@@ -259,6 +257,8 @@ public class GameStage extends Stage {
     }
 
     public void turnFinished(int playerId, int i, int j) {
+        if (step != STEP_GAME)
+            return;
         if (isMyTurn(playerId)) {
             boolean res = getOpponent(playerId).open(i, j);
 
@@ -336,8 +336,7 @@ public class GameStage extends Stage {
             case STEP_GAME:
                 break;
             case STEP_AFTERMATH:
-                restart();
-                step--;
+                step = STEP_BEGINNING - 1;
                 break;
             default:
                 Gdx.app.error("GameStage", "Unknown step " + step);
@@ -350,45 +349,33 @@ public class GameStage extends Stage {
         switch (step) {
             case STEP_BEGINNING:
                 turn = TURN_LEFT;
-                leftPlayer.setVisible(false);
-                rightPlayer.setVisible(false);
+                setChildrenEnabled(false, false);
                 restart();
                 break;
             case STEP_CHOOSE_CONFIG:
                 //todo: config screen
                 break;
             case STEP_PLACEMENT_L:
-                leftPlayer.setVisible(true);
-                rightPlayer.setVisible(false);
-                shipPlacer.setVisible(true);
-                rightPlayer.setTouchable(Touchable.enabled);
-                leftPlayer.setTouchable(Touchable.disabled);
-                shipPlacer.setTouchable(Touchable.enabled);
+                setChildrenEnabled(true, false, false, false, true, true);
                 shipPlacer.restart(middleGap);
                 shipPlacer.start(leftPlayer);
                 break;
             case STEP_PLACEMENT_R:
-                leftPlayer.setVisible(false);
-                rightPlayer.setVisible(true);
-                shipPlacer.setVisible(true);
-                rightPlayer.setTouchable(Touchable.disabled);
-                leftPlayer.setTouchable(Touchable.disabled);
-                shipPlacer.setTouchable(Touchable.enabled);
+                setChildrenEnabled(false, false, true, false, true, true);
                 shipPlacer.restart(middleGap);
                 shipPlacer.start(rightPlayer);
                 rightPlayer.setPosition(redundantX + sideWidth, redundantY + footerHeight);
                 break;
             case STEP_GAME:
+                leftPlayer.setShowShips(config.getGameType() != GameConfig.GameType.LOCAL_2P);
+                rightPlayer.setShowShips(Constants.DEBUG_MODE || config.getGameType() == GameConfig.GameType.AI_VS_AI);
+                setChildrenEnabled(true, true);
                 rightPlayer.setPosition(sideWidth + middleGap + redundantX + cellSize * config.getWidth(), redundantY + footerHeight);
-                leftPlayer.setTouchable(Touchable.enabled);
-                rightPlayer.setTouchable(Touchable.enabled);
-                shipPlacer.setTouchable(Touchable.disabled);
-                leftPlayer.setVisible(true);
-                rightPlayer.setVisible(true);
-                shipPlacer.setVisible(false);
                 break;
             case STEP_AFTERMATH:
                 //todo: aftermath screen
+                leftPlayer.setShowShips(true);
+                rightPlayer.setShowShips(true);
                 if (leftPlayer.getWorld().isDead())
                     rightScore++;
                 else if (rightPlayer.getWorld().isDead())
@@ -397,6 +384,32 @@ public class GameStage extends Stage {
             default:
                 Gdx.app.error("GameStage", "Unknown step " + step);
         }
+    }
+
+    private void setChildrenEnabled(boolean left, boolean right) {
+        setChildrenEnabled(left, left, right, right, false, false);
+    }
+
+    private void setChildrenEnabled(boolean left, boolean leftTouch, boolean right, boolean rightTouch,
+                                    boolean placer, boolean placerTouch) {
+        leftPlayer.setVisible(left);
+        if (leftTouch)
+            leftPlayer.setTouchable(Touchable.enabled);
+        else
+            leftPlayer.setTouchable(Touchable.disabled);
+
+        rightPlayer.setVisible(right);
+        if (rightTouch)
+            rightPlayer.setTouchable(Touchable.enabled);
+        else
+            rightPlayer.setTouchable(Touchable.disabled);
+
+        shipPlacer.setVisible(placer);
+        if (placerTouch)
+            shipPlacer.setTouchable(Touchable.enabled);
+        else
+            shipPlacer.setTouchable(Touchable.disabled);
+
     }
 
     private void restart() {
