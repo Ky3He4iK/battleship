@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 
@@ -8,10 +9,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import dev.ky3he4ik.battleship.ai.AIDummy;
+import dev.ky3he4ik.battleship.gui.AnimationManager;
 import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.RelayTouch;
+import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.gui.placing.ShipPlacer;
+import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class StepsDirector extends Stage {
@@ -28,7 +34,10 @@ public class StepsDirector extends Stage {
     @NotNull
     private ArrayList<BaseStep> steps;
 
-    private int currentStep = 0;
+    @NotNull
+    private SpriteManager manager;
+
+    private int currentStep = STEP_BEGINNING;
     int turn = 0;
 
     float cellSize;
@@ -51,18 +60,18 @@ public class StepsDirector extends Stage {
     int rightScore = 0;
 
     @NotNull
-    private Field leftPlayer;
+    Field leftPlayer;
     @NotNull
-    private Field rightPlayer;
+    Field rightPlayer;
     @NotNull
-    private GameConfig config;
+    GameConfig config;
     @NotNull
-    private ShipPlacer shipPlacer;
+    ShipPlacer shipPlacer;
+
     @NotNull
-    private RelayTouch touchListener;
+    RelayTouch touchListener;
 
     public StepsDirector() {
-        calcCellSize();
         steps = new ArrayList<>();
         steps.add(new StepBeginning(this, STEP_BEGINNING));
         steps.add(new StepConfigure(this, STEP_CHOOSE_CONFIG));
@@ -71,6 +80,47 @@ public class StepsDirector extends Stage {
         steps.add(new StepGame(this, STEP_GAME));
         steps.add(new StepAftermath(this, STEP_AFTERMATH));
 
+        manager = SpriteManager.getInstance();
+        config = GameConfig.getSampleConfigEast();
+        calcCellSize();
+
+        World leftWorld = new World(config.getWidth(), config.getHeight());
+        World rightWorld = new World(config.getWidth(), config.getHeight());
+
+        Communication leftComm = null;
+        if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+            leftComm = new AIDummy(rightWorld, leftWorld, config);
+            leftComm.init();
+            leftComm.setPlaceShips();
+        }
+        leftPlayer = new Field(leftWorld, cellSize, leftComm, TURN_LEFT, this);
+        leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        leftPlayer.setVisible(false);
+        addActor(leftPlayer);
+
+        Communication rightComm = null;
+        if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+            rightComm = new AIDummy(leftPlayer.getWorld(), rightWorld, config);
+            rightComm.init();
+            rightComm.setPlaceShips();
+        }
+        rightPlayer = new Field(rightWorld, cellSize, rightComm, TURN_RIGHT, this);
+        rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        rightPlayer.setVisible(false);
+        addActor(rightPlayer);
+
+        shipPlacer = new ShipPlacer(this, config.getShips(), cellSize);
+        shipPlacer.setVisible(false);
+        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        addActor(shipPlacer);
+
+        AnimationManager.getInstance().initAnimation(Constants.BLOW_ANIMATION);
+        AnimationManager.getInstance().initAnimation(Constants.WATER_ANIMATION);
+        AnimationManager.getInstance().initAnimation(Constants.WATER_BLOW_ANIMATION);
+
+        touchListener = new RelayTouch(this);
+        addListener(touchListener);
+
         //todo
         for (int i = 0; i < steps.size(); i++)
             if (steps.get(i).stepId != i)
@@ -78,6 +128,8 @@ public class StepsDirector extends Stage {
     }
 
     void nextStep() {
+        if (currentStep == STEP_BEGINNING)
+            restart();
         currentStep = steps.get(currentStep).stepEnd();
         steps.get(currentStep).stepBegin();
     }
@@ -136,17 +188,15 @@ public class StepsDirector extends Stage {
             shipPlacer.setTouchable(Touchable.enabled);
         else
             shipPlacer.setTouchable(Touchable.disabled);
-
     }
 
-    void restart() {
+    private void restart() {
         if (rightPlayer.getCommunication() != null)
             rightPlayer.getCommunication().restart();
         if (leftPlayer.getCommunication() != null)
             leftPlayer.getCommunication().restart();
         leftPlayer.restart();
         rightPlayer.restart();
-
     }
 
     private void calcCellSize() {
@@ -160,51 +210,91 @@ public class StepsDirector extends Stage {
         redundantY = (h - cellSize * config.getHeight()) / 2;
     }
 
-    public float getCellSize() {
-        return cellSize;
-    }
+    public void resize(int width, int height) {
+        getViewport().update(width, height, true);
+        calcCellSize();
 
-    public float getRedundantX() {
-        return redundantX;
-    }
+        leftPlayer.setBounds(sideWidth + redundantX, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        rightPlayer.setY(redundantY + footerHeight);
+        if (currentStep == STEP_PLACEMENT_R)
+            rightPlayer.setX(sideWidth + redundantX);
+        else
+            rightPlayer.setX(sideWidth + redundantX + middleGap + cellSize * config.getWidth());
+        rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
+        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        shipPlacer.setCellSize(cellSize);
 
-    public float getRedundantY() {
-        return redundantY;
-    }
 
-    public float getMiddleGap() {
-        return middleGap;
-    }
-
-    public float getHeaderHeight() {
-        return headerHeight;
-    }
-
-    public float getFooterHeight() {
-        return footerHeight;
-    }
-
-    public float getSideWidth() {
-        return sideWidth;
-    }
-
-    @NotNull
-    public GameConfig getConfig() {
-        return config;
+        for (GameConfig.Ship ship : config.getShips()) {
+            Sprite sprite = manager.getSprite(ship.name);
+            sprite.setSize(cellSize, ship.length * cellSize);
+            sprite.setOrigin(cellSize / 2, cellSize / 2);
+            sprite.setRotation(0);
+            if (!manager.contains(ship.name + Constants.ROTATED_SUFFIX))
+                manager.cloneSprite(ship.name, ship.name + Constants.ROTATED_SUFFIX);
+            sprite = manager.getSprite(ship.name + Constants.ROTATED_SUFFIX);
+            sprite.setSize(cellSize, ship.length * cellSize);
+            sprite.setOrigin(cellSize / 2, cellSize / 2);
+            sprite.setRotation(-90);
+            sprite.setFlip(true, false);
+        }
     }
 
     @NotNull
-    public Field getLeftPlayer() {
-        return leftPlayer;
+    Field getOpponent(int playerId) {
+        if (playerId == TURN_LEFT)
+            return rightPlayer;
+        else
+            return leftPlayer;
     }
 
     @NotNull
-    public Field getRightPlayer() {
-        return rightPlayer;
+    Field getPlayer(int playerId) {
+        if (playerId == TURN_LEFT)
+            return leftPlayer;
+        else
+            return rightPlayer;
     }
 
     @NotNull
-    public ShipPlacer getShipPlacer() {
-        return shipPlacer;
+    private BaseStep getStep() {
+        return steps.get(currentStep);
+    }
+
+    public void cellPressed(int playerId, int idx, int idy) {
+        if ((playerId == TURN_RIGHT || config.getGameType() == GameConfig.GameType.LOCAL_2P) && turn != playerId)
+            turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
+    }
+
+    public void turnFinished(int playerId, int i, int j) {
+        getStep().turnFinished(playerId, i, j);
+    }
+
+    public boolean relayTouch() {
+        if (currentStep == STEP_BEGINNING || currentStep == STEP_AFTERMATH) {
+            nextStep();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        leftPlayer.dispose();
+        leftPlayer.clearActions();
+        leftPlayer.clearListeners();
+        rightPlayer.clearActions();
+        rightPlayer.clearListeners();
+        rightPlayer.dispose();
+        for (BaseStep step : steps)
+            step.dispose();
+    }
+
+    public void shipsPlaced(int playerId) {
+        readyCnt++;
+        if (readyCnt == 2)
+            nextStep();
+        Gdx.app.debug("GameStage", "" + playerId + " is ready");
     }
 }

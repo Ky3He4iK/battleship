@@ -2,6 +2,7 @@ package dev.ky3he4ik.battleship.gui.game_steps;
 
 import org.jetbrains.annotations.NotNull;
 
+import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 
 public class StepConfigure extends BaseStep {
@@ -27,8 +28,18 @@ public class StepConfigure extends BaseStep {
 
     @Override
     public int stepEnd() {
-        if (callback.getConfig().getGameType() == GameConfig.GameType.AI_VS_AI)
+        callback.leftPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
+        Communication communication = callback.leftPlayer.getCommunication();
+        if (communication != null)
+            communication.restart();
+        callback.rightPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
+        communication = callback.rightPlayer.getCommunication();
+        if (communication != null)
+            communication.restart();
+
+        if (callback.config.getGameType() == GameConfig.GameType.AI_VS_AI)
             return StepsDirector.STEP_GAME;
-        return super.stepEnd();
+        else
+            return super.stepEnd();
     }
 }

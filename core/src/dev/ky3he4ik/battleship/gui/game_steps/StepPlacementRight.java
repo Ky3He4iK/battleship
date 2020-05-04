@@ -11,14 +11,14 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public void stepBegin() {
-        if (callback.getConfig().getGameType() != GameConfig.GameType.LOCAL_2P) {
+        if (callback.config.getGameType() != GameConfig.GameType.LOCAL_2P) {
             callback.nextStep();
             return;
         }
         callback.setChildrenEnabled(false, false, true, false, true, true);
-        callback.getShipPlacer().restart(callback.middleGap);
-        callback.getShipPlacer().start(callback.getLeftPlayer());
-        callback.getRightPlayer().setPosition(callback.redundantX + callback.sideWidth, callback.redundantY + callback.footerHeight);
+        callback.shipPlacer.restart(callback.middleGap);
+        callback.shipPlacer.start(callback.leftPlayer);
+        callback.rightPlayer.setPosition(callback.redundantX + callback.sideWidth, callback.redundantY + callback.footerHeight);
     }
 
     @Override

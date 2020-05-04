@@ -15,10 +15,10 @@ abstract public class AI extends Thread implements Communication {
     private PlayerFinished callback;
 
     @NotNull
-    protected final World enemy;
+    protected World enemy;
 
     @NotNull
-    protected final World my;
+    protected World my;
     private boolean isMyTurn;
     private boolean isPlaceShips;
     private boolean running;
@@ -66,7 +66,6 @@ abstract public class AI extends Thread implements Communication {
                 Gdx.app.error("AI thread", e.getMessage(), e);
             }
         }
-
     }
 
     protected abstract void placeShips();

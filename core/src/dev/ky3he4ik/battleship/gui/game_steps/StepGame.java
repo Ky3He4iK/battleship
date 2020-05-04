@@ -1,9 +1,11 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import org.jetbrains.annotations.NotNull;
 
+import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -25,38 +27,38 @@ public class StepGame extends BaseStep {
 
     @Override
     public void stepBegin() {
-        callback.getLeftPlayer().setShowShips(callback.getConfig().getGameType() != GameConfig.GameType.LOCAL_2P);
-        callback.getRightPlayer().setShowShips(Constants.DEBUG_MODE || callback.getConfig().getGameType() == GameConfig.GameType.AI_VS_AI);
+        callback.leftPlayer.setShowShips(callback.config.getGameType() != GameConfig.GameType.LOCAL_2P);
+        callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI);
         callback.setChildrenEnabled(true, true);
-        callback.getRightPlayer().setPosition(callback.sideWidth + callback.middleGap + callback.redundantX + callback.cellSize * callback.getConfig().getWidth(), callback.redundantY + callback.footerHeight);
+        callback.rightPlayer.setPosition(callback.sideWidth + callback.middleGap + callback.redundantX + callback.cellSize * callback.config.getWidth(), callback.redundantY + callback.footerHeight);
     }
 
     @Override
     public void act() {
         if (callback.aiReadyR && callback.turn == StepsDirector.TURN_RIGHT) {
             callback.aiReadyR = false;
-            boolean res = callback.getLeftPlayer().open(callback.aiXR, callback.aiYR);
-            if (callback.getLeftPlayer().getWorld().isDead()) {
+            boolean res = callback.leftPlayer.open(callback.aiXR, callback.aiYR);
+            if (callback.leftPlayer.getWorld().isDead()) {
                 callback.nextStep();
                 return;
             }
             if (res)
-                callback.getRightPlayer().setTurn();
+                callback.rightPlayer.setTurn();
             else
                 callback.nextTurn();
         } else if (callback.aiReadyL && callback.turn == StepsDirector.TURN_LEFT) {
             callback.aiReadyL = false;
-            boolean res = callback.getRightPlayer().open(callback.aiXL, callback.aiYL);
-            if (callback.getRightPlayer().getWorld().isDead()) {
+            boolean res = callback.rightPlayer.open(callback.aiXL, callback.aiYL);
+            if (callback.rightPlayer.getWorld().isDead()) {
                 callback.nextStep();
                 return;
             }
             if (res)
-                callback.getLeftPlayer().setTurn();
+                callback.leftPlayer.setTurn();
             else
                 callback.nextTurn();
         }
-        if (callback.getRightPlayer().getWorld().isDead() || callback.getLeftPlayer().getWorld().isDead())
+        if (callback.rightPlayer.getWorld().isDead() || callback.leftPlayer.getWorld().isDead())
             callback.nextStep();
     }
 
@@ -73,12 +75,43 @@ public class StepGame extends BaseStep {
             }
             cachedTurn = callback.getTurn();
         }
-        float shift = callback.getMiddleGap() * 0.1f;
-        float arrowSize = callback.getMiddleGap() - shift * 2;
-        getBatch().draw(arrowSprite, callback.redundantX + callback.sideWidth + callback.getConfig().getWidth() * callback.cellSize + shift,
-                callback.redundantY + callback.footerHeight + callback.getConfig().getHeight() * callback.cellSize / 2 - arrowSize / 2,
+        float shift = callback.middleGap * 0.1f;
+        float arrowSize = callback.middleGap - shift * 2;
+        getBatch().draw(arrowSprite, callback.redundantX + callback.sideWidth + callback.config.getWidth() * callback.cellSize + shift,
+                callback.redundantY + callback.footerHeight + callback.config.getHeight() * callback.cellSize / 2 - arrowSize / 2,
                 arrowSize, arrowSize);
         getBatch().setColor(1, 1, 1, 1);
         getBatch().end();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        arrowSprite.getTexture().dispose();
+    }
+
+    @Override
+    public void turnFinished(int playerId, int i, int j) {
+        if (playerId == callback.turn) {
+            Field opponent = callback.getOpponent(playerId);
+            boolean res = opponent.open(i, j);
+
+            if (opponent.getWorld().isDead()) {
+                Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
+                callback.nextStep();
+            } else if (res)
+                callback.getPlayer(playerId).setTurn();
+            else
+                callback.nextTurn();
+        } else if (playerId == StepsDirector.TURN_RIGHT
+                && (callback.config.getGameType() == GameConfig.GameType.AI || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI)) {
+            callback.aiReadyR = true;
+            callback.aiXR = i;
+            callback.aiYR = j;
+        } else if (playerId == StepsDirector.TURN_LEFT && callback.config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+            callback.aiReadyL = true;
+            callback.aiXL = i;
+            callback.aiYL = j;
+        }
     }
 }

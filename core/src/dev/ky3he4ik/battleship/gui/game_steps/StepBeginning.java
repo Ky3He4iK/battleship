@@ -23,7 +23,7 @@ public class StepBeginning extends BaseStep {
     public void draw() {
         Batch batch = getBatch();
         batch.begin();
-        font.draw(batch, "Press any key", getWidth() / 2, getHeight() / 2);
+        font.draw(batch, "Press any key", callback.getWidth() / 2, callback.getHeight() / 2);
         batch.end();
     }
 }

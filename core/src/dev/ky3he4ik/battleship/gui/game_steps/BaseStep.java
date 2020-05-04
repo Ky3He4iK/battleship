@@ -2,6 +2,7 @@ package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,9 @@ public abstract class BaseStep extends Stage {
     protected StepsDirector callback;
 
     @NotNull
+    protected ShapeRenderer renderer;
+
+    @NotNull
     BitmapFont font;
 
     BaseStep(@NotNull StepsDirector callback, int stepId) {
@@ -19,6 +23,7 @@ public abstract class BaseStep extends Stage {
         this.stepId = stepId;
         font = new BitmapFont();
         font.getData().setScale(Gdx.graphics.getHeight() / 400f);
+        renderer = new ShapeRenderer();
     }
 
     abstract public void stepBegin();
@@ -30,4 +35,14 @@ public abstract class BaseStep extends Stage {
     abstract public void act();
 
     abstract public void draw();
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        font.dispose();
+        renderer.dispose();
+    }
+
+    public void turnFinished(int playerId, int i, int j) {
+    }
 }

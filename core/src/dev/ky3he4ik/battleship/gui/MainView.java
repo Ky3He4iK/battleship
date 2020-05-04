@@ -5,18 +5,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import dev.ky3he4ik.battleship.MyGdxGame;
-import dev.ky3he4ik.battleship.logic.World;
-import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class MainView implements Screen {
-    private GameStage stage;
+    private StepsDirector stage;
     private MyGdxGame game;
 
     public MainView(final MyGdxGame game) {
         this.game = game;
-        GameConfig config = GameConfig.getSampleConfigEast();
-        stage = new GameStage(config, new World(config.getWidth(), config.getHeight()), new World(config.getWidth(), config.getHeight()));
+        stage = new StepsDirector();
         Gdx.input.setInputProcessor(stage);
     }
 

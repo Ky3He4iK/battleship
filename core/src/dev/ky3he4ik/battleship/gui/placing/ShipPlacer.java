@@ -13,7 +13,7 @@ import java.util.BitSet;
 import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.Field;
-import dev.ky3he4ik.battleship.gui.GameStage;
+import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -31,18 +31,17 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     @NotNull
     private ArrayList<ActorWithSprite> childrens;
     @NotNull
-    private GameStage callback;
+    private StepsDirector callback;
 
     private final int BUTTON_ROTATE;
     private final int BUTTON_RANDOM;
     private final int BUTTON_DONE;
 
-    private boolean process = false;
     private float cellSize;
 
     private int lastAccessId = 0;
 
-    public ShipPlacer(@NotNull GameStage callback, @NotNull ArrayList<GameConfig.Ship> availableShips, float cellSize) {
+    public ShipPlacer(@NotNull StepsDirector callback, @NotNull ArrayList<GameConfig.Ship> availableShips, float cellSize) {
         this.availableShips = availableShips;
         this.cellSize = cellSize;
         this.callback = callback;
@@ -86,7 +85,6 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
             removeActor(ship);
         }
         ships.clear();
-        process = false;
         float shift = middleGap * 0.1f;
         middleGap -= shift * 2;
 
@@ -96,7 +94,6 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     }
 
     public void start(@NotNull Field field) {
-        process = true;
         this.field = field;
         int posY = 1, maxLen = 0, posX = 0;
         for (GameConfig.Ship ship : availableShips) {

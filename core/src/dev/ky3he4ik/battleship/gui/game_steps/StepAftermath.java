@@ -13,12 +13,12 @@ public class StepAftermath extends BaseStep {
 
     @Override
     public void stepBegin() {
-        text = (callback.getLeftPlayer().getWorld().isDead() ? "Second" : "First") + " player won!\n" + callback.leftScore + " : " + callback.rightScore;
-        callback.getLeftPlayer().setShowShips(true);
-        callback.getRightPlayer().setShowShips(true);
-        if (callback.getLeftPlayer().getWorld().isDead())
+        text = (callback.leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + callback.leftScore + " : " + callback.rightScore;
+        callback.leftPlayer.setShowShips(true);
+        callback.rightPlayer.setShowShips(true);
+        if (callback.leftPlayer.getWorld().isDead())
             callback.rightScore++;
-        else if (callback.getRightPlayer().getWorld().isDead())
+        else if (callback.rightPlayer.getWorld().isDead())
             callback.leftScore++;
     }
 
@@ -30,7 +30,7 @@ public class StepAftermath extends BaseStep {
     @Override
     public void draw() {
         getBatch().begin();
-        font.draw(getBatch(), text, getWidth() / 2, getHeight() / 2);
+        font.draw(getBatch(), text, callback.getWidth() / 2, callback.getHeight() / 2);
         getBatch().end();
     }
 

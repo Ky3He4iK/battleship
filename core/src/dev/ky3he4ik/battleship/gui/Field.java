@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
+import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.gui.placing.AloneShip;
 import dev.ky3he4ik.battleship.gui.placing.AloneShipListener;
 import dev.ky3he4ik.battleship.logic.Communication;
@@ -21,7 +22,7 @@ import dev.ky3he4ik.battleship.utils.H;
 
 public class Field extends Group implements PlayerFinished, AloneShipListener {
     @NotNull
-    private final World world;
+    private World world;
     @NotNull
     private Cell[][] cells;
     @NotNull
@@ -42,9 +43,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     private int playerId;
 
     @NotNull
-    private GameStage callback;
+    private StepsDirector callback;
 
-    public Field(@NotNull final World world, float cellSize, @Nullable final Communication communication, int playerId, @NotNull GameStage callback) {
+    public Field(@NotNull final World world, float cellSize, @Nullable final Communication communication, int playerId, @NotNull StepsDirector callback) {
         this.world = world;
         this.cellSize = cellSize;
         this.showShips = false;
@@ -56,9 +57,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         if (communication != null)
             communication.setCallback(this);
 
-        cells = new Cell[world.getHeight()][];
-        for (int i = 0; i < world.getHeight(); i++) {
-            cells[i] = new Cell[world.getWidth()];
+        cells = new Cell[world.getWidth()][];
+        for (int i = 0; i < world.getWidth(); i++) {
+            cells[i] = new Cell[world.getHeight()];
             for (int j = 0; j < world.getHeight(); j++) {
                 cells[i][j] = new Cell(this, i, j);
                 cells[i][j].setBounds(cellSize * i, cellSize * j, cellSize, cellSize);
@@ -70,6 +71,22 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     public void init() {
+        if (world.getWidth() != cells.length || (cells.length > 0 && world.getHeight() != cells[0].length)) {
+            for (Cell[] cells1 : cells)
+                for (Cell cell : cells1)
+                    cell.dispose();
+
+            cells = new Cell[world.getWidth()][];
+            for (int i = 0; i < world.getWidth(); i++) {
+                cells[i] = new Cell[world.getHeight()];
+                for (int j = 0; j < world.getHeight(); j++) {
+                    cells[i][j] = new Cell(this, i, j);
+                    cells[i][j].setBounds(cellSize * i, cellSize * j, cellSize, cellSize);
+                    cells[i][j].setVisible(true);
+                    addActor(cells[i][j]);
+                }
+            }
+        }
         for (World.Ship ship : world.getShips()) {
             AloneShip child = new AloneShip(this, ship.convert());
             child.setRotation(ship.rotation);

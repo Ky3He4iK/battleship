@@ -12,8 +12,8 @@ public class StepPlacementLeft extends  BaseStep {
     @Override
     public void stepBegin() {
         callback.setChildrenEnabled(true, false, false, false, true, true);
-        callback.getShipPlacer().restart(callback.middleGap);
-        callback.getShipPlacer().start(callback.getLeftPlayer());
+        callback.shipPlacer.restart(callback.middleGap);
+        callback.shipPlacer.start(callback.leftPlayer);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class StepPlacementLeft extends  BaseStep {
 
     @Override
     public int stepEnd() {
-        if (callback.getConfig().getGameType() != GameConfig.GameType.LOCAL_2P)
+        if (callback.config.getGameType() != GameConfig.GameType.LOCAL_2P)
             return StepsDirector.STEP_GAME;
         return super.stepEnd();
     }

@@ -228,4 +228,48 @@ public class GameConfig {
     public String toJSON() {
         return new Gson().toJson(this);
     }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setMovingEnabled(boolean movingEnabled) {
+        this.movingEnabled = movingEnabled;
+    }
+
+    public void setMultipleShots(boolean multipleShots) {
+        this.multipleShots = multipleShots;
+    }
+
+    public void setAdditionalShots(boolean additionalShots) {
+        this.additionalShots = additionalShots;
+    }
+
+    public void setDecreasingField(boolean decreasingField) {
+        this.decreasingField = decreasingField;
+    }
+
+    public void setMovingPerTurn(int movingPerTurn) {
+        this.movingPerTurn = movingPerTurn;
+    }
+
+    public void setShotsPerTurn(int shotsPerTurn) {
+        this.shotsPerTurn = shotsPerTurn;
+    }
+
+    public void setAiLevel(int aiLevel) {
+        this.aiLevel = aiLevel;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public void setGameType(@NotNull GameType gameType) {
+        this.gameType = gameType;
+    }
 }
