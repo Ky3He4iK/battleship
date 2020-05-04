@@ -1,5 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+
 import org.jetbrains.annotations.NotNull;
 
 public class StepAftermath extends BaseStep {
@@ -13,13 +15,13 @@ public class StepAftermath extends BaseStep {
 
     @Override
     public void stepBegin() {
-        text = (callback.leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + callback.leftScore + " : " + callback.rightScore;
         callback.leftPlayer.setShowShips(true);
         callback.rightPlayer.setShowShips(true);
         if (callback.leftPlayer.getWorld().isDead())
             callback.rightScore++;
         else if (callback.rightPlayer.getWorld().isDead())
             callback.leftScore++;
+        text = (callback.leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + callback.leftScore + " : " + callback.rightScore;
     }
 
     @Override
@@ -37,5 +39,11 @@ public class StepAftermath extends BaseStep {
     @Override
     public int stepEnd() {
         return StepsDirector.STEP_BEGINNING;
+    }
+
+    @Override
+    public boolean relayTouch(InputEvent event, float x, float y, int pointer, int button) {
+        callback.nextStep();
+        return true;
     }
 }

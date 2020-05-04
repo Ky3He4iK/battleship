@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +14,7 @@ public class StepBeginning extends BaseStep {
     public void stepBegin() {
         callback.setTurn(StepsDirector.TURN_LEFT);
         callback.setChildrenEnabled(false, false);
+        callback.readyCnt = 0;
     }
 
     @Override
@@ -25,5 +27,11 @@ public class StepBeginning extends BaseStep {
         batch.begin();
         font.draw(batch, "Press any key", callback.getWidth() / 2, callback.getHeight() / 2);
         batch.end();
+    }
+
+    @Override
+    public boolean relayTouch(InputEvent event, float x, float y, int pointer, int button) {
+        callback.nextStep();
+        return true;
     }
 }

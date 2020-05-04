@@ -211,8 +211,6 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     public void restart() {
-        if (communication != null)
-            communication.setPlaceShips();
         world.reset();
         clicked = false;
         for (Cell[] cells1 : cells)

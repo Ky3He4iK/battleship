@@ -91,8 +91,10 @@ public class AloneShip extends Actor implements EventListener {
             case touchDragged:
                 if (canBeMoved) {
                     float[] pos = H.getAbsCoord(this);
-                    setPosition(Gdx.input.getX() - pos[0] + getX() - getWidth() / 2,
-                            Gdx.graphics.getHeight() - Gdx.input.getY() - pos[1] + getY() - getHeight() / 2);
+                    float mouseX = Math.max(Math.min(Gdx.input.getX(), Gdx.graphics.getWidth()), 0);
+                    float mouseY = Math.max(Math.min(Gdx.graphics.getHeight() - Gdx.input.getY(), Gdx.graphics.getHeight()), 0);
+                    setPosition(mouseX - pos[0] + getX() - getWidth() / 2,
+                            mouseY - pos[1] + getY() - getHeight() / 2);
                     callback.shipMoved(H.getAbsCoord(this), this);
                 }
                 return true;

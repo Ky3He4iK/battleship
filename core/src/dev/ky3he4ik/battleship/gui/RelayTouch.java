@@ -17,6 +17,6 @@ public class RelayTouch extends InputListener {
 
     @Override
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        return callback.relayTouch();
+        return callback.relayTouch(event, x, y, pointer, button);
     }
 }

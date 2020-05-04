@@ -32,10 +32,13 @@ public class StepConfigure extends BaseStep {
         Communication communication = callback.leftPlayer.getCommunication();
         if (communication != null)
             communication.restart();
+        callback.leftPlayer.init();
+
         callback.rightPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
         communication = callback.rightPlayer.getCommunication();
         if (communication != null)
             communication.restart();
+        callback.rightPlayer.init();
 
         if (callback.config.getGameType() == GameConfig.GameType.AI_VS_AI)
             return StepsDirector.STEP_GAME;

@@ -2,6 +2,7 @@ package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 
@@ -48,7 +49,7 @@ public class StepsDirector extends Stage {
     float footerHeight;
     float sideWidth;
 
-    private int readyCnt = 0;
+    int readyCnt = 0;
     boolean aiReadyR = false;
     int aiXR = -1;
     int aiYR = -1;
@@ -91,7 +92,6 @@ public class StepsDirector extends Stage {
         if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             leftComm = new AIDummy(rightWorld, leftWorld, config);
             leftComm.init();
-            leftComm.setPlaceShips();
         }
         leftPlayer = new Field(leftWorld, cellSize, leftComm, TURN_LEFT, this);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
@@ -102,7 +102,6 @@ public class StepsDirector extends Stage {
         if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             rightComm = new AIDummy(leftPlayer.getWorld(), rightWorld, config);
             rightComm.init();
-            rightComm.setPlaceShips();
         }
         rightPlayer = new Field(rightWorld, cellSize, rightComm, TURN_RIGHT, this);
         rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
@@ -121,7 +120,7 @@ public class StepsDirector extends Stage {
         touchListener = new RelayTouch(this);
         addListener(touchListener);
 
-        //todo
+        getStep().stepBegin();
         for (int i = 0; i < steps.size(); i++)
             if (steps.get(i).stepId != i)
                 Gdx.app.error("StepsDirector", "invalid step #" + steps.get(i).stepId + " at pos " + i);
@@ -270,12 +269,8 @@ public class StepsDirector extends Stage {
         getStep().turnFinished(playerId, i, j);
     }
 
-    public boolean relayTouch() {
-        if (currentStep == STEP_BEGINNING || currentStep == STEP_AFTERMATH) {
-            nextStep();
-            return true;
-        }
-        return false;
+    public boolean relayTouch(InputEvent event, float x, float y, int pointer, int button) {
+        return getStep().relayTouch(event, x, y, pointer, button);
     }
 
     @Override

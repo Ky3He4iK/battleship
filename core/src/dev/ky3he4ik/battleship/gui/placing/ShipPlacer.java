@@ -95,21 +95,20 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
 
     public void start(@NotNull Field field) {
         this.field = field;
-        int posY = 1, maxLen = 0, posX = 0;
+        int posY = 0,  posX = 0;
         for (GameConfig.Ship ship : availableShips) {
-            if (ship.length > maxLen)
-                maxLen = ship.length;
+            if ((posX + ship.length) * cellSize > getWidth()) {
+                posX = 0;
+                posY += 2;
+                if (posY * cellSize > getHeight())
+                    Gdx.app.error("ShipPlacer", "Too many ships to place");
+            }
             AloneShip aShip = new AloneShip(this, ship);
             aShip.setPlaced(true);
             aShip.setBounds(posX * cellSize, posY * cellSize, cellSize * ship.length, cellSize);
             addActor(aShip);
             ships.add(ship.id - 1, aShip);
-            posY += 2;
-            if ((posY + 1) * cellSize > getHeight()) {
-                posY = 0;
-                posX += maxLen + 1;
-                maxLen = 0;
-            }
+            posX += ship.length + 1;
         }
     }
 

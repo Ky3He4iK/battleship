@@ -14,6 +14,8 @@ public class StepPlacementLeft extends  BaseStep {
         callback.setChildrenEnabled(true, false, false, false, true, true);
         callback.shipPlacer.restart(callback.middleGap);
         callback.shipPlacer.start(callback.leftPlayer);
+        callback.leftPlayer.setPlaceShips();
+        callback.rightPlayer.setPlaceShips();
     }
 
     @Override

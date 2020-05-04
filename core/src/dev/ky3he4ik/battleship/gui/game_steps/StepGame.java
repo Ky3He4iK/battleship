@@ -21,7 +21,6 @@ public class StepGame extends BaseStep {
         super(callback, stepId);
         arrowSprite = SpriteManager.getInstance().getSprite(Constants.ARROW_TURN);
         arrowSprite.setFlip(false, false);
-        getBatch().setColor(0, 1, 0, 1);
         cachedTurn = StepsDirector.TURN_LEFT;
     }
 
@@ -68,13 +67,16 @@ public class StepGame extends BaseStep {
         if (callback.getTurn() != cachedTurn) {
             if (callback.getTurn() == StepsDirector.TURN_LEFT) {
                 arrowSprite.setFlip(false, false);
-                getBatch().setColor(0, 1, 0, 1);
             } else {
                 arrowSprite.setFlip(true, false);
-                getBatch().setColor(1, 0, 0, 1);
             }
             cachedTurn = callback.getTurn();
         }
+        if (callback.getTurn() == StepsDirector.TURN_LEFT)
+            getBatch().setColor(0, 1, 0, 1);
+        else
+            getBatch().setColor(1, 0, 0, 1);
+
         float shift = callback.middleGap * 0.1f;
         float arrowSize = callback.middleGap - shift * 2;
         getBatch().draw(arrowSprite, callback.redundantX + callback.sideWidth + callback.config.getWidth() * callback.cellSize + shift,
