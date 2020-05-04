@@ -47,6 +47,12 @@ public class World {
             else
                 return idx == i && idy <= j && idy + len > j;
         }
+
+        @NotNull
+        public GameConfig.Ship convert() {
+            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+            return new GameConfig.Ship(len, code, name_);
+        }
     }
 
     public static final int ROTATION_HORIZONTAL = 0;

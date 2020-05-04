@@ -102,7 +102,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         for (GameConfig.Ship ship : availableShips) {
             if (ship.length > maxLen)
                 maxLen = ship.length;
-            AloneShip aShip = new AloneShip(this, ship.name, ship.length, ship.id);
+            AloneShip aShip = new AloneShip(this, ship);
             aShip.setPlaced(true);
             aShip.setBounds(posX * cellSize, posY * cellSize, cellSize * ship.length, cellSize);
             addActor(aShip);

@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.gui.SpriteManager;
+import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
@@ -29,19 +30,23 @@ public class AloneShip extends Actor implements EventListener {
     @NotNull
     private Sprite sprite;
 
+    @NotNull
+    public final GameConfig.Ship ship;
+
     public final int length;
     public final int id;
 
     private boolean placed = false;
     private boolean canBeMoved = false;
 
-    public AloneShip(@NotNull final AloneShipListener shipPlacer, @NotNull String name, int length, int id) {
-        callback = shipPlacer;
-        this.length = length;
+    public AloneShip(@NotNull final AloneShipListener callback, @NotNull final GameConfig.Ship ship) {
+        this.callback = callback;
+        this.ship = ship;
+        this.length = ship.length;
         this.names = new String[]{
-                name + Constants.ROTATED_SUFFIX, name
+                ship.name + Constants.ROTATED_SUFFIX, ship.name
         };
-        this.id = id;
+        this.id = ship.id;
         rotation = World.ROTATION_HORIZONTAL;
         sprite = SpriteManager.getInstance().getSprite(names[rotation]);
         addListener(this);

@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -34,6 +35,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     private boolean shadow = false;
     private int shadowUX, shadowUY, shadowLX, shadowLY;
     private int shadowRot;
+    private int lastAccessId = 0;
 
     @Nullable
     private Communication communication;
@@ -64,19 +66,26 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 addActor(cells[i][j]);
             }
         }
+        setColor(1, 1, 1, 1);
     }
 
     public void init() {
         for (World.Ship ship : world.getShips()) {
-            AloneShip child = new AloneShip(this, ship.name, ship.len, ship.code);
+            AloneShip child = new AloneShip(this, ship.convert());
             child.setRotation(ship.rotation);
             child.setPlaced(true);
+            children.add(child);
         }
     }
 
     @Override
     public void draw(@NotNull Batch batch, float parentAlpha) {
+//        for transparency
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT)
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         super.draw(batch, parentAlpha);
+        batch.setColor(1, 1, 1, 0.5f);
         if (showShips) {
             for (World.Ship ship : world.getShips())
                 if (!world.shipDead(ship.code)) {
@@ -87,7 +96,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                             1, 1, sprite.getRotation());
                 }
         }
-        batch.setColor(1, 0, 0, 1);
+        batch.setColor(1, 0, 0, 0.5f);
         for (World.Ship ship : world.getShips())
             if (world.shipDead(ship.code)) {
                 Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
@@ -148,6 +157,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 cell.clearListeners();
                 removeActor(cell);
             }
+        }
+        for (AloneShip child : children) {
+            removeActor(child);
         }
     }
 
@@ -278,17 +290,28 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     @Override
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
-        return world.shipAlive(ship.id);
+        if (world.shipAlive(ship.id)) {
+            lastAccessId = ship.id - 1;
+            removeShip(pos[0], pos[1], ship.id);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship) {
-
-        //todo
+        float[] newPos = unHighlight(ship.ship, pos[0], pos[1], ship.getShipRotation());
+        float[] curPos = H.getAbsCoord(this);
+        if (newPos != null) {
+            ship.setPlaced(true);
+            Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
+            ship.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);
+        } else
+            ship.setPlaced(false);
     }
 
     @Override
     public void shipMoved(@NotNull float[] pos, @NotNull AloneShip ship) {
-        //todo
+        highlight(pos[0], pos[1], ship.getShipRotation(), ship.length);
     }
 }
