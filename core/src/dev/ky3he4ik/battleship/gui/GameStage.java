@@ -140,6 +140,43 @@ public class GameStage extends Stage {
                 getBatch().end();
                 break;
             case STEP_CHOOSE_CONFIG:
+            case STEP_PLACEMENT_L:
+            case STEP_PLACEMENT_R:
+                break;
+            case STEP_GAME:
+                getBatch().begin();
+                if (turn == TURN_LEFT) {
+                    arrowSprite.setFlip(false, false);
+                    arrowSprite.setColor(0, 1, 0, 1);
+                    getBatch().setColor(0, 1, 0, 1);
+                } else {
+                    arrowSprite.setFlip(true, false);
+                    arrowSprite.setColor(1, 0, 0, 1);
+                    getBatch().setColor(1, 0, 0, 1);
+                }
+                float shift = middleGap * 0.1f;
+                float arrowSize = middleGap - shift * 2;
+                getBatch().draw(arrowSprite, redundantX + sideWidth + config.getWidth() * cellSize + shift, redundantY + footerHeight + config.getHeight() * cellSize / 2 - arrowSize / 2, arrowSize, arrowSize);
+                getBatch().setColor(1, 1, 1, 1);
+                getBatch().end();
+                break;
+            case STEP_AFTERMATH:
+                getBatch().begin();
+                font.draw(getBatch(), (leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + leftScore + " : " + rightScore, getWidth() / 2, getHeight() / 2);
+                getBatch().end();
+                break;
+            default:
+                Gdx.app.error("GameStage", "Unknown step: " + step);
+        }
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        switch (step) {
+            case STEP_BEGINNING:
+                break;
+            case STEP_CHOOSE_CONFIG:
                 //todo: config screen
                 nextStep();
                 break;
@@ -166,29 +203,10 @@ public class GameStage extends Stage {
                     else
                         turn();
                 }
-                getBatch().begin();
-                if (turn == TURN_LEFT) {
-                    arrowSprite.setFlip(false, false);
-                    arrowSprite.setColor(0, 1, 0, 1);
-                    getBatch().setColor(0, 1, 0, 1);
-                } else {
-                    arrowSprite.setFlip(true, false);
-                    arrowSprite.setColor(1, 0, 0, 1);
-                    getBatch().setColor(1, 0, 0, 1);
-                }
-                float shift = middleGap * 0.1f;
-                float arrowSize = middleGap - shift * 2;
-                getBatch().draw(arrowSprite, redundantX + sideWidth + config.getWidth() * cellSize + shift, redundantY + footerHeight + config.getHeight() * cellSize / 2 - arrowSize / 2, arrowSize, arrowSize);
-                getBatch().setColor(1, 1, 1, 1);
-                getBatch().end();
-                if ((turn == TURN_LEFT && rightPlayer.getWorld().isDead()) || (turn == TURN_RIGHT && leftPlayer.getWorld().isDead())) {
+                if ((turn == TURN_LEFT && rightPlayer.getWorld().isDead()) || (turn == TURN_RIGHT && leftPlayer.getWorld().isDead()))
                     nextStep();
-                }
                 break;
             case STEP_AFTERMATH:
-                getBatch().begin();
-                font.draw(getBatch(), (leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + leftScore + " : " + rightScore, getWidth() / 2, getHeight() / 2);
-                getBatch().end();
                 break;
             default:
                 Gdx.app.error("GameStage", "Unknown step: " + step);
