@@ -350,8 +350,13 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             for (AloneShip child : children)
                 if (child.id == lastAccessId) {
                     child.rotate();
-                    if (rotate(child, H.getAbsCoord(child), child.getShipRotation()) != null)
+                    float[] res = rotate(child, H.getAbsCoord(child), child.getShipRotation());
+                    if (res != null) {
+                        child.setPlaced(true);
+                        child.setPosition(res[0] - getX(), res[1] - getY());
                         return true;
+                    }
+                    child.setPlaced(false);
                     break;
                 }
         return false;
