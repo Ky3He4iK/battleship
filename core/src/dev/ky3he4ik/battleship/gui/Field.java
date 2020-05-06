@@ -36,7 +36,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     private boolean shadow = false;
     private int shadowUX, shadowUY, shadowLX, shadowLY;
     private int shadowRot;
-    private int lastAccessId = 0;
+    private int lastAccessId = -1;
+    private int shipsCnt;
 
     @Nullable
     private Communication communication;
@@ -87,20 +88,25 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 }
             }
         }
-        for (World.Ship ship : world.getShips()) {
-            AloneShip child = new AloneShip(this, ship.convert());
-            child.setRotation(ship.rotation);
-            child.setPlaced(true);
-            children.add(child);
-        }
+    }
+
+    public void start() {
+        shipsCnt = world.getShips().size();
+        if (showShips)
+            for (World.Ship ship : world.getShips()) {
+                AloneShip child = new AloneShip(this, ship.convert());
+                child.setRotation(ship.rotation);
+                child.setPlaced(true);
+                addActor(child);
+                children.add(child);
+                child.setBounds(ship.idx * cellSize, ship.idy * cellSize, cellSize * ship.length, cellSize);
+                if (ship.rotation == World.ROTATION_VERTICAL)
+                    child.rotate();
+            }
     }
 
     @Override
     public void draw(@NotNull Batch batch, float parentAlpha) {
-//        for transparency
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT)
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
         super.draw(batch, parentAlpha);
         batch.setColor(1, 1, 1, 0.5f);
         if (showShips) {
@@ -112,6 +118,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                             sprite.getWidth(), sprite.getHeight(),
                             1, 1, sprite.getRotation());
                 }
+            for (AloneShip child : children)
+                if (world.shipDead(child.id))
+                    child.setVisible(false);
         }
         batch.setColor(1, 0, 0, 0.5f);
         for (World.Ship ship : world.getShips())
@@ -146,7 +155,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         clicked = false;
         clickX = idx;
         clickY = idy;
-        if (!isOpened(idx, idy))
+        if (!isOpened(idx, idy) && world.getShips().size() == shipsCnt)
             callback.cellPressed(playerId, idx, idy);
     }
 
@@ -187,6 +196,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     public void setTurn() {
+        lastAccessId = -1;
         if (communication != null)
             communication.setTurn();
     }
@@ -294,10 +304,10 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     @Nullable
-    public float[] rotate(@NotNull GameConfig.Ship ship, @NotNull float[] coord, int rotation) {
+    public float[] rotate(@NotNull AloneShip ship, @NotNull float[] coord, int rotation) {
         if (!world.rotate(ship.id)) {
             shadow = false;
-            if (world.placeShip(ship.convert(), innerCellX(coord[0]), innerCellY(coord[1]), rotation))
+            if (world.placeShip(ship.ship.convert(), innerCellX(coord[0]), innerCellY(coord[1]), rotation))
                 return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
             return null;
         } else
@@ -306,8 +316,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     @Override
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
-        if (world.shipAlive(ship.id)) {
-            lastAccessId = ship.id - 1;
+        if (!ship.isPlaced() || (world.shipAlive(ship.id) && callback.getTurn() == playerId)) {
+            lastAccessId = ship.id;
             removeShip(pos[0], pos[1], ship.id);
             return true;
         }
@@ -333,5 +343,17 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     public void setShowShips(boolean showShips) {
         this.showShips = showShips;
+    }
+
+    public boolean rotateButtonPressed() {
+        if (lastAccessId != -1)
+            for (AloneShip child : children)
+                if (child.id == lastAccessId) {
+                    child.rotate();
+                    if (rotate(child, H.getAbsCoord(child), child.getShipRotation()) != null)
+                        return true;
+                    break;
+                }
+        return false;
     }
 }

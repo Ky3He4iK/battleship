@@ -55,7 +55,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         addActor(button);
 
         BUTTON_RANDOM = childrens.size();
-        button = new ActorWithSprite(this, Constants.BUTTON_RND, BUTTON_RANDOM);
+        button = new ActorWithSprite(this, Constants.BUTTON_RND, Constants.BUTTON_RND_SELECTED, BUTTON_RANDOM);
         H.setBoundsByHeight(button, 0, getY() - cellSize, cellSize);
         childrens.add(button);
         addActor(button);
@@ -95,7 +95,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
 
     public void start(@NotNull Field field) {
         this.field = field;
-        int posY = 0,  posX = 0;
+        int posY = 0, posX = 0;
         for (GameConfig.Ship ship : availableShips) {
             if ((posX + ship.length) * cellSize > getWidth()) {
                 posX = 0;
@@ -165,7 +165,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
             ships.get(lastAccessId).rotate();
             if (field != null) {
                 AloneShip ship = ships.get(lastAccessId);
-                float[] res = field.rotate(availableShips.get(lastAccessId), H.getAbsCoord(ship), ship.getShipRotation());
+                float[] res = field.rotate(ship, H.getAbsCoord(ship), ship.getShipRotation());
                 if (res == null)
                     ship.setPlaced(false);
                 else {

@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 import dev.ky3he4ik.battleship.ai.AIDummy;
+import dev.ky3he4ik.battleship.gui.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
 import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.RelayTouch;
@@ -21,7 +23,7 @@ import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-public class StepsDirector extends Stage {
+public class StepsDirector extends Stage implements ActorWithSpriteListener {
     final static int TURN_LEFT = 0;
     final static int TURN_RIGHT = 1;
 
@@ -31,6 +33,8 @@ public class StepsDirector extends Stage {
     final static int STEP_PLACEMENT_R = 3;
     final static int STEP_GAME = 4;
     final static int STEP_AFTERMATH = 5;
+
+    private static final int ROTATE_BTN_ID = 1;
 
     @NotNull
     private ArrayList<BaseStep> steps;
@@ -71,6 +75,9 @@ public class StepsDirector extends Stage {
 
     @NotNull
     RelayTouch touchListener;
+
+    @NotNull
+    ActorWithSprite rotateBtn;
 
     public StepsDirector() {
         steps = new ArrayList<>();
@@ -119,6 +126,10 @@ public class StepsDirector extends Stage {
 
         touchListener = new RelayTouch(this);
         addListener(touchListener);
+
+        rotateBtn = new ActorWithSprite(this, Constants.ARROW_ROTATE, ROTATE_BTN_ID);
+        addActor(rotateBtn);
+        rotateBtn.setVisible(false);
 
         getStep().stepBegin();
         for (int i = 0; i < steps.size(); i++)
@@ -223,7 +234,6 @@ public class StepsDirector extends Stage {
         shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         shipPlacer.setCellSize(cellSize);
 
-
         for (GameConfig.Ship ship : config.getShips()) {
             Sprite sprite = manager.getSprite(ship.name);
             sprite.setSize(cellSize, ship.length * cellSize);
@@ -237,6 +247,8 @@ public class StepsDirector extends Stage {
             sprite.setRotation(-90);
             sprite.setFlip(true, false);
         }
+
+        getStep().resize();
     }
 
     @NotNull
@@ -291,5 +303,22 @@ public class StepsDirector extends Stage {
         if (readyCnt == 2)
             nextStep();
         Gdx.app.debug("GameStage", "" + playerId + " is ready");
+    }
+
+    @Override
+    public boolean buttonPressed(int buttonId) {
+        if (buttonId == ROTATE_BTN_ID)
+            return getPlayer(turn).rotateButtonPressed();
+        return false;
+    }
+
+    @Override
+    public void buttonReleased(int buttonId) {
+
+    }
+
+    @Override
+    public void buttonMoved(int buttonId) {
+
     }
 }

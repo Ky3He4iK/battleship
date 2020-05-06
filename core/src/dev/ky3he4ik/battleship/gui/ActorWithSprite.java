@@ -10,20 +10,40 @@ import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ActorWithSprite extends Actor implements EventListener {
     @NotNull
     protected Sprite sprite;
+
+    @Nullable
+    protected Sprite altSprite;
 
     @NotNull
     protected ActorWithSpriteListener callback;
 
     protected int buttonId;
 
+    protected boolean isPressed;
+
+    public ActorWithSprite(@NotNull ActorWithSpriteListener callback, @NotNull String spriteName, @Nullable String altSpriteName, int buttonId) {
+        this.callback = callback;
+        this.buttonId = buttonId;
+        sprite = SpriteManager.getInstance().getSprite(spriteName);
+        isPressed = false;
+        if (altSpriteName == null)
+            altSprite = null;
+        else
+            altSprite = SpriteManager.getInstance().getSprite(altSpriteName);
+        addListener(this);
+    }
+
     public ActorWithSprite(@NotNull ActorWithSpriteListener callback, @NotNull String spriteName, int buttonId) {
         this.callback = callback;
         this.buttonId = buttonId;
         sprite = SpriteManager.getInstance().getSprite(spriteName);
+        isPressed = false;
+        altSprite = null;
         addListener(this);
     }
 
@@ -34,7 +54,10 @@ public class ActorWithSprite extends Actor implements EventListener {
 
     @Override
     public void draw(@NotNull Batch batch, float parentAlpha) {
-        batch.draw(sprite, getX(), getY(), getWidth(), getHeight());
+        if (isPressed && altSprite != null)
+            batch.draw(altSprite, getX(), getY(), getWidth(), getHeight());
+        else
+            batch.draw(sprite, getX(), getY(), getWidth(), getHeight());
     }
 
     public int getButtonId() {
@@ -52,12 +75,14 @@ public class ActorWithSprite extends Actor implements EventListener {
         switch (event.getType()) {
             case touchDown:
                 if (event.getButton() == Input.Buttons.LEFT) {
+                    isPressed = true;
                     onPress();
                     return callback.buttonPressed(buttonId);
                 }
                 return false;
             case touchUp:
                 if (event.getButton() == Input.Buttons.LEFT) {
+                    isPressed = false;
                     onRelease();
                     callback.buttonReleased(buttonId);
                     return true;

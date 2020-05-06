@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +29,12 @@ public class StepGame extends BaseStep {
     public void stepBegin() {
         callback.leftPlayer.setShowShips(callback.config.getGameType() != GameConfig.GameType.LOCAL_2P);
         callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI);
-        callback.setChildrenEnabled(true, true);
         callback.rightPlayer.setPosition(callback.sideWidth + callback.middleGap + callback.redundantX + callback.cellSize * callback.config.getWidth(), callback.redundantY + callback.footerHeight);
+        callback.setChildrenEnabled(true, true);
+        callback.leftPlayer.start();
+        callback.rightPlayer.start();
+        callback.rotateBtn.setVisible(true);
+        resize();
     }
 
     @Override
@@ -63,13 +68,14 @@ public class StepGame extends BaseStep {
 
     @Override
     public void draw() {
-        getBatch().begin();
+        super.draw();
+        Batch batch = getBatch();
+
         if (callback.getTurn() != cachedTurn) {
-            if (callback.getTurn() == StepsDirector.TURN_LEFT) {
+            if (callback.getTurn() == StepsDirector.TURN_LEFT)
                 arrowSprite.setFlip(false, false);
-            } else {
+            else
                 arrowSprite.setFlip(true, false);
-            }
             cachedTurn = callback.getTurn();
         }
         if (callback.getTurn() == StepsDirector.TURN_LEFT)
@@ -77,13 +83,10 @@ public class StepGame extends BaseStep {
         else
             getBatch().setColor(1, 0, 0, 1);
 
-        float shift = callback.middleGap * 0.1f;
-        float arrowSize = callback.middleGap - shift * 2;
-        getBatch().draw(arrowSprite, callback.redundantX + callback.sideWidth + callback.config.getWidth() * callback.cellSize + shift,
-                callback.redundantY + callback.footerHeight + callback.config.getHeight() * callback.cellSize / 2 - arrowSize / 2,
-                arrowSize, arrowSize);
-        getBatch().setColor(1, 1, 1, 1);
-        getBatch().end();
+        batch.begin();
+        batch.draw(arrowSprite, arrowSprite.getX(), arrowSprite.getY(), arrowSprite.getWidth(), arrowSprite.getHeight());
+        batch.setColor(1, 1, 1, 1);
+        batch.end();
     }
 
     @Override
@@ -115,5 +118,24 @@ public class StepGame extends BaseStep {
             callback.aiXL = i;
             callback.aiYL = j;
         }
+    }
+
+    @Override
+    public int stepEnd() {
+        callback.rotateBtn.setVisible(false);
+        return super.stepEnd();
+    }
+
+    @Override
+    public void resize() {
+        super.resize();
+        float shift = callback.middleGap * 0.1f;
+        float arrowSize = callback.middleGap - shift * 2;
+        arrowSprite.setBounds(callback.redundantX + callback.sideWidth + callback.config.getWidth() * callback.cellSize + shift,
+                callback.redundantY + callback.footerHeight + callback.config.getHeight() * callback.cellSize / 2 - arrowSize / 2,
+                arrowSize, arrowSize);
+        callback.rotateBtn.setBounds(callback.redundantX + callback.sideWidth + callback.config.getWidth() * callback.cellSize + callback.middleGap / 4,
+                callback.redundantY + callback.footerHeight + callback.config.getHeight() * callback.cellSize / 2 - arrowSize / 2 - callback.middleGap / 2,
+                callback.middleGap / 2, callback.middleGap / 2);
     }
 }

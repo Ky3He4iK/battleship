@@ -35,7 +35,9 @@ public abstract class BaseStep extends Stage {
 
     abstract public void act();
 
-    abstract public void draw();
+    public void draw() {
+        super.draw();
+    }
 
     @Override
     public void dispose() {
@@ -49,5 +51,8 @@ public abstract class BaseStep extends Stage {
 
     public boolean relayTouch(InputEvent event, float x, float y, int pointer, int button) {
         return false;
+    }
+
+    public void resize() {
     }
 }

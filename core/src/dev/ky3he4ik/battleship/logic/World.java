@@ -14,7 +14,7 @@ import dev.ky3he4ik.battleship.utils.H;
 
 public class World {
     public static class Ship {
-        public final int len;
+        public final int length;
         public final String name;
         public final int code;
         public final int idx;
@@ -22,8 +22,8 @@ public class World {
         public final int rotation;
 
 
-        public Ship(int len, int code, String name, int idx, int idy, int rotation) {
-            this.len = len;
+        public Ship(int length, int code, String name, int idx, int idy, int rotation) {
+            this.length = length;
             this.code = code;
             this.name = name;
             this.idx = idx;
@@ -32,26 +32,26 @@ public class World {
         }
 
         public Ship copy() {
-            return new Ship(len, code, name, idx, idy, rotation);
+            return new Ship(length, code, name, idx, idy, rotation);
         }
 
         public Ship move(int idx, int idy, int rotation) {
             String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-            return new Ship(len, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
+            return new Ship(length, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
                     idx, idy, rotation);
         }
 
         public boolean containsCell(int i, int j) {
             if (rotation == ROTATION_HORIZONTAL)
-                return idy == j && idx <= i && idx + len > i;
+                return idy == j && idx <= i && idx + length > i;
             else
-                return idx == i && idy <= j && idy + len > j;
+                return idx == i && idy <= j && idy + length > j;
         }
 
         @NotNull
         public GameConfig.Ship convert() {
             String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-            return new GameConfig.Ship(len, code, name_);
+            return new GameConfig.Ship(length, code, name_);
         }
     }
 
@@ -296,7 +296,7 @@ public class World {
     @Contract(pure = true)
     public boolean isDead() {
         for (Ship ship : ships) {
-            for (int i = 0; i < ship.len; i++)
+            for (int i = 0; i < ship.length; i++)
                 if (getState(ship.idx + H.I(ship.rotation == ROTATION_HORIZONTAL) * i, ship.idy + H.I(ship.rotation == ROTATION_VERTICAL) * i) == STATE_UNDAMAGED)
                     return false;
         }
@@ -335,14 +335,14 @@ public class World {
     public boolean placeShip(Ship ship, int idx, int idy, int rotation) {
         if (!inBounds(idx, idy))
             return false;
-        else if (rotation == ROTATION_HORIZONTAL && !inBounds(idx + ship.len - 1, idy))
+        else if (rotation == ROTATION_HORIZONTAL && !inBounds(idx + ship.length - 1, idy))
             return false;
-        else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.len - 1))
+        else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.length - 1))
             return false;
 
         removeShip(ship.code);
 
-        for (int i = -1; i <= ship.len; i++) {
+        for (int i = -1; i <= ship.length; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
                 if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1))
                     return false;
@@ -352,7 +352,7 @@ public class World {
             }
         }
         ships.add(ship.move(idx, idy, rotation));
-        for (int i = 0; i < ship.len; i++) {
+        for (int i = 0; i < ship.length; i++) {
             if (rotation == ROTATION_VERTICAL)
                 field[idx][idy + i] = (ship.code << SHIP_SHIFT) | STATE_UNDAMAGED;
             else
@@ -375,7 +375,7 @@ public class World {
         for (int i = 0; i < ships.size(); i++)
             if (ships.get(i).code == shipId) {
                 Ship ship = ships.get(i);
-                for (int j = 0; j < ship.len; j++)
+                for (int j = 0; j < ship.length; j++)
                     field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
                 ships.remove(i);
                 return;
@@ -386,7 +386,7 @@ public class World {
         for (int i = 0; i < ships.size(); i++)
             if (ships.get(i).code == shipId) {
                 Ship ship = ships.get(i);
-                for (int j = 0; j < ship.len; j++)
+                for (int j = 0; j < ship.length; j++)
                     field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)]
                             [ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
                 ships.remove(i);
@@ -408,7 +408,7 @@ public class World {
         if (ship == null)
             return false;
         boolean alive = true;
-        for (int i = 0; i < ship.len; i++)
+        for (int i = 0; i < ship.length; i++)
             alive = alive && getState(ship.idx + i * H.I(ship.rotation == ROTATION_HORIZONTAL),
                     ship.idy + i * H.I(ship.rotation == ROTATION_VERTICAL)) == STATE_UNDAMAGED;
         return alive;
@@ -419,7 +419,7 @@ public class World {
         if (ship == null)
             return false;
         boolean alive = false;
-        for (int i = 0; i < ship.len; i++)
+        for (int i = 0; i < ship.length; i++)
             alive = alive || getState(ship.idx + i * H.I(ship.rotation == ROTATION_HORIZONTAL),
                     ship.idy + i * H.I(ship.rotation == ROTATION_VERTICAL)) == STATE_UNDAMAGED;
         return !alive;
