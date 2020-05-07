@@ -79,12 +79,12 @@ public class StepGame extends BaseStep {
             cachedTurn = callback.getTurn();
         }
         if (callback.getTurn() == StepsDirector.TURN_LEFT)
-            getBatch().setColor(0, 1, 0, 1);
+            arrowSprite.setColor(0, 1, 0, 1);
         else
-            getBatch().setColor(1, 0, 0, 1);
+            arrowSprite.setColor(1, 0, 0, 1);
 
         batch.begin();
-        batch.draw(arrowSprite, arrowSprite.getX(), arrowSprite.getY(), arrowSprite.getWidth(), arrowSprite.getHeight());
+        arrowSprite.draw(batch);
         batch.setColor(1, 1, 1, 1);
         batch.end();
     }

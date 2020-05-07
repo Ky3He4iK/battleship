@@ -252,7 +252,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     @NotNull
-    Field getOpponent(int playerId) {
+    public Field getOpponent(int playerId) {
         if (playerId == TURN_LEFT)
             return rightPlayer;
         else

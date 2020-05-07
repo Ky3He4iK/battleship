@@ -55,7 +55,7 @@ public class AloneShip extends Actor implements EventListener {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if (!placed)
-            batch.setColor(1, .5f, .5f, 1);
+            batch.setColor(getColor());
         batch.draw(sprite, getX(), getY(), sprite.getOriginX(), sprite.getOriginY(),
                 sprite.getWidth(), sprite.getHeight(), 1, 1, sprite.getRotation());
         batch.setColor(1, 1, 1, 1);

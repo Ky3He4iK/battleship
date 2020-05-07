@@ -344,10 +344,10 @@ public class World {
 
         for (int i = -1; i <= ship.length; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
-                if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1))
+                if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || isOpened(idx + i, idy))
                     return false;
             } else {
-                if (cellIsBusy(idx, idy + i) || cellIsBusy(idx + 1, idy + i) || cellIsBusy(idx - 1, idy + i))
+                if (cellIsBusy(idx, idy + i) || cellIsBusy(idx + 1, idy + i) || cellIsBusy(idx - 1, idy + i) || isOpened(idx, idy + i))
                     return false;
             }
         }

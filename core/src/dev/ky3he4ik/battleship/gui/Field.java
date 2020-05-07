@@ -108,21 +108,21 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     @Override
     public void draw(@NotNull Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        batch.setColor(1, 1, 1, 0.5f);
-        if (showShips) {
-            for (World.Ship ship : world.getShips())
-                if (!world.shipDead(ship.code)) {
-                    Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
-                    batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
-                            sprite.getOriginX(), sprite.getOriginY(),
-                            sprite.getWidth(), sprite.getHeight(),
-                            1, 1, sprite.getRotation());
-                }
-            for (AloneShip child : children)
-                if (world.shipDead(child.id))
-                    child.setVisible(false);
-        }
-        batch.setColor(1, 0, 0, 0.5f);
+//        batch.setColor(1, 1, 1, 0.5f);
+//        if (showShips) {
+//            for (World.Ship ship : world.getShips())
+//                if (!world.shipDead(ship.code)) {
+//                    Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
+//                    batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
+//                            sprite.getOriginX(), sprite.getOriginY(),
+//                            sprite.getWidth(), sprite.getHeight(),
+//                            1, 1, sprite.getRotation());
+//                }
+//            for (AloneShip child : children)
+//                if (world.shipDead(child.id))
+//                    child.setVisible(false);
+//        }
+//        batch.setColor(1, 0, 0, 0.5f);
         for (World.Ship ship : world.getShips())
             if (world.shipDead(ship.code)) {
                 Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
@@ -150,12 +150,12 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     public void registerRelease(int idx, int idy) {
-        if (idx == -1 || idy == -1)
-            return;
         clicked = false;
+        if (idx < 0 || idy < 0 || idx >= world.getWidth() || idy >= world.getHeight())
+            return;
         clickX = idx;
         clickY = idy;
-        if (!isOpened(idx, idy) && world.getShips().size() == shipsCnt)
+        if (!isOpened(idx, idy) && callback.getOpponent(playerId).getWorld().getShips().size() == shipsCnt)
             callback.cellPressed(playerId, idx, idy);
     }
 
@@ -252,11 +252,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public float[] unHighlight(@NotNull GameConfig.Ship ship, float x, float y, int rotation) {
         if (shadow)
             shadow = false;
-        else {
-            shadowLX = innerCellX(x);
-            shadowLY = innerCellY(y);
-            shadowRot = rotation;
-        }
+        shadowLX = innerCellX(x);
+        shadowLY = innerCellY(y);
+        shadowRot = rotation;
         if (world.placeShip(ship.convert(), shadowLX, shadowLY, shadowRot))
             return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
         return null;
@@ -311,7 +309,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
             return null;
         } else
-            return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
+            return new float[]{coord[0], coord[1]};
     }
 
     @Override
@@ -320,20 +318,37 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             lastAccessId = ship.id;
             removeShip(pos[0], pos[1], ship.id);
             return true;
+        } else {
+            registerRelease(innerCellX(Gdx.input.getX() - cellSize / 2), innerCellY(Gdx.graphics.getHeight() - Gdx.input.getY()- cellSize / 2));
+            return false;
         }
-        return false;
     }
 
     @Override
     public void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship) {
-        float[] newPos = unHighlight(ship.ship, pos[0], pos[1], ship.getShipRotation());
         float[] curPos = H.getAbsCoord(this);
-        if (newPos != null) {
-            ship.setPlaced(true);
-            Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
-            ship.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);
-        } else
-            ship.setPlaced(false);
+//        if (pos[0] + cellSize / 2 < curPos[0] || pos[1] + ship.getHeight() / 2 < curPos[1] || pos[0] > curPos[0] + getWidth() || pos[1] > curPos[1] + getHeight()) {
+        ship.setPlaced(false);
+        ship.setPosition(Math.min(curPos[0] + getWidth() - cellSize, Math.max(curPos[0], pos[0])) - curPos[0],
+                Math.min(curPos[1] + getHeight() - cellSize, Math.max(curPos[1], pos[1])) - curPos[1]);
+//        }
+        placeAllShips();
+    }
+
+    private void placeAllShips() {
+        float[] curPos = H.getAbsCoord(this);
+        for (AloneShip ship : children) {
+            float[] pos = H.getAbsCoord(ship);
+            float[] newPos = unHighlight(ship.ship, pos[0], pos[1], ship.getShipRotation());
+            if (newPos != null) {
+                ship.setPlaced(true);
+                Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
+                ship.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);
+            } else {
+                ship.setPlaced(false);
+                ship.setPosition(pos[0] - curPos[0], pos[1] - curPos[1]);
+            }
+        }
     }
 
     @Override
@@ -349,6 +364,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         if (lastAccessId != -1)
             for (AloneShip child : children)
                 if (child.id == lastAccessId) {
+                    shadowLX = innerCellX(child.getGlobalX());
+                    shadowLY = innerCellY(child.getGlobalY());
                     child.rotate();
                     float[] res = rotate(child, H.getAbsCoord(child), child.getShipRotation());
                     if (res != null) {
