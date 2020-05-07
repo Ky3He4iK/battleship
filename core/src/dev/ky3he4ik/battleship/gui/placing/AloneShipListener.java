@@ -4,13 +4,15 @@ import org.jetbrains.annotations.NotNull;
 
 public interface AloneShipListener {
     // returns: can be moved
-    public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship);
+    boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship);
 
-    public void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship);
+    void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship);
 
-    public void shipMoved(@NotNull float[] pos, @NotNull AloneShip ship);
+    void shipMoved(@NotNull float[] pos, @NotNull AloneShip ship);
 
-    public float getX();
+    float getX();
 
-    public float getY();
+    float getY();
+
+    boolean isPlaced(int shipId);
 }

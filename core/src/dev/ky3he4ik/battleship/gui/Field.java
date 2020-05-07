@@ -3,7 +3,6 @@ package dev.ky3he4ik.battleship.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 import org.jetbrains.annotations.NotNull;
@@ -92,17 +91,17 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     public void start() {
         shipsCnt = world.getShips().size();
-        if (showShips)
-            for (World.Ship ship : world.getShips()) {
-                AloneShip child = new AloneShip(this, ship.convert());
-                child.setRotation(ship.rotation);
-                child.setPlaced(true);
-                addActor(child);
-                children.add(child);
-                child.setBounds(ship.idx * cellSize, ship.idy * cellSize, cellSize * ship.length, cellSize);
-                if (ship.rotation == World.ROTATION_VERTICAL)
-                    child.rotate();
-            }
+        for (World.Ship ship : world.getShips()) {
+            AloneShip child = new AloneShip(this, ship.convert());
+            child.setRotation(ship.rotation);
+            child.setPlaced(true);
+            child.setVisible(showShips);
+            addActor(child);
+            children.add(child);
+            child.setBounds(ship.idx * cellSize, ship.idy * cellSize, cellSize * ship.length, cellSize);
+            if (ship.rotation == World.ROTATION_VERTICAL)
+                child.rotate();
+        }
     }
 
     @Override
@@ -123,16 +122,11 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 //                    child.setVisible(false);
 //        }
 //        batch.setColor(1, 0, 0, 0.5f);
-        for (World.Ship ship : world.getShips())
-            if (world.shipDead(ship.code)) {
-                Sprite sprite = SpriteManager.getInstance().getSprite(ship.name);
-                batch.draw(sprite, getX() + ship.idx * cellSize, getY() + ship.idy * cellSize,
-                        sprite.getOriginX(), sprite.getOriginY(),
-                        sprite.getWidth(), sprite.getHeight(),
-                        1, 1, sprite.getRotation());
+        for (AloneShip ship : children)
+            if (world.shipDead(ship.id)) {
+                ship.setDead();
+                ship.setVisible(true);
             }
-
-        batch.setColor(1, 1, 1, 1);
     }
 
     public int getState(int idx, int idy) {
@@ -319,7 +313,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             removeShip(pos[0], pos[1], ship.id);
             return true;
         } else {
-            registerRelease(innerCellX(Gdx.input.getX() - cellSize / 2), innerCellY(Gdx.graphics.getHeight() - Gdx.input.getY()- cellSize / 2));
+            registerRelease(innerCellX(Gdx.input.getX() - cellSize / 2), innerCellY(Gdx.graphics.getHeight() - Gdx.input.getY() - cellSize / 2));
             return false;
         }
     }
@@ -332,21 +326,18 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         ship.setPosition(Math.min(curPos[0] + getWidth() - cellSize, Math.max(curPos[0], pos[0])) - curPos[0],
                 Math.min(curPos[1] + getHeight() - cellSize, Math.max(curPos[1], pos[1])) - curPos[1]);
 //        }
-        placeAllShips();
-    }
-
-    private void placeAllShips() {
-        float[] curPos = H.getAbsCoord(this);
-        for (AloneShip ship : children) {
-            float[] pos = H.getAbsCoord(ship);
-            float[] newPos = unHighlight(ship.ship, pos[0], pos[1], ship.getShipRotation());
-            if (newPos != null) {
-                ship.setPlaced(true);
-                Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
-                ship.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);
-            } else {
-                ship.setPlaced(false);
-                ship.setPosition(pos[0] - curPos[0], pos[1] - curPos[1]);
+        for (AloneShip child : children) {
+            if (!child.isPlaced()) {
+                pos = H.getAbsCoord(child);
+                float[] newPos = unHighlight(child.ship, pos[0], pos[1], child.getShipRotation());
+                if (newPos != null) {
+                    child.setPlaced(true);
+                    Gdx.app.debug("ShipPlacer", "Ship placed: " + child.id + " (" + child.getShipName() + ")");
+                    child.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);
+                } else {
+                    child.setPlaced(false);
+                    child.setPosition(pos[0] - curPos[0], pos[1] - curPos[1]);
+                }
             }
         }
     }
@@ -356,8 +347,15 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         highlight(pos[0], pos[1], ship.getShipRotation(), ship.length);
     }
 
+    @Override
+    public boolean isPlaced(int shipId) {
+        return world.isPlaced(shipId);
+    }
+
     public void setShowShips(boolean showShips) {
         this.showShips = showShips;
+        for (AloneShip ship: children)
+            ship.setVisible(showShips);
     }
 
     public boolean rotateButtonPressed() {

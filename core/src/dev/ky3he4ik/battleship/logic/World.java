@@ -340,14 +340,12 @@ public class World {
         else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.length - 1))
             return false;
 
-        removeShip(ship.code);
-
         for (int i = -1; i <= ship.length; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
-                if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || isOpened(idx + i, idy))
+                if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || (i >= 0 && i < ship.length && isOpened(idx + i, idy)))
                     return false;
             } else {
-                if (cellIsBusy(idx, idy + i) || cellIsBusy(idx + 1, idy + i) || cellIsBusy(idx - 1, idy + i) || isOpened(idx, idy + i))
+                if (cellIsBusy(idx, idy + i) || cellIsBusy(idx + 1, idy + i) || cellIsBusy(idx - 1, idy + i) || (i >= 0 && i < ship.length && isOpened(idx, idy + i)))
                     return false;
             }
         }
@@ -423,5 +421,12 @@ public class World {
             alive = alive || getState(ship.idx + i * H.I(ship.rotation == ROTATION_HORIZONTAL),
                     ship.idy + i * H.I(ship.rotation == ROTATION_VERTICAL)) == STATE_UNDAMAGED;
         return !alive;
+    }
+
+    public boolean isPlaced(int shipId) {
+        for (Ship ship : ships)
+            if (ship.code == shipId)
+                return true;
+        return false;
     }
 }

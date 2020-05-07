@@ -38,6 +38,7 @@ public class AloneShip extends Actor implements EventListener {
 
     private boolean placed = false;
     private boolean canBeMoved = false;
+    private boolean dead = false;
 
     public AloneShip(@NotNull final AloneShipListener callback, @NotNull final GameConfig.Ship ship) {
         this.callback = callback;
@@ -54,8 +55,10 @@ public class AloneShip extends Actor implements EventListener {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if (!placed)
+        if (!placed || dead)
             batch.setColor(getColor());
+        else
+            setPlaced(callback.isPlaced(id));
         batch.draw(sprite, getX(), getY(), sprite.getOriginX(), sprite.getOriginY(),
                 sprite.getWidth(), sprite.getHeight(), 1, 1, sprite.getRotation());
         batch.setColor(1, 1, 1, 1);
@@ -83,13 +86,13 @@ public class AloneShip extends Actor implements EventListener {
                 }
                 return false;
             case touchUp:
-                if (event.getButton() == Input.Buttons.LEFT && canBeMoved) {
+                if (event.getButton() == Input.Buttons.LEFT && canBeMoved && !dead) {
                     callback.shipReleased(H.getAbsCoord(this), this);
                     return true;
                 }
                 return false;
             case touchDragged:
-                if (canBeMoved) {
+                if (canBeMoved && !dead) {
                     float[] pos = H.getAbsCoord(this);
                     float mouseX = Math.max(Math.min(Gdx.input.getX(), Gdx.graphics.getWidth()), 0);
                     float mouseY = Math.max(Math.min(Gdx.graphics.getHeight() - Gdx.input.getY(), Gdx.graphics.getHeight()), 0);
@@ -116,6 +119,8 @@ public class AloneShip extends Actor implements EventListener {
 
     public void setPlaced(boolean placed) {
         this.placed = placed;
+        if (placed)
+            setColor(1, .5f, .5f, .7f);
     }
 
     public float getGlobalX() {
@@ -134,5 +139,10 @@ public class AloneShip extends Actor implements EventListener {
     public void setShipRotation(int rotation) {
         if (this.rotation != rotation)
             rotate();
+    }
+
+    public void setDead() {
+        dead = true;
+        setColor(1, .7f, .7f, .7f);
     }
 }

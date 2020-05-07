@@ -152,6 +152,13 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     }
 
     @Override
+    public boolean isPlaced(int shipId) {
+//        if (field != null)
+//            return field.getWorld().isPlaced(shipId);
+        return true;
+    }
+
+    @Override
     public boolean buttonPressed(int buttonId) {
         if (buttonId == BUTTON_ROTATE) {
             Gdx.app.debug("ShipPlacer", "rotating " + lastAccessId);

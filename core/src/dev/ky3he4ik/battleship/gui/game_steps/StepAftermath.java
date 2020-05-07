@@ -8,6 +8,8 @@ public class StepAftermath extends BaseStep {
     @NotNull
     private String text;
 
+    private long startTime;
+
     StepAftermath(@NotNull StepsDirector callback, int stepId) {
         super(callback, stepId);
         text = "";
@@ -22,6 +24,7 @@ public class StepAftermath extends BaseStep {
         else if (callback.rightPlayer.getWorld().isDead())
             callback.leftScore++;
         text = (callback.leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + callback.leftScore + " : " + callback.rightScore;
+        startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -43,7 +46,10 @@ public class StepAftermath extends BaseStep {
 
     @Override
     public boolean relayTouch(InputEvent event, float x, float y, int pointer, int button) {
-        callback.nextStep();
-        return true;
+        if (System.currentTimeMillis() - startTime > 3000) {
+            callback.nextStep();
+            return true;
+        }
+        return false;
     }
 }
