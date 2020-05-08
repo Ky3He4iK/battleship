@@ -17,15 +17,9 @@ public abstract class BaseStep extends Stage {
     @NotNull
     protected ShapeRenderer renderer;
 
-    @NotNull
-    BitmapFont font;
-
     BaseStep(@NotNull StepsDirector callback, int stepId) {
         this.callback = callback;
         this.stepId = stepId;
-        font = new BitmapFont();
-        font.getData().setScale(Gdx.graphics.getHeight() / 400f);
-        font.setColor(Color.BLACK);
         renderer = new ShapeRenderer();
     }
 
@@ -44,7 +38,6 @@ public abstract class BaseStep extends Stage {
     @Override
     public void dispose() {
         super.dispose();
-        font.dispose();
         renderer.dispose();
     }
 

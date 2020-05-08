@@ -19,7 +19,7 @@ public class StepAftermath extends BaseStep {
     StepAftermath(@NotNull StepsDirector callback, int stepId) {
         super(callback, stepId);
         text = "";
-        textLabel = new Label(text, new Label.LabelStyle(font, font.getColor()));
+        textLabel = new Label(text, new Label.LabelStyle(callback.font, callback.font.getColor()));
     }
 
     @Override
@@ -48,7 +48,6 @@ public class StepAftermath extends BaseStep {
     public void draw() {
         getBatch().begin();
         textLabel.draw(getBatch(), 1);
-//        font.draw(getBatch(), text, callback.getWidth() / 2, callback.getHeight() / 2);
         getBatch().end();
     }
 
@@ -70,5 +69,11 @@ public class StepAftermath extends BaseStep {
     @Override
     public String getName() {
         return "Aftermath";
+    }
+
+    @Override
+    public void resize() {
+        super.resize();
+        textLabel.setPosition((callback.getWidth() - textLabel.getWidth()) / 2, (callback.getHeight() - textLabel.getHeight()) / 2);
     }
 }

@@ -42,6 +42,8 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public void draw() {
+        if (callback.readyCnt == 2)
+            callback.nextStep();
         if (callback.config.getGameType() != GameConfig.GameType.LOCAL_2P) {
             cTime += Gdx.graphics.getDeltaTime();
             Batch batch = getBatch();

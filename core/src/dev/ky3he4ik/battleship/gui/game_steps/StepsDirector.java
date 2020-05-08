@@ -1,10 +1,13 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -79,7 +82,19 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     @NotNull
     ActorWithSprite rotateBtn;
 
+    @NotNull
+    BitmapFont font;
+
+    @NotNull
+    Label stepLabel;
+
     public StepsDirector() {
+        font = new BitmapFont();
+        font.getData().setScale(Gdx.graphics.getHeight() / 400f);
+        font.setColor(Color.BLACK);
+
+        stepLabel = new Label("", new Label.LabelStyle(font, font.getColor()));
+
         steps = new ArrayList<>();
         steps.add(new StepBeginning(this, STEP_BEGINNING));
         steps.add(new StepConfigure(this, STEP_CHOOSE_CONFIG));
@@ -142,6 +157,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
             restart();
         currentStep = steps.get(currentStep).stepEnd();
         steps.get(currentStep).stepBegin();
+        stepLabel.setText(steps.get(currentStep).getName());
     }
 
     void setTurn(int turn) {
@@ -249,6 +265,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         }
 
         getStep().resize();
+
+        font.getData().setScale(Gdx.graphics.getHeight() / 400f);
     }
 
     @NotNull
@@ -296,6 +314,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         rightPlayer.dispose();
         for (BaseStep step : steps)
             step.dispose();
+        font.dispose();
     }
 
     public void shipsPlaced(int playerId) {

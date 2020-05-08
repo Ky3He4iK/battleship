@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
@@ -13,7 +14,7 @@ public class StepBeginning extends BaseStep {
 
     StepBeginning(@NotNull StepsDirector callback, int stepId) {
         super(callback, stepId);
-        textLabel = new Label("Press any key", new Label.LabelStyle(font, font.getColor()));
+        textLabel = new Label("Press any key", new Label.LabelStyle(callback.font, callback.font.getColor()));
     }
 
     @Override
