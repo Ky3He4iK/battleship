@@ -27,8 +27,6 @@ public class StepGame extends BaseStep {
 
     @Override
     public void stepBegin() {
-        callback.leftPlayer.setShowShips(callback.config.getGameType() != GameConfig.GameType.LOCAL_2P);
-        callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI);
         callback.rightPlayer.setPosition(callback.sideWidth + callback.middleGap + callback.redundantX + callback.cellSize * callback.config.getWidth(), callback.redundantY + callback.footerHeight);
         callback.setChildrenEnabled(true, true);
         callback.leftPlayer.start();

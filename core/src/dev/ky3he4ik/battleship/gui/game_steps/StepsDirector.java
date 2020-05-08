@@ -300,7 +300,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     public void shipsPlaced(int playerId) {
         readyCnt++;
-        if (readyCnt == 2)
+        if (playerId == TURN_LEFT || (playerId == TURN_RIGHT && config.getGameType() != GameConfig.GameType.AI_VS_AI && config.getGameType() != GameConfig.GameType.AI) || readyCnt == 2)
             nextStep();
         Gdx.app.debug("GameStage", "" + playerId + " is ready");
     }

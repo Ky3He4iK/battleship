@@ -91,6 +91,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     public void start() {
         shipsCnt = world.getShips().size();
+        for (AloneShip ship: children)
+            removeActor(ship);
+        children.clear();
         for (World.Ship ship : world.getShips()) {
             AloneShip child = new AloneShip(this, ship.convert());
             child.setRotation(ship.rotation);

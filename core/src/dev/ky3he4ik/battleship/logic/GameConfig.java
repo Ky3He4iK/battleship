@@ -216,7 +216,7 @@ public class GameConfig {
     @NotNull
     public static GameConfig getSampleConfigEast() {
         return new GameConfig(10, 10, false, false,
-                true, false, 0, 1, 1, GameType.AI, Ship.getSampleShipsEast());
+                true, false, 0, 1, 1, GameType.AI_VS_AI, Ship.getSampleShipsEast());
     }
 
     @NotNull

@@ -153,8 +153,6 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
 
     @Override
     public boolean isPlaced(int shipId) {
-//        if (field != null)
-//            return field.getWorld().isPlaced(shipId);
         return true;
     }
 
