@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -24,6 +25,7 @@ public abstract class BaseStep extends Stage {
         this.stepId = stepId;
         font = new BitmapFont();
         font.getData().setScale(Gdx.graphics.getHeight() / 400f);
+        font.setColor(Color.BLACK);
         renderer = new ShapeRenderer();
     }
 

@@ -354,7 +354,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     public void setShowShips(boolean showShips) {
         this.showShips = showShips;
-        for (AloneShip ship: children)
+        for (AloneShip ship : children)
             ship.setVisible(showShips);
     }
 
