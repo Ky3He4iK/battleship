@@ -57,4 +57,7 @@ public abstract class BaseStep extends Stage {
 
     public void resize() {
     }
+
+    @NotNull
+    abstract public String getName();
 }

@@ -58,4 +58,10 @@ public class StepPlacementRight extends BaseStep {
         callback.rightPlayer.start();
         return super.stepEnd();
     }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "P2 placement";
+    }
 }

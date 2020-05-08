@@ -136,4 +136,10 @@ public class StepGame extends BaseStep {
                 callback.redundantY + callback.footerHeight + callback.config.getHeight() * callback.cellSize / 2 - arrowSize / 2 - callback.middleGap / 2,
                 callback.middleGap / 2, callback.middleGap / 2);
     }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "Game";
+    }
 }

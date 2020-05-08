@@ -65,4 +65,10 @@ public class StepAftermath extends BaseStep {
         }
         return false;
     }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "Aftermath";
+    }
 }

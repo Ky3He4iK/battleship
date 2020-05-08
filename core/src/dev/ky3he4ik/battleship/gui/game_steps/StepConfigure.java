@@ -58,4 +58,10 @@ public class StepConfigure extends BaseStep {
     public void resize() {
         configGroup.setSize(callback.getWidth(), callback.getHeight());
     }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "Configure";
+    }
 }

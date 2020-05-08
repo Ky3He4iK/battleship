@@ -42,4 +42,10 @@ public class StepBeginning extends BaseStep {
         callback.nextStep();
         return true;
     }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "Beginning";
+    }
 }
