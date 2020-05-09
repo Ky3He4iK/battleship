@@ -90,7 +90,7 @@ public class GameConfig {
     private int shotsPerTurn;
     private int aiLevel;
     private int aiLevel2;
-    private int version = 1;
+    private int version;
 
     @NotNull
     private GameType gameType;
@@ -301,4 +301,19 @@ public class GameConfig {
         return new Gson().toJson(this);
     }
 
+    public void duplicate(@NotNull GameConfig other) {
+        other.width = width;
+        other.height = height;
+        other.movingEnabled = movingEnabled;
+        other.multipleShots = multipleShots;
+        other.additionalShots = additionalShots;
+        other.decreasingField = decreasingField;
+        other.movingPerTurn = movingPerTurn;
+        other.shotsPerTurn = shotsPerTurn;
+        other.aiLevel = aiLevel;
+        other.aiLevel2 = aiLevel2;
+        other.version = version;
+        other.gameType = gameType;
+        other.ships = ships;
+    }
 }

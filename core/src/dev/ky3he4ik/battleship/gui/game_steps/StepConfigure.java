@@ -1,5 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
+import com.badlogic.gdx.utils.viewport.Viewport;
+
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.gui.game_steps.config.ConfigGroup;
@@ -12,14 +14,18 @@ public class StepConfigure extends BaseStep {
     StepConfigure(@NotNull StepsDirector callback, int stepId) {
         super(callback, stepId);
         configGroup = new ConfigGroup(this);
-        configGroup.setVisible(false);
-        //todo: implement
+//        configGroup.setVisible(false);
     }
 
     @Override
     public void stepBegin() {
         callback.nextStep();
-        configGroup.setVisible(true);
+        configGroup.init();
+    }
+
+    @Override
+    public Viewport getViewport() {
+        return callback.getViewport();
     }
 
     @Override
@@ -34,7 +40,7 @@ public class StepConfigure extends BaseStep {
 
     @Override
     public int stepEnd() {
-        configGroup.setVisible(false);
+        configGroup.finish().duplicate(callback.config);
 
         callback.leftPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
         Communication communication = callback.leftPlayer.getCommunication();
@@ -54,11 +60,6 @@ public class StepConfigure extends BaseStep {
             return super.stepEnd();
     }
 
-    @Override
-    public void resize() {
-        configGroup.setSize(callback.getWidth(), callback.getHeight());
-    }
-
     @NotNull
     @Override
     public String getName() {
@@ -68,5 +69,10 @@ public class StepConfigure extends BaseStep {
     @NotNull
     public GameConfig getConfig() {
         return callback.config;
+    }
+
+    @NotNull
+    public StepsDirector getCallback() {
+        return callback;
     }
 }
