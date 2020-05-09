@@ -53,17 +53,16 @@ public final class H {
         } while (!done);
     }
 
-    public static void placeShipsLines(@NotNull World world, @NotNull GameConfig config) {
+    public static void placeShipsLines(@NotNull World world, @NotNull ArrayList<GameConfig.Ship> availableShips) {
         int idx = 0;
         int idy = 0;
         int step = 0;
-        ArrayList<GameConfig.Ship> availableShips = config.getShips();
         for (int i = 0; i < availableShips.size(); ) {
             boolean success = world.placeShip(availableShips.get(i).convert(), idx, idy, World.ROTATION_HORIZONTAL);
             idy += 2;
             step = Math.max(step, availableShips.get(i).length);
-            if (idy >= config.getHeight()) {
-                idy -= config.getHeight();
+            if (idy >= world.getHeight()) {
+                idy -= world.getHeight();
                 idx += step + 1;
                 step = 0;
             }

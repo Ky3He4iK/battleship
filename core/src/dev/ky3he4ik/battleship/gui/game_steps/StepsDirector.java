@@ -104,7 +104,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         steps.add(new StepAftermath(this, STEP_AFTERMATH));
 
         manager = SpriteManager.getInstance();
-        config = GameConfig.getSampleConfigEast();
+        config = GameConfig.getSampleMoving();
         calcCellSize();
 
         World leftWorld = new World(config.getWidth(), config.getHeight());
@@ -112,7 +112,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
         Communication leftComm = null;
         if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
-            leftComm = new AIDummy(rightWorld, leftWorld, config);
+            leftComm = new AIDummy(null, rightWorld, leftWorld, config);
             leftComm.init();
         }
         leftPlayer = new Field(leftWorld, cellSize, leftComm, TURN_LEFT, this);
@@ -122,7 +122,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
         Communication rightComm = null;
         if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
-            rightComm = new AIDummy(leftPlayer.getWorld(), rightWorld, config);
+            rightComm = new AIDummy(null, leftPlayer.getWorld(), rightWorld, config);
             rightComm.init();
         }
         rightPlayer = new Field(rightWorld, cellSize, rightComm, TURN_RIGHT, this);

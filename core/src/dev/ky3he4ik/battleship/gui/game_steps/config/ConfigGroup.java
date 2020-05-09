@@ -20,7 +20,7 @@ public class ConfigGroup extends Group {
 
     public ConfigGroup(@NotNull StepConfigure callback) {
         this.callback = callback;
-        config = GameConfig.getSampleConfigEast();
+        config = callback.getConfig();
 
         final Table scrollTable = new Table();
 //        scrollTable.add(text);

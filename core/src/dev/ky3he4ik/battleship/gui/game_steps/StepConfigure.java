@@ -64,4 +64,9 @@ public class StepConfigure extends BaseStep {
     public String getName() {
         return "Configure";
     }
+
+    @NotNull
+    public GameConfig getConfig() {
+        return callback.config;
+    }
 }

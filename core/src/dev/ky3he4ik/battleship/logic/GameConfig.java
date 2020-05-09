@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import dev.ky3he4ik.battleship.ai.AILevel;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class GameConfig {
@@ -88,6 +89,7 @@ public class GameConfig {
     private int movingPerTurn;
     private int shotsPerTurn;
     private int aiLevel;
+    private int aiLevel2;
     private int version = 1;
 
     @NotNull
@@ -109,9 +111,7 @@ public class GameConfig {
      * @param gameType        - type of game
      * @param ships           - list of available ships
      */
-    public GameConfig(int width, int height, boolean movingEnabled, boolean multipleShots,
-                      boolean additionalShots, boolean decreasingField, int movingPerTurn, int shotsPerTurn, int aiLevel,
-                      @NotNull GameType gameType, @NotNull ArrayList<Ship> ships) {
+    public GameConfig(int width, int height, boolean movingEnabled, boolean multipleShots, boolean additionalShots, boolean decreasingField, int movingPerTurn, int shotsPerTurn, int aiLevel, int aiLevel2, @NotNull GameType gameType, @NotNull ArrayList<Ship> ships) {
         this.width = width;
         this.height = height;
         this.movingEnabled = movingEnabled;
@@ -121,54 +121,10 @@ public class GameConfig {
         this.movingPerTurn = movingPerTurn;
         this.shotsPerTurn = shotsPerTurn;
         this.aiLevel = aiLevel;
+        this.aiLevel2 = aiLevel2;
+        this.version = 1;
         this.gameType = gameType;
         this.ships = ships;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public boolean isMovingEnabled() {
-        return movingEnabled;
-    }
-
-    public boolean isMultipleShots() {
-        return multipleShots;
-    }
-
-    public boolean isAdditionalShots() {
-        return additionalShots;
-    }
-
-    public boolean isDecreasingField() {
-        return decreasingField;
-    }
-
-    public int getMovingPerTurn() {
-        return movingPerTurn;
-    }
-
-    public int getShotsPerTurn() {
-        return shotsPerTurn;
-    }
-
-    public int getAiLevel() {
-        return aiLevel;
-    }
-
-    @NotNull
-    public GameType getGameType() {
-        return gameType;
-    }
-
-    @NotNull
-    public ArrayList<Ship> getShips() {
-        return ships;
     }
 
     @Override
@@ -176,19 +132,21 @@ public class GameConfig {
         if (this == o) return true;
         if (!(o instanceof GameConfig)) return false;
 
-        GameConfig that = (GameConfig) o;
+        GameConfig config = (GameConfig) o;
 
-        if (width != that.width) return false;
-        if (height != that.height) return false;
-        if (movingEnabled != that.movingEnabled) return false;
-        if (multipleShots != that.multipleShots) return false;
-        if (additionalShots != that.additionalShots) return false;
-        if (decreasingField != that.decreasingField) return false;
-        if (movingPerTurn != that.movingPerTurn) return false;
-        if (shotsPerTurn != that.shotsPerTurn) return false;
-        if (aiLevel != that.aiLevel) return false;
-        if (gameType != that.gameType) return false;
-        return ships.equals(that.ships);
+        if (width != config.width) return false;
+        if (height != config.height) return false;
+        if (movingEnabled != config.movingEnabled) return false;
+        if (multipleShots != config.multipleShots) return false;
+        if (additionalShots != config.additionalShots) return false;
+        if (decreasingField != config.decreasingField) return false;
+        if (movingPerTurn != config.movingPerTurn) return false;
+        if (shotsPerTurn != config.shotsPerTurn) return false;
+        if (aiLevel != config.aiLevel) return false;
+        if (aiLevel2 != config.aiLevel2) return false;
+        if (version != config.version) return false;
+        if (gameType != config.gameType) return false;
+        return ships.equals(config.ships);
     }
 
     @Override
@@ -202,21 +160,135 @@ public class GameConfig {
         result = 31 * result + movingPerTurn;
         result = 31 * result + shotsPerTurn;
         result = 31 * result + aiLevel;
+        result = 31 * result + aiLevel2;
+        result = 31 * result + version;
         result = 31 * result + gameType.hashCode();
         result = 31 * result + ships.hashCode();
         return result;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public boolean isMovingEnabled() {
+        return movingEnabled;
+    }
+
+    public void setMovingEnabled(boolean movingEnabled) {
+        this.movingEnabled = movingEnabled;
+    }
+
+    public boolean isMultipleShots() {
+        return multipleShots;
+    }
+
+    public void setMultipleShots(boolean multipleShots) {
+        this.multipleShots = multipleShots;
+    }
+
+    public boolean isAdditionalShots() {
+        return additionalShots;
+    }
+
+    public void setAdditionalShots(boolean additionalShots) {
+        this.additionalShots = additionalShots;
+    }
+
+    public boolean isDecreasingField() {
+        return decreasingField;
+    }
+
+    public void setDecreasingField(boolean decreasingField) {
+        this.decreasingField = decreasingField;
+    }
+
+    public int getMovingPerTurn() {
+        return movingPerTurn;
+    }
+
+    public void setMovingPerTurn(int movingPerTurn) {
+        this.movingPerTurn = movingPerTurn;
+    }
+
+    public int getShotsPerTurn() {
+        return shotsPerTurn;
+    }
+
+    public void setShotsPerTurn(int shotsPerTurn) {
+        this.shotsPerTurn = shotsPerTurn;
+    }
+
+    public int getAiLevel() {
+        return aiLevel;
+    }
+
+    public void setAiLevel(int aiLevel) {
+        this.aiLevel = aiLevel;
+    }
+
+    public int getAiLevel2() {
+        return aiLevel2;
+    }
+
+    public void setAiLevel2(int aiLevel2) {
+        this.aiLevel2 = aiLevel2;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    @NotNull
+    public GameType getGameType() {
+        return gameType;
+    }
+
+    public void setGameType(@NotNull GameType gameType) {
+        this.gameType = gameType;
+    }
+
+    @NotNull
+    public ArrayList<Ship> getShips() {
+        return ships;
+    }
+
+    public void setShips(@NotNull ArrayList<Ship> ships) {
+        this.ships = ships;
+    }
+
     @NotNull
     public static GameConfig getSampleConfigWest() {
         return new GameConfig(10, 10, false, false,
-                true, false, 0, 1, 1, GameType.AI, Ship.getSampleShipsWest());
+                true, false, 0, 1, AILevel.EASY.id, AILevel.NOVICE.id, GameType.AI, Ship.getSampleShipsWest());
     }
 
     @NotNull
     public static GameConfig getSampleConfigEast() {
         return new GameConfig(10, 10, false, false,
-                true, false, 0, 1, 1, GameType.AI, Ship.getSampleShipsEast());
+                true, false, 0, 1, AILevel.EASY.id, AILevel.NOVICE.id, GameType.AI, Ship.getSampleShipsEast());
+    }
+
+    @NotNull
+    public static GameConfig getSampleMoving() {
+        return new GameConfig(10, 10, true, false,
+                true, false, -1, 1, AILevel.EASY.id, AILevel.NOVICE.id, GameType.AI, Ship.getSampleShipsEast());
     }
 
     @NotNull
@@ -229,47 +301,4 @@ public class GameConfig {
         return new Gson().toJson(this);
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public void setMovingEnabled(boolean movingEnabled) {
-        this.movingEnabled = movingEnabled;
-    }
-
-    public void setMultipleShots(boolean multipleShots) {
-        this.multipleShots = multipleShots;
-    }
-
-    public void setAdditionalShots(boolean additionalShots) {
-        this.additionalShots = additionalShots;
-    }
-
-    public void setDecreasingField(boolean decreasingField) {
-        this.decreasingField = decreasingField;
-    }
-
-    public void setMovingPerTurn(int movingPerTurn) {
-        this.movingPerTurn = movingPerTurn;
-    }
-
-    public void setShotsPerTurn(int shotsPerTurn) {
-        this.shotsPerTurn = shotsPerTurn;
-    }
-
-    public void setAiLevel(int aiLevel) {
-        this.aiLevel = aiLevel;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public void setGameType(@NotNull GameType gameType) {
-        this.gameType = gameType;
-    }
 }
