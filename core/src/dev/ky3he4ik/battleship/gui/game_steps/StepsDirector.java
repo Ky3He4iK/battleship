@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 import dev.ky3he4ik.battleship.ai.AIDummy;
+import dev.ky3he4ik.battleship.ai.AILevel;
 import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
@@ -112,7 +113,12 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
         Communication leftComm = null;
         if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
-            leftComm = new AIDummy(null, rightWorld, leftWorld, config);
+            AILevel aiLevel = AILevel.getById(config.getAiLevel2());
+            if (aiLevel == null) {
+                leftComm = new AIDummy(null, rightWorld, leftWorld, config);
+                Gdx.app.error("StepsDirector", "Invalid aiLevel2: " + config.getAiLevel2() + "; using fallback (AIDummy)");
+            } else
+                leftComm = aiLevel.getAI(null, rightWorld, leftWorld, config);
             leftComm.init();
         }
         leftPlayer = new Field(leftWorld, cellSize, leftComm, TURN_LEFT, this);
@@ -122,7 +128,12 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
         Communication rightComm = null;
         if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
-            rightComm = new AIDummy(null, leftPlayer.getWorld(), rightWorld, config);
+            AILevel aiLevel = AILevel.getById(config.getAiLevel());
+            if (aiLevel == null) {
+                rightComm = new AIDummy(null, leftPlayer.getWorld(), rightWorld, config);
+                Gdx.app.error("StepsDirector", "Invalid aiLevel: " + config.getAiLevel() + "; using fallback (AIDummy)");
+            } else
+                rightComm = aiLevel.getAI(null, leftPlayer.getWorld(), rightWorld, config);
             rightComm.init();
         }
         rightPlayer = new Field(rightWorld, cellSize, rightComm, TURN_RIGHT, this);
@@ -339,5 +350,33 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     @Override
     public void buttonMoved(int buttonId) {
 
+    }
+
+    public float getCellSize() {
+        return cellSize;
+    }
+
+    public float getRedundantX() {
+        return redundantX;
+    }
+
+    public float getRedundantY() {
+        return redundantY;
+    }
+
+    public float getMiddleGap() {
+        return middleGap;
+    }
+
+    public float getHeaderHeight() {
+        return headerHeight;
+    }
+
+    public float getFooterHeight() {
+        return footerHeight;
+    }
+
+    public float getSideWidth() {
+        return sideWidth;
     }
 }
