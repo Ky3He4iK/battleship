@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme"
         tools:targetApi="o"
-        android:fullBackupContent="">
+        android:fullBackupContent="true">
         <activity
             android:name="dev.ky3he4ik.battleship.AndroidLauncher"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"

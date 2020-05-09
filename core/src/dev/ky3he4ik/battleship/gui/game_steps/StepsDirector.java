@@ -94,6 +94,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         font.getData().setScale(Gdx.graphics.getHeight() / 400f);
         font.setColor(Color.BLACK);
 
+        config = GameConfig.getSampleMoving();
+
         stepLabel = new Label("", new Label.LabelStyle(font, font.getColor()));
 
         steps = new ArrayList<>();
@@ -105,7 +107,6 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         steps.add(new StepAftermath(this, STEP_AFTERMATH));
 
         manager = SpriteManager.getInstance();
-        config = GameConfig.getSampleMoving();
         calcCellSize();
 
         World leftWorld = new World(config.getWidth(), config.getHeight());
