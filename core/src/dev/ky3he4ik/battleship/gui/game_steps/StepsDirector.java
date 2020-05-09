@@ -142,7 +142,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         touchListener = new RelayTouch(this);
         addListener(touchListener);
 
-        rotateBtn = new ActorWithSprite(this, Constants.ARROW_ROTATE, ROTATE_BTN_ID);
+        rotateBtn = new ActorWithSprite(this, Constants.ARROW_ROTATE, Constants.ARROW_ROTATE_SELECTED, ROTATE_BTN_ID);
         addActor(rotateBtn);
         rotateBtn.setVisible(false);
 

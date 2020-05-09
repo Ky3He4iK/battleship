@@ -77,7 +77,8 @@ public class ActorWithSprite extends Actor implements EventListener {
                 if (event.getButton() == Input.Buttons.LEFT) {
                     isPressed = true;
                     onPress();
-                    return callback.buttonPressed(buttonId);
+                    callback.buttonPressed(buttonId);
+                    return true;
                 }
                 return false;
             case touchUp:

@@ -50,7 +50,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         childrens = new ArrayList<>();
 
         BUTTON_ROTATE = childrens.size();
-        ActorWithSprite button = new ActorWithSprite(this, Constants.ARROW_ROTATE, BUTTON_ROTATE);
+        ActorWithSprite button = new ActorWithSprite(this, Constants.ARROW_ROTATE, Constants.ARROW_ROTATE_SELECTED, BUTTON_ROTATE);
         childrens.add(button);
         addActor(button);
 
@@ -61,7 +61,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         addActor(button);
 
         BUTTON_DONE = childrens.size();
-        button = new ActorWithSprite(this, Constants.BUTTON_DONE, BUTTON_DONE);
+        button = new ActorWithSprite(this, Constants.BUTTON_DONE, Constants.BUTTON_DONE_SELECTED, BUTTON_DONE);
         button.setBounds(cellSize * 4, getY() - cellSize, cellSize, cellSize);
         childrens.add(button);
         addActor(button);

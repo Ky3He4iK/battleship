@@ -30,10 +30,12 @@ public class Constants {
 
 
     public static final String ARROW_ROTATE = "rotate_arrow.png";
+    public static final String ARROW_ROTATE_SELECTED = "rotate_arrow_selected.png";
     public static final String ARROW_TURN = "arrow_simplest_white.png";
     public static final String BUTTON_RND = "Button_rnd.png";
     public static final String BUTTON_RND_SELECTED = "Button_rnd_selected.png";
     public static final String BUTTON_DONE = "Button_done.png";
+    public static final String BUTTON_DONE_SELECTED = "Button_done_selected.png";
 
     public static final String ROTATED_SUFFIX = "_rot";
 
