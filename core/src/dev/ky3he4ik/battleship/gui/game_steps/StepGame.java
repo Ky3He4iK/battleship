@@ -37,25 +37,27 @@ public class StepGame extends BaseStep {
 
     @Override
     public void act() {
-        if (callback.aiReadyR && callback.turn == StepsDirector.TURN_RIGHT) {
+        if (callback.aiReadyR && callback.turn == StepsDirector.TURN_RIGHT && callback.canShoot(StepsDirector.TURN_RIGHT)) {
             callback.aiReadyR = false;
             boolean res = callback.leftPlayer.open(callback.aiXR, callback.aiYR);
+            callback.registerShoot(StepsDirector.TURN_RIGHT, res);
             if (callback.leftPlayer.getWorld().isDead()) {
                 callback.nextStep();
                 return;
             }
-            if (res)
+            if (res && callback.canShoot(StepsDirector.TURN_RIGHT))
                 callback.rightPlayer.setTurn();
             else
                 callback.nextTurn();
-        } else if (callback.aiReadyL && callback.turn == StepsDirector.TURN_LEFT) {
+        } else if (callback.aiReadyL && callback.turn == StepsDirector.TURN_LEFT && callback.canShoot(StepsDirector.TURN_LEFT)) {
             callback.aiReadyL = false;
             boolean res = callback.rightPlayer.open(callback.aiXL, callback.aiYL);
+            callback.registerShoot(StepsDirector.TURN_LEFT, res);
             if (callback.rightPlayer.getWorld().isDead()) {
                 callback.nextStep();
                 return;
             }
-            if (res)
+            if (res && callback.canShoot(StepsDirector.TURN_LEFT))
                 callback.leftPlayer.setTurn();
             else
                 callback.nextTurn();
@@ -95,14 +97,14 @@ public class StepGame extends BaseStep {
 
     @Override
     public void turnFinished(int playerId, int i, int j) {
-        if (playerId == callback.turn) {
+        if (playerId == callback.turn && callback.canShoot(playerId)) {
             Field opponent = callback.getOpponent(playerId);
             boolean res = opponent.open(i, j);
-
+            callback.registerShoot(playerId, res);
             if (opponent.getWorld().isDead()) {
                 Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
                 callback.nextStep();
-            } else if (res)
+            } else if (res && callback.canShoot(playerId))
                 callback.getPlayer(playerId).setTurn();
             else
                 callback.nextTurn();

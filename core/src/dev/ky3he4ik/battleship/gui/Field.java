@@ -311,7 +311,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     @Override
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
-        if (!ship.isPlaced() || (world.shipAlive(ship.id) && callback.getTurn() == playerId)) {
+        if (callback.canMove(playerId) && !ship.isPlaced() || (world.shipAlive(ship.id) && callback.getTurn() == playerId)) {
             lastAccessId = ship.id;
             removeShip(pos[0], pos[1], ship.id);
             return true;
@@ -334,6 +334,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 pos = H.getAbsCoord(child);
                 float[] newPos = unHighlight(child.ship, pos[0], pos[1], child.getShipRotation());
                 if (newPos != null) {
+                    callback.registerMove(playerId);
                     child.setPlaced(true);
                     Gdx.app.debug("ShipPlacer", "Ship placed: " + child.id + " (" + child.getShipName() + ")");
                     child.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);

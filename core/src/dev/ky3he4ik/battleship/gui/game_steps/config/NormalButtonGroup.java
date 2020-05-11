@@ -19,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NormalButtonGroup extends Container<HorizontalGroup> {
     @NotNull
-    private final Array<TextButton> buttons = new Array();
+    private final Array<TextButton> buttons = new Array<>();
     @NotNull
-    private Array<TextButton> checkedButtons = new Array(1);
+    private Array<TextButton> checkedButtons = new Array<>(1);
     private int minCheckCount = 1, maxCheckCount = 1;
     private boolean uncheckLast = true;
     @NotNull

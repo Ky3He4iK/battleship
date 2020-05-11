@@ -68,6 +68,9 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     int leftScore = 0;
     int rightScore = 0;
 
+    private int movedCurrentTurn;
+    private int shootedCurrentTurn;
+
     @NotNull
     Field leftPlayer;
     @NotNull
@@ -178,6 +181,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     void nextTurn() {
+        shootedCurrentTurn = 0;
+        movedCurrentTurn = 0;
         if (turn == TURN_LEFT) {
             turn = TURN_RIGHT;
             rightPlayer.setTurn();
@@ -303,7 +308,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     public void cellPressed(int playerId, int idx, int idy) {
-        if ((playerId == TURN_RIGHT || config.getGameType() == GameConfig.GameType.LOCAL_2P) && turn != playerId)
+        if (canShoot(1 - playerId) && (playerId == TURN_RIGHT || config.getGameType() == GameConfig.GameType.LOCAL_2P) && turn != playerId)
             turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
     }
 
@@ -379,5 +384,30 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     public float getSideWidth() {
         return sideWidth;
+    }
+
+    @NotNull
+    public GameConfig getConfig() {
+        return config;
+    }
+
+    public boolean canShoot(int playerId) {
+        return turn == playerId && shootedCurrentTurn < config.getShotsPerTurn();
+    }
+
+    public boolean canMove(int playerId) {
+        return turn == playerId && config.isMovingEnabled() && (movedCurrentTurn < config.getMovingPerTurn() || config.getMovingPerTurn() == -1);
+    }
+
+    public void registerMove(int playerId) {
+        if (canMove(playerId))
+            movedCurrentTurn++;
+    }
+
+    public void registerShoot(int playerId, boolean itWasShip) {
+        if (config.isAdditionalShots() && canShoot(playerId) && !itWasShip)
+            shootedCurrentTurn++;
+        else if (!config.isAdditionalShots() && canShoot(playerId))
+            shootedCurrentTurn++;
     }
 }
