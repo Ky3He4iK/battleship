@@ -45,7 +45,7 @@ public class StepGame extends BaseStep {
                 callback.nextStep();
                 return;
             }
-            if (res && callback.canShoot(StepsDirector.TURN_RIGHT))
+            if (callback.canShoot(StepsDirector.TURN_RIGHT))
                 callback.rightPlayer.setTurn();
             else
                 callback.nextTurn();
@@ -57,7 +57,7 @@ public class StepGame extends BaseStep {
                 callback.nextStep();
                 return;
             }
-            if (res && callback.canShoot(StepsDirector.TURN_LEFT))
+            if (callback.canShoot(StepsDirector.TURN_LEFT))
                 callback.leftPlayer.setTurn();
             else
                 callback.nextTurn();
@@ -104,7 +104,7 @@ public class StepGame extends BaseStep {
             if (opponent.getWorld().isDead()) {
                 Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");
                 callback.nextStep();
-            } else if (res && callback.canShoot(playerId))
+            } else if (callback.canShoot(playerId))
                 callback.getPlayer(playerId).setTurn();
             else
                 callback.nextTurn();

@@ -311,7 +311,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     @Override
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
-        if (callback.canMove(playerId) && !ship.isPlaced() || (world.shipAlive(ship.id) && callback.getTurn() == playerId)) {
+        if ((callback.canMove(playerId) || !ship.isPlaced()) && (!ship.isPlaced() || (world.shipAlive(ship.id) && callback.getTurn() == playerId))) {
             lastAccessId = ship.id;
             removeShip(pos[0], pos[1], ship.id);
             return true;
