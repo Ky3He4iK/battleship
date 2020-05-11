@@ -18,7 +18,7 @@ allprojects {
 
     version = 'v0.5'
     ext {
-        appName = "Battleship"
+        appName = "Advanced Battleship"
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.8'
         box2DLightsVersion = '1.5'
