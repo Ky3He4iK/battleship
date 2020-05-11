@@ -40,8 +40,7 @@ public class StepConfigure extends BaseStep {
 
     @Override
     public int stepEnd() {
-        configGroup.finish();
-        configGroup.getConfig().duplicate(callback.config);
+        configGroup.finish().duplicate(callback.config);
 
         callback.leftPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
         Communication communication = callback.leftPlayer.getCommunication();
