@@ -1,6 +1,6 @@
 package dev.ky3he4ik.battleship.logic;
 
-import com.badlogic.gdx.graphics.Color;
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -58,12 +58,6 @@ public class World {
     public static final int ROTATION_HORIZONTAL = 0;
     public static final int ROTATION_VERTICAL = 1;
 
-    public static Color COLOR_UNKNOWN = new Color(.3f, .3f, .3f, 1);
-    public static Color COLOR_EMPTY = new Color(0, 0, .5f, 1);
-    public static Color COLOR_UNDAMAGED = new Color(0, 1, 0, 1);
-    public static Color COLOR_DAMAGED = new Color(.5f, 0, 0, 1);
-    public static Color COLOR_SUNK = new Color(1, 0, 0, 1);
-
     // cell states:
     public static final int STATE_MASK = 0xf; // reserved for more states
     public static final int STATE_SHIFT = 0;
@@ -77,21 +71,7 @@ public class World {
     public static final int SHIP_MASK = 0xff00; // reserved for more ships
     public static final int SHIP_SHIFT = 8;
 
-    public static final int SHIP_NOSHIP = 0x000; // literally no ship;
-    public static final int SHIP_CARRIER = 0x100;
-    public static final int SHIP_BATTLESHIP = 0x200;
-    public static final int SHIP_DESTROYER = 0x300;
-    public static final int SHIP_SUBMARINE = 0x400;
-    public static final int SHIP_PATROL_BOAT = 0x500;
-
     public static final int INVALID = -1;
-
-    public static final Ship[] SHIPS_AVAILABLE = {new Ship(5, SHIP_CARRIER, Constants.SHIP_CARRIER_IMG, 0, 0, 0),
-            new Ship(4, SHIP_BATTLESHIP, Constants.SHIP_BATTLESHIP_IMG, 0, 0, 0),
-            new Ship(3, SHIP_DESTROYER, Constants.SHIP_DESTROYER_IMG, 0, 0, 0),
-            new Ship(3, SHIP_SUBMARINE, Constants.SHIP_SUBMARINE_IMG, 0, 0, 0),
-            new Ship(2, SHIP_PATROL_BOAT, Constants.SHIP_PATROL_BOAT_IMG, 0, 0, 0),
-    };
 
     private BitSet[] opened;
     private int[][] field;
@@ -311,7 +291,7 @@ public class World {
         if (opened == null || opened.length != width)
             opened = new BitSet[width];
         if (ships == null)
-            ships = new ArrayList<>(SHIPS_AVAILABLE.length);
+            ships = new ArrayList<>();
         else
             ships.clear();
         System.gc();
@@ -428,5 +408,15 @@ public class World {
             if (ship.code == shipId)
                 return true;
         return false;
+    }
+
+    @NotNull
+    public static World fromJSON(@NotNull String json) {
+        return new Gson().fromJson(json, World.class);
+    }
+
+    @NotNull
+    public String toJSON() {
+        return new Gson().toJson(this);
     }
 }

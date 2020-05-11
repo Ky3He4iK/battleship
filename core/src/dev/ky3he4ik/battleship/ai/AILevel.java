@@ -10,42 +10,42 @@ import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.logic.World;
 
 public enum AILevel {
-    NOVICE(0, "infant") {
+    NOVICE(0, "Infant") {
         @NotNull
         @Override
         public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
             return new AITraining(callback, enemy, my, config);
         }
     },
-    EASY(1, "easy") {
+    EASY(1, "Easy") {
         @NotNull
         @Override
         public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
             return new AIDummy(callback, enemy, my, config);
         }
     },
-//    MIDDLE(2, "middle") {
+//    MIDDLE(2, "Middle") {
 //        @NotNull
 //        @Override
 //        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
 //            return new AIDummy(callback, enemy, my, config);
 //        }
 //    },
-//    HARD(3, "hard") {
+//    HARD(3, "Hard") {
 //        @NotNull
 //        @Override
 //        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
 //            return new AIDummy(callback, enemy, my, config);
 //        }
 //    },
-//    UNFAIR(4, "unfair") {
+//    UNFAIR(4, "Unfair") {
 //        @NotNull
 //        @Override
 //        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
 //            return new AIDummy(callback, enemy, my, config);
 //        }
 //    },
-    IMPOSSIBLE(5, "impossible") {
+    IMPOSSIBLE(5, "Impossible") {
         @NotNull
         @Override
         public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {

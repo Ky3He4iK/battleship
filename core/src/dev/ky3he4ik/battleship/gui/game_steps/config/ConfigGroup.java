@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,14 +84,14 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
             TextButton btn = new TextButton(gameType.name(), style);
             btn.setName(gameType.name());
             gameTypeGroup.add(btn);
-            scrollTable.add(btn);
+//            scrollTable.add(btn);
         }
         gameTypeGroup.setChecked(config.getGameType().name());
         scrollTable.row();
 
         aiLevelGroup = new ButtonGroup<>();
         AILevel[] aiLevels = AILevel.values();
-        for (AILevel aiLevel: aiLevels) {
+        for (AILevel aiLevel : aiLevels) {
             TextButton btn = new TextButton(aiLevel.name, style);
             btn.setName(aiLevel.name);
             aiLevelGroup.add(btn);
@@ -117,17 +118,29 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         setVisible(true);
         Gdx.input.setInputProcessor(this);
 
-        outerTable.setBounds(callbackCallback.getRedundantX() + callbackCallback.getSideWidth(), callbackCallback.getRedundantY(),
-                Gdx.graphics.getWidth() - callbackCallback.getRedundantX() * 2 - callbackCallback.getSideWidth(),
-                Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2);
+        outerTable.setBounds(callbackCallback.getRedundantX() + callbackCallback.getSideWidth(),
+                callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() + callbackCallback.getCellSize(),
+                Gdx.graphics.getWidth() - callbackCallback.getRedundantX() * 2 - callbackCallback.getSideWidth() * 2,
+                Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getCellSize() - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight());
         outerTable.row().height(getHeight() - callbackCallback.getCellSize());
         outerTable.add(scroller).fill().expand();//.colspan()
 
         scroller.invalidate();
         scrollTable.invalidate();
 
-        doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize(),
-                callbackCallback.getRedundantY(), callbackCallback.getCellSize(), callbackCallback.getCellSize());
+        Array<TextButton> btns = gameTypeGroup.getButtons();
+        for (TextButton btn : new Array.ArrayIterator<>(btns))
+            scrollTable.add(btn).prefWidth(outerTable.getWidth() / btns.size);
+        scrollTable.row();
+
+        btns = aiLevelGroup.getButtons();
+        for (TextButton btn : new Array.ArrayIterator<>(btns))
+            scrollTable.add(btn).prefWidth(outerTable.getWidth() / btns.size);
+        scrollTable.row();
+
+
+        doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize() - callbackCallback.getSideWidth(),
+                callbackCallback.getRedundantY() + callbackCallback.getFooterHeight(), callbackCallback.getCellSize(), callbackCallback.getCellSize());
     }
 
     @NotNull
@@ -140,6 +153,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         Gdx.input.setInputProcessor(inputProcessor);
 
         outerTable.clearChildren();
+        scrollTable.clearChildren();
         AILevel level = AILevel.getByName(aiLevelGroup.getChecked().getName());
         if (level != null) {
             config.setAiLevel(level.id);
@@ -150,6 +164,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         //todo
 
         setVisible(false);
+        Gdx.app.debug("ConfigGroup/finish", config.toJSON());
         return config;
     }
 
