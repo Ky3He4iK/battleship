@@ -1,0 +1,33 @@
+package dev.ky3he4ik.battleship.ai;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
+
+import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.PlayerFinished;
+import dev.ky3he4ik.battleship.logic.World;
+
+public class AIImpossible extends AIDummy {
+    protected AIImpossible(@Nullable PlayerFinished callback, @NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
+        super(callback, enemy, my, config);
+    }
+
+    @Override
+    protected void turn() {
+        if (new Random().nextInt(128) < 16)
+            super.turn();
+        else {
+            for (int i = 0; i < enemy.getWidth(); i++)
+                for (int j = 0; j < enemy.getHeight(); j++)
+                    if (enemy.getState(i, j) == World.STATE_UNDAMAGED) {
+                        turnX = i;
+                        turnY = j;
+                        return;
+                    }
+            turnX = 0;
+            turnY = 0;
+        }
+    }
+}

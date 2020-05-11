@@ -24,32 +24,32 @@ public enum AILevel {
             return new AIDummy(callback, enemy, my, config);
         }
     },
-    MIDDLE(2, "middle") {
-        @NotNull
-        @Override
-        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
-            return new AIDummy(callback, enemy, my, config);
-        }
-    },
-    HARD(3, "hard") {
-        @NotNull
-        @Override
-        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
-            return new AIDummy(callback, enemy, my, config);
-        }
-    },
-    UNFAIR(4, "unfair") {
-        @NotNull
-        @Override
-        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
-            return new AIDummy(callback, enemy, my, config);
-        }
-    },
+//    MIDDLE(2, "middle") {
+//        @NotNull
+//        @Override
+//        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
+//            return new AIDummy(callback, enemy, my, config);
+//        }
+//    },
+//    HARD(3, "hard") {
+//        @NotNull
+//        @Override
+//        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
+//            return new AIDummy(callback, enemy, my, config);
+//        }
+//    },
+//    UNFAIR(4, "unfair") {
+//        @NotNull
+//        @Override
+//        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
+//            return new AIDummy(callback, enemy, my, config);
+//        }
+//    },
     IMPOSSIBLE(5, "impossible") {
         @NotNull
         @Override
         public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
-            return new AIDummy(callback, enemy, my, config);
+            return new AIImpossible(callback, enemy, my, config);
         }
     };
 
@@ -70,6 +70,14 @@ public enum AILevel {
         if (values()[id].id != id)
             Gdx.app.error("AILevel/getById", "Level at " + id + " has incorrect id");
         return values()[id];
+    }
+
+    @Nullable
+    public static AILevel getByName(@NotNull String name) {
+        for (AILevel level : values())
+            if (level.name.equals(name))
+                return level;
+        return null;
     }
 
     public static int getId(@NotNull AILevel aiLevel) {
