@@ -38,6 +38,10 @@ public class Constants {
     public static final String BUTTON_DONE_SELECTED = "Button_done_selected.png";
     public static final String BUTTON_FRAME = "Button_frame_selected.png";
     public static final String BUTTON_FRAME_SELECTED = "Button_frame_selected.png";
+    public static final String BUTTON_FRAME_SELECTED_2 = "Button_frame_selected_2.png";
+
+    public static final String SLIDER_BACKGROUND = "slider_background.png";
+    public static final String SLIDER_KNOB = "slider_knob.png";
 
     public static final String ROTATED_SUFFIX = "_rot";
 

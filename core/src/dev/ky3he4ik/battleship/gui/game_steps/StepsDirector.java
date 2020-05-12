@@ -242,7 +242,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         rightPlayer.restart();
     }
 
-    private void calcCellSize() {
+    void calcCellSize() {
         middleGap = getWidth() * Constants.MIDDLE_GAP_PART;
         sideWidth = getWidth() * Constants.SIDE_PART;
         headerHeight = getHeight() * Constants.HEADER_PART;

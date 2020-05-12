@@ -19,8 +19,8 @@ public class StepConfigure extends BaseStep {
 
     @Override
     public void stepBegin() {
-        callback.nextStep();
-//        configGroup.init();
+//        callback.nextStep();
+        configGroup.init();
     }
 
     @Override
@@ -40,7 +40,8 @@ public class StepConfigure extends BaseStep {
 
     @Override
     public int stepEnd() {
-//        configGroup.finish().duplicate(callback.config);
+        configGroup.finish().duplicate(callback.config);
+        callback.calcCellSize();
 
         callback.leftPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
         Communication communication = callback.leftPlayer.getCommunication();

@@ -2,6 +2,7 @@ package dev.ky3he4ik.battleship.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.gui.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 
@@ -97,5 +99,20 @@ public final class H {
     public static void setBoundsByHeight(@NotNull ActorWithSprite actor, float x, float y, float height) {
         float scale = actor.getSprite().getHeight() / height;
         actor.setBounds(x, y, actor.getSprite().getWidth() / scale, height);
+    }
+
+    @NotNull
+    public static SpriteDrawable getSpriteDrawable(@NotNull String spriteName) {
+        SpriteDrawable drawable = new SpriteDrawable(SpriteManager.getInstance().getSprite(spriteName));
+        drawable.setMinHeight(Gdx.graphics.getHeight() / 10f);
+        drawable.setMinWidth(Gdx.graphics.getWidth() / 10f);
+        return drawable;
+    }
+    @NotNull
+    public static SpriteDrawable getSpriteDrawableMinimized(@NotNull String spriteName) {
+        SpriteDrawable drawable = new SpriteDrawable(SpriteManager.getInstance().getSprite(spriteName));
+        drawable.setMinHeight(0);
+        drawable.setMinWidth(0);
+        return drawable;
     }
 }

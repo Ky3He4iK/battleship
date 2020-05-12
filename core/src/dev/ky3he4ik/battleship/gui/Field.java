@@ -73,8 +73,10 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public void init() {
         if (world.getWidth() != cells.length || (cells.length > 0 && world.getHeight() != cells[0].length)) {
             for (Cell[] cells1 : cells)
-                for (Cell cell : cells1)
+                for (Cell cell : cells1) {
                     cell.dispose();
+                    removeActor(cell);
+                }
 
             cells = new Cell[world.getWidth()][];
             for (int i = 0; i < world.getWidth(); i++) {

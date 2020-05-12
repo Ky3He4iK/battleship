@@ -75,9 +75,9 @@ public class GameConfig {
     public enum GameType {
         LOCAL_2P,
         AI,
-        LOCAL_INET,
-        BLUETOOTH,
-        GLOBAL_INET,
+//        LOCAL_INET,
+//        BLUETOOTH,
+//        GLOBAL_INET,
         AI_VS_AI
     }
 
@@ -275,7 +275,7 @@ public class GameConfig {
     @NotNull
     public static GameConfig getSampleMoving() {
         return new GameConfig(10, 10, true,
-                true, false, -1, 1, AILevel.EASY.id, AILevel.IMPOSSIBLE.id, GameType.AI, Ship.getSampleShipsEast());
+                true, false, -1, 1, AILevel.IMPOSSIBLE.id, AILevel.IMPOSSIBLE.id, GameType.AI, Ship.getSampleShipsEast());
     }
 
     @NotNull
