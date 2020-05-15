@@ -132,19 +132,19 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         aiLevelGroup.setChecked(Objects.requireNonNull(AILevel.getById(config.getAiLevel())).name);
 
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle(H.getSpriteDrawable(Constants.SLIDER_BACKGROUND), H.getSpriteDrawable(Constants.SLIDER_KNOB));
-        widthSlider = new Slider(3, 20, 1, false, sliderStyle);
+        widthSlider = new Slider(4, 20, 1, false, sliderStyle);
         widthSliderLabel = new Label(null, labelStyle);
-        heightSlider = new Slider(3, 20, 1, false, sliderStyle);
+        heightSlider = new Slider(4, 20, 1, false, sliderStyle);
         heightSliderLabel = new Label(null, labelStyle);
 
         //todo:
         //      decreasingField
         //      aiLevel2
         //      ships
-        shootsSlider = new Slider(1, 10, 1, false, sliderStyle);
+        shootsSlider = new Slider(1, 15, 1, false, sliderStyle);
         shootsSliderLabel = new Label(null, labelStyle);
 
-        movesSlider = new Slider(0, 11, 1, false, sliderStyle);
+        movesSlider = new Slider(0, 16, 1, false, sliderStyle);
         movesSliderLabel = new Label(null, labelStyle);
 
         addShots = new CheckBox(null, new CheckBox.CheckBoxStyle(H.getSpriteDrawable(Constants.BUTTON_DONE_FRAME), H.getSpriteDrawable(Constants.BUTTON_DONE_SELECTED), font, font.getColor()));
