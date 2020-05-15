@@ -1,5 +1,7 @@
 package dev.ky3he4ik.battleship.ai;
 
+import com.badlogic.gdx.Gdx;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -7,10 +9,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.logic.World;
-import dev.ky3he4ik.battleship.logic.GameConfig;
-import dev.ky3he4ik.battleship.utils.H;
 
 public class AIDummy extends AI {
     private int hitX = -1, hitY = -1;
@@ -29,14 +30,8 @@ public class AIDummy extends AI {
     }
 
     @Override
-    protected void placeShips() {
-        H.placeShipsRandom(my, config.getShips());
-    }
-
-    @Override
     protected void turn() {
         if (hitX == -1) {
-            Random random = new Random();
             while (!queue.isEmpty()) {
                 int[] pair = queue.poll();
                 if (!enemy.isOpened(pair[0], pair[1])) {
@@ -47,6 +42,7 @@ public class AIDummy extends AI {
                 }
             }
 
+            Random random = new Random();
             turnX = random.nextInt(enemy.getHeight());
             turnY = random.nextInt(enemy.getWidth());
             while (enemy.isOpened(turnX, turnY)) {
@@ -68,7 +64,8 @@ public class AIDummy extends AI {
         }
     }
 
-    private void rememberCell() {
+    protected void rememberCell() {
+        Gdx.app.debug("AIDummy", "remember cell: " + turnX + "x" + turnY);
         if (enemy.getState(turnX, turnY) == World.STATE_UNDAMAGED) {
             hitX = turnX;
             hitY = turnY;

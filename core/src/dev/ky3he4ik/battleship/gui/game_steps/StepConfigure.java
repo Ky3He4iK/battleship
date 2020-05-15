@@ -1,12 +1,16 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import org.jetbrains.annotations.NotNull;
 
+import dev.ky3he4ik.battleship.ai.AIDummy;
+import dev.ky3he4ik.battleship.ai.AILevel;
 import dev.ky3he4ik.battleship.gui.game_steps.config.ConfigGroup;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.World;
 
 public class StepConfigure extends BaseStep {
     private ConfigGroup configGroup;
@@ -43,22 +47,40 @@ public class StepConfigure extends BaseStep {
         configGroup.finish().duplicate(callback.config);
         callback.calcCellSize();
 
-        callback.leftPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
-        Communication communication = callback.leftPlayer.getCommunication();
-        if (communication != null)
-            communication.restart();
+        GameConfig config = callback.config;
+
+        World leftWorld = callback.leftPlayer.getWorld();
+        leftWorld.reset(config.getWidth(), config.getHeight());
+        World rightWorld = callback.rightPlayer.getWorld();
+        rightWorld.reset(config.getWidth(), config.getHeight());
+
+        if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+            AILevel aiLevel = AILevel.getById(config.getAiLevel2());
+            Communication leftComm;
+            if (aiLevel == null) {
+                leftComm = new AIDummy(null, rightWorld, leftWorld, config);
+                Gdx.app.error("StepsDirector", "Invalid aiLevel2: " + config.getAiLevel2() + "; using fallback (AIDummy)");
+            } else
+                leftComm = aiLevel.getAI(null, rightWorld, leftWorld, config);
+            leftComm.init();
+            callback.leftPlayer.setCommunication(leftComm);
+        }
         callback.leftPlayer.init();
 
-        callback.rightPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
-        communication = callback.rightPlayer.getCommunication();
-        if (communication != null)
-            communication.restart();
+        if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+            Communication rightComm;
+            AILevel aiLevel = AILevel.getById(config.getAiLevel());
+            if (aiLevel == null) {
+                rightComm = new AIDummy(null, leftWorld, rightWorld, config);
+                Gdx.app.error("StepsDirector", "Invalid aiLevel: " + config.getAiLevel() + "; using fallback (AIDummy)");
+            } else
+                rightComm = aiLevel.getAI(null, leftWorld, rightWorld, config);
+            rightComm.init();
+            callback.rightPlayer.setCommunication(rightComm);
+        }
         callback.rightPlayer.init();
 
-        if (callback.config.getGameType() == GameConfig.GameType.AI_VS_AI)
-            return StepsDirector.STEP_GAME;
-        else
-            return super.stepEnd();
+        return super.stepEnd();
     }
 
     @NotNull

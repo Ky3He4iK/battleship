@@ -89,6 +89,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 }
             }
         }
+        if (communication != null)
+            communication.restart();
     }
 
     public void start() {
@@ -107,6 +109,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             if (ship.rotation == World.ROTATION_VERTICAL)
                 child.rotate();
         }
+        if (communication != null)
+            communication.setTurn();
     }
 
     @Override
@@ -232,6 +236,14 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     @Nullable
     public Communication getCommunication() {
         return communication;
+    }
+
+    public void setCommunication(@Nullable Communication communication) {
+        if (this.communication != null)
+            this.communication.dispose();
+        this.communication = communication;
+        if (communication != null)
+            communication.setCallback(this);
     }
 
     public void removeShip(float x, float y, int shipId) {

@@ -38,14 +38,14 @@ public enum AILevel {
 //            return new AIDummy(callback, enemy, my, config);
 //        }
 //    },
-//    UNFAIR(4, "Unfair") {
-//        @NotNull
-//        @Override
-//        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
-//            return new AIDummy(callback, enemy, my, config);
-//        }
-//    },
-    IMPOSSIBLE(2, "Impossible") {
+    UNFAIR(2, "Unfair") {
+        @NotNull
+        @Override
+        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
+            return new AIDummy(callback, enemy, my, config);
+        }
+    },
+    IMPOSSIBLE(3, "Impossible") {
         @NotNull
         @Override
         public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {

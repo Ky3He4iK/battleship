@@ -109,7 +109,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         font.setColor(Color.BLACK);
 
         labelStyle = new Label.LabelStyle(font, font.getColor());
-        setDebugAll(true);
+        setDebugAll(Constants.DEBUG_MODE);
 
         gameTypeGroup = new ButtonGroup<>();
         GameConfig.GameType[] gameTypes = GameConfig.GameType.values();

@@ -37,29 +37,44 @@ public class StepGame extends BaseStep {
 
     @Override
     public void act() {
-        if (callback.aiReadyR && callback.turn == StepsDirector.TURN_RIGHT && callback.canShoot(StepsDirector.TURN_RIGHT)) {
-            callback.aiReadyR = false;
-            boolean res = callback.leftPlayer.open(callback.aiXR, callback.aiYR);
-            callback.registerShoot(StepsDirector.TURN_RIGHT, res);
-            if (callback.leftPlayer.getWorld().isDead()) {
-                callback.nextStep();
-                return;
-            }
-            if (callback.canShoot(StepsDirector.TURN_RIGHT))
-                callback.rightPlayer.setTurn();
-            else
+        if (callback.turn == StepsDirector.TURN_RIGHT) {
+            Gdx.app.debug("StepGame", "turn: right " + callback.aiReadyR + "; " + callback.canShoot(StepsDirector.TURN_RIGHT) + "; " + callback.aiXR + 'x' + callback.aiYR);
+            if (callback.canShoot(StepsDirector.TURN_RIGHT)) {
+                if (callback.aiReadyR) {
+                    callback.aiReadyR = false;
+                    if (callback.leftPlayer.isOpened(callback.aiXR, callback.aiYR))
+                        callback.rightPlayer.setTurn();
+                    else {
+                        boolean res = callback.leftPlayer.open(callback.aiXR, callback.aiYR);
+                        callback.registerShoot(StepsDirector.TURN_RIGHT, res);
+                        if (callback.leftPlayer.getWorld().isDead()) {
+                            callback.nextStep();
+                            return;
+                        }
+                        if (callback.canShoot(StepsDirector.TURN_RIGHT))
+                            callback.rightPlayer.setTurn();
+                        else
+                            callback.nextTurn();
+                    }
+                }
+            } else
                 callback.nextTurn();
-        } else if (callback.aiReadyL && callback.turn == StepsDirector.TURN_LEFT && callback.canShoot(StepsDirector.TURN_LEFT)) {
-            callback.aiReadyL = false;
-            boolean res = callback.rightPlayer.open(callback.aiXL, callback.aiYL);
-            callback.registerShoot(StepsDirector.TURN_LEFT, res);
-            if (callback.rightPlayer.getWorld().isDead()) {
-                callback.nextStep();
-                return;
-            }
-            if (callback.canShoot(StepsDirector.TURN_LEFT))
-                callback.leftPlayer.setTurn();
-            else
+        } else if (callback.turn == StepsDirector.TURN_LEFT) {
+            if (callback.canShoot(StepsDirector.TURN_LEFT)) {
+                if (callback.aiReadyL) {
+                    callback.aiReadyL = false;
+                    boolean res = callback.rightPlayer.open(callback.aiXL, callback.aiYL);
+                    callback.registerShoot(StepsDirector.TURN_LEFT, res);
+                    if (callback.rightPlayer.getWorld().isDead()) {
+                        callback.nextStep();
+                        return;
+                    }
+                    if (callback.canShoot(StepsDirector.TURN_LEFT))
+                        callback.leftPlayer.setTurn();
+                    else
+                        callback.nextTurn();
+                }
+            } else
                 callback.nextTurn();
         }
         if (callback.rightPlayer.getWorld().isDead() || callback.leftPlayer.getWorld().isDead())
@@ -97,6 +112,7 @@ public class StepGame extends BaseStep {
 
     @Override
     public void turnFinished(int playerId, int i, int j) {
+        Gdx.app.debug("StepGame", "turn finished: " + playerId + "; " + i + 'x' + j);
         if (playerId == callback.turn && callback.canShoot(playerId)) {
             Field opponent = callback.getOpponent(playerId);
             boolean res = opponent.open(i, j);
@@ -108,8 +124,9 @@ public class StepGame extends BaseStep {
                 callback.getPlayer(playerId).setTurn();
             else
                 callback.nextTurn();
-        } else if (playerId == StepsDirector.TURN_RIGHT
+        } else if (playerId == StepsDirector.TURN_RIGHT && !callback.aiReadyR
                 && (callback.config.getGameType() == GameConfig.GameType.AI || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI)) {
+            Gdx.app.debug("StepGame", "set right turn");
             callback.aiReadyR = true;
             callback.aiXR = i;
             callback.aiYR = j;
@@ -117,7 +134,8 @@ public class StepGame extends BaseStep {
             callback.aiReadyL = true;
             callback.aiXL = i;
             callback.aiYL = j;
-        }
+        } else
+            Gdx.app.log("StepGame", "wrong turn!");
     }
 
     @Override

@@ -115,31 +115,13 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         World leftWorld = new World(config.getWidth(), config.getHeight());
         World rightWorld = new World(config.getWidth(), config.getHeight());
 
-        Communication leftComm = null;
-        if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
-            AILevel aiLevel = AILevel.getById(config.getAiLevel2());
-            if (aiLevel == null) {
-                leftComm = new AIDummy(null, rightWorld, leftWorld, config);
-                Gdx.app.error("StepsDirector", "Invalid aiLevel2: " + config.getAiLevel2() + "; using fallback (AIDummy)");
-            } else
-                leftComm = aiLevel.getAI(null, rightWorld, leftWorld, config);
-            leftComm.init();
-        }
-        leftPlayer = new Field(leftWorld, cellSize, leftComm, TURN_LEFT, this);
+        leftPlayer = new Field(leftWorld, cellSize, null, TURN_LEFT, this);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         leftPlayer.setVisible(false);
         addActor(leftPlayer);
 
         Communication rightComm = null;
-        if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
-            AILevel aiLevel = AILevel.getById(config.getAiLevel());
-            if (aiLevel == null) {
-                rightComm = new AIDummy(null, leftPlayer.getWorld(), rightWorld, config);
-                Gdx.app.error("StepsDirector", "Invalid aiLevel: " + config.getAiLevel() + "; using fallback (AIDummy)");
-            } else
-                rightComm = aiLevel.getAI(null, leftPlayer.getWorld(), rightWorld, config);
-            rightComm.init();
-        }
+        //todo: communication for different gamemodes
         rightPlayer = new Field(rightWorld, cellSize, rightComm, TURN_RIGHT, this);
         rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(false);
@@ -176,6 +158,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     void setTurn(int turn) {
+        shootedCurrentTurn = 0;
+        movedCurrentTurn = 0;
         if (this.turn != turn)
             nextTurn();
     }

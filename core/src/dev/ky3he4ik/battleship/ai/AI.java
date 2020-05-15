@@ -9,6 +9,7 @@ import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.utils.H;
 
 abstract public class AI extends Thread implements Communication {
     @Nullable
@@ -43,6 +44,11 @@ abstract public class AI extends Thread implements Communication {
 
     @Override
     final public void run() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Gdx.app.error("AI thread", e.getMessage(), e);
+        }
         while (running) {
             if (isPlaceShips) {
                 placeShips();
@@ -53,7 +59,9 @@ abstract public class AI extends Thread implements Communication {
                     shipsPlaced = true;
             }
             if (isMyTurn) {
+                Gdx.app.debug("AIThread", "do turn");
                 turn();
+                Gdx.app.debug("AIThread", "Shoot at " + turnX + 'x' + turnY);
                 isMyTurn = false;
                 if (callback != null)
                     callback.turnFinished(turnX, turnY);
@@ -68,12 +76,15 @@ abstract public class AI extends Thread implements Communication {
         }
     }
 
-    protected abstract void placeShips();
+    protected void placeShips() {
+        H.placeShipsRandom(my, config.getShips());
+    }
 
     protected abstract void turn();
 
     @Override
     public void setTurn() {
+        Gdx.app.debug("AIThread", "set turn");
         isMyTurn = true;
     }
 
