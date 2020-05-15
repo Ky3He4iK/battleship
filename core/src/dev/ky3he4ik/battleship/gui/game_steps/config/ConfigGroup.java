@@ -163,7 +163,6 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         heightSliderLabel = new Label(null, labelStyle);
 
         //todo:
-        //      aiLevel2
         //      ships
         shootsSlider = new Slider(1, 15, 1, false, sliderStyle);
         shootsSliderLabel = new Label(null, labelStyle);

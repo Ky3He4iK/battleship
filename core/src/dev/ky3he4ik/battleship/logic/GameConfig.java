@@ -67,8 +67,16 @@ public class GameConfig {
                     new Ship(1, 10, Constants.SHIP_RUBBER_BOAT_IMG)));
         }
 
+        @NotNull
         public World.Ship convert() {
             return new World.Ship(length, id, name, 0, 0, 0);
+        }
+
+        @NotNull
+        public String rotatedName() {
+            if (name.endsWith(Constants.ROTATED_SUFFIX))
+                return name;
+            return name + Constants.ROTATED_SUFFIX;
         }
     }
 

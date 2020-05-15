@@ -44,6 +44,11 @@ public class Constants {
     public static final String SLIDER_BACKGROUND = "slider_background.png";
     public static final String SLIDER_KNOB = "slider_knob.png";
 
+    public static final String ARROW_RIGHT = "arrow_right.png";
+    public static final String ARROW_RIGHT_PRESSED = "arrow_right_pressed.png";
+    public static final String ARROW_LEFT = "arrow_left.png";
+    public static final String ARROW_LEFT_PRESSED = "arrow_left_pressed.png";
+
     public static final String ROTATED_SUFFIX = "_rot";
 
     public static final AnimationManager.AnimationInfo BLOW_ANIMATION = AnimationManager.AnimationInfo.byDuration(1, "explosion_animation_4_3.png", 4, 3, false);

@@ -45,7 +45,7 @@ public class AloneShip extends Actor implements EventListener {
         this.ship = ship;
         this.length = ship.length;
         this.names = new String[]{
-                ship.name + Constants.ROTATED_SUFFIX, ship.name
+                ship.rotatedName(), ship.name
         };
         this.id = ship.id;
         rotation = World.ROTATION_HORIZONTAL;

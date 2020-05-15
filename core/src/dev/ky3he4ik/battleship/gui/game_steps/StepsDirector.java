@@ -261,9 +261,9 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
             sprite.setSize(cellSize, ship.length * cellSize);
             sprite.setOrigin(cellSize / 2, cellSize / 2);
             sprite.setRotation(0);
-            if (!manager.contains(ship.name + Constants.ROTATED_SUFFIX))
-                manager.cloneSprite(ship.name, ship.name + Constants.ROTATED_SUFFIX);
-            sprite = manager.getSprite(ship.name + Constants.ROTATED_SUFFIX);
+            if (!manager.contains(ship.rotatedName()))
+                manager.cloneSprite(ship.name, ship.rotatedName());
+            sprite = manager.getSprite(ship.rotatedName());
             sprite.setSize(cellSize, ship.length * cellSize);
             sprite.setOrigin(cellSize / 2, cellSize / 2);
             sprite.setRotation(-90);
