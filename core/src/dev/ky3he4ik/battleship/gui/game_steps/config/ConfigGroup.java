@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -71,7 +73,6 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     @NotNull
     private Label heightSliderLabel;
 
-
     @NotNull
     private Slider shootsSlider;
 
@@ -84,9 +85,17 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     @NotNull
     private Label movesSliderLabel;
 
+    @NotNull
+    private CheckBox addShots;
 
     @NotNull
-    private Container<Table> tableContainer;
+    private Label addShotsLabel;
+
+    @NotNull
+    private ScrollPane scrollPane;
+
+    @NotNull
+    private Container<ScrollPane> tableContainer;
 
     public ConfigGroup(@NotNull StepConfigure callback) {
         this.callback = callback;
@@ -129,7 +138,6 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         heightSliderLabel = new Label(null, labelStyle);
 
         //todo:
-        //      additionalShots
         //      decreasingField
         //      aiLevel2
         //      ships
@@ -139,14 +147,19 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         movesSlider = new Slider(0, 11, 1, false, sliderStyle);
         movesSliderLabel = new Label(null, labelStyle);
 
+        addShots = new CheckBox(null, new CheckBox.CheckBoxStyle(H.getSpriteDrawable(Constants.BUTTON_DONE_FRAME), H.getSpriteDrawable(Constants.BUTTON_DONE_SELECTED), font, font.getColor()));
+        addShotsLabel = new Label("Additional shots", labelStyle);
 
         scrollTable = new Table();
         scrollTable.align(Align.center);
         scrollTable.setFillParent(true);
         scrollTable.defaults().uniform();
 
-//        tableContainer = new Container<>(scrollTable);
-        addActor(scrollTable);
+        scrollPane = new ScrollPane(scrollTable);
+
+        tableContainer = new Container<>(scrollPane);
+        tableContainer.setFillParent(true);
+        addActor(tableContainer);
 
         doneButton = new ActorWithSprite(this, Constants.BUTTON_DONE, Constants.BUTTON_DONE_SELECTED, DONE_BUTTON_ID);
         doneButton.setVisible(false);
@@ -162,7 +175,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         setVisible(true);
         Gdx.input.setInputProcessor(this);
 
-        scrollTable.setBounds(callbackCallback.getRedundantX(),
+        tableContainer.setBounds(callbackCallback.getRedundantX(),
                 callbackCallback.getRedundantY(),
                 Gdx.graphics.getWidth() - callbackCallback.getRedundantX() * 2 - callbackCallback.getSideWidth() * 2,
                 Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getCellSize() - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight());
@@ -181,22 +194,28 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
             scrollTable.add(btn).prefWidth(scrollTable.getWidth() / btns.size).fill().uniform();
         scrollTable.row();
 
+        int colspan = scrollTable.getColumns() - 1;
+        float width = getWidth() / (colspan + 1) * colspan;
         scrollTable.add(widthSliderLabel);
-        scrollTable.add(widthSlider).colspan(3).width(getWidth() / 4 * 3);
+        scrollTable.add(widthSlider).colspan(colspan).width(width);
         widthSlider.setValue(config.getWidth());
         scrollTable.row();
         scrollTable.add(heightSliderLabel);
-        scrollTable.add(heightSlider).colspan(3).width(getWidth() / 4 * 3);
+        scrollTable.add(heightSlider).colspan(colspan).width(width);
         heightSlider.setValue(config.getHeight());
         scrollTable.row();
 
         scrollTable.add(shootsSliderLabel);
-        scrollTable.add(shootsSlider).colspan(3).width(getWidth() / 4 * 3);
+        scrollTable.add(shootsSlider).colspan(colspan).width(width);
         shootsSlider.setValue(config.getShotsPerTurn());
         scrollTable.row();
         scrollTable.add(movesSliderLabel);
-        scrollTable.add(movesSlider).colspan(3).width(getWidth() / 4 * 3);
+        scrollTable.add(movesSlider).colspan(colspan).width(width);
         movesSlider.setValue(config.getMovingPerTurn() == -1 ? movesSlider.getMaxValue() : config.getMovingPerTurn());
+        scrollTable.row();
+        scrollTable.add(addShotsLabel);
+        scrollTable.add(addShots).colspan(colspan).width(width).align(Align.right);
+        addShots.setChecked(config.isAdditionalShots());
         scrollTable.row();
 
         doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize() - callbackCallback.getSideWidth(),
@@ -238,6 +257,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
             else
                 config.setMovingEnabled(true);
         }
+        config.setAdditionalShots(addShots.isChecked());
         //todo
 
         setVisible(false);
