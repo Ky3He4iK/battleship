@@ -56,7 +56,16 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     private ButtonGroup<TextButton> gameTypeGroup;
 
     @NotNull
+    private Label aiLevelGroupLabel;
+
+    @NotNull
     private ButtonGroup<TextButton> aiLevelGroup;
+
+    @NotNull
+    private Label aiLevelGroupLabel2;
+
+    @NotNull
+    private ButtonGroup<TextButton> aiLevelGroup2;
 
     @NotNull
     private Label.LabelStyle labelStyle;
@@ -92,10 +101,19 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     private Label addShotsLabel;
 
     @NotNull
+    private CheckBox decrField;
+
+    @NotNull
+    private Label decrFieldLabel;
+
+    @NotNull
     private ScrollPane scrollPane;
 
     @NotNull
     private Container<ScrollPane> tableContainer;
+
+    private boolean isLeftAIShown = true;
+    private boolean isRightAIShown = true;
 
     public ConfigGroup(@NotNull StepConfigure callback) {
         this.callback = callback;
@@ -122,14 +140,21 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         }
         gameTypeGroup.setChecked(config.getGameType().name());
 
+        aiLevelGroupLabel = new Label("AI difficulty: ", labelStyle);
+        aiLevelGroupLabel2 = new Label("Left AI difficulty: ", labelStyle);
         aiLevelGroup = new ButtonGroup<>();
+        aiLevelGroup2 = new ButtonGroup<>();
         AILevel[] aiLevels = AILevel.values();
         for (AILevel aiLevel : aiLevels) {
             TextButton btn = new TextButton(aiLevel.name, style);
             btn.setName(aiLevel.name);
             aiLevelGroup.add(btn);
+            btn = new TextButton(aiLevel.name, style);
+            btn.setName(aiLevel.name);
+            aiLevelGroup2.add(btn);
         }
         aiLevelGroup.setChecked(Objects.requireNonNull(AILevel.getById(config.getAiLevel())).name);
+        aiLevelGroup2.setChecked(Objects.requireNonNull(AILevel.getById(config.getAiLevel2())).name);
 
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle(H.getSpriteDrawable(Constants.SLIDER_BACKGROUND), H.getSpriteDrawable(Constants.SLIDER_KNOB));
         widthSlider = new Slider(4, 20, 1, false, sliderStyle);
@@ -138,7 +163,6 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         heightSliderLabel = new Label(null, labelStyle);
 
         //todo:
-        //      decreasingField
         //      aiLevel2
         //      ships
         shootsSlider = new Slider(1, 15, 1, false, sliderStyle);
@@ -147,8 +171,11 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         movesSlider = new Slider(0, 16, 1, false, sliderStyle);
         movesSliderLabel = new Label(null, labelStyle);
 
-        addShots = new CheckBox(null, new CheckBox.CheckBoxStyle(H.getSpriteDrawable(Constants.BUTTON_DONE_FRAME), H.getSpriteDrawable(Constants.BUTTON_DONE_SELECTED), font, font.getColor()));
+        addShots = H.getCheckbox(font);
         addShotsLabel = new Label("Additional shots", labelStyle);
+
+        decrField = H.getCheckbox(font);
+        decrFieldLabel = new Label("Decreasing field", labelStyle);
 
         scrollTable = new Table();
         scrollTable.align(Align.center);
@@ -180,22 +207,27 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
                 Gdx.graphics.getWidth() - callbackCallback.getRedundantX() * 2 - callbackCallback.getSideWidth() * 2,
                 Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getCellSize() - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight());
 
-//        scrollTable.setFillParent(true);
 
-        scrollTable.add(new Label("Game mode:", labelStyle)).uniform();
+        scrollTable.add(new Label("Game mode:", labelStyle));
         Array<TextButton> btns = gameTypeGroup.getButtons();
         for (TextButton btn : new Array.ArrayIterator<>(btns))
-            scrollTable.add(btn).prefWidth(scrollTable.getWidth() / btns.size).fill().uniform();
+            scrollTable.add(btn).fill();
         scrollTable.row();
 
-        scrollTable.add(new Label("AI difficulty:", labelStyle)).uniform();
+        scrollTable.add(aiLevelGroupLabel);
         btns = aiLevelGroup.getButtons();
         for (TextButton btn : new Array.ArrayIterator<>(btns))
-            scrollTable.add(btn).prefWidth(scrollTable.getWidth() / btns.size).fill().uniform();
+            scrollTable.add(btn).fill();
+        scrollTable.row();
+
+        scrollTable.add(aiLevelGroupLabel2);
+        btns = aiLevelGroup2.getButtons();
+        for (TextButton btn : new Array.ArrayIterator<>(btns))
+            scrollTable.add(btn).fill();
         scrollTable.row();
 
         int colspan = scrollTable.getColumns() - 1;
-        float width = getWidth() / (colspan + 1) * colspan;
+        float width = tableContainer.getWidth() / (colspan + 1) * colspan - .5f;
         scrollTable.add(widthSliderLabel);
         scrollTable.add(widthSlider).colspan(colspan).width(width);
         widthSlider.setValue(config.getWidth());
@@ -217,6 +249,12 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         scrollTable.add(addShots).colspan(colspan).width(width).align(Align.right);
         addShots.setChecked(config.isAdditionalShots());
         scrollTable.row();
+//        todo: decreasing field in game
+//        scrollTable.add(decrFieldLabel);
+//        scrollTable.add(decrField).colspan(colspan).width(width).align(Align.right);
+//        addShots.setChecked(config.isDecreasingField());
+//        scrollTable.row();
+
 
         doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize() - callbackCallback.getSideWidth(),
                 callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() - callbackCallback.getCellSize(), callbackCallback.getCellSize(), callbackCallback.getCellSize());
@@ -237,10 +275,14 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         TextButton checked = aiLevelGroup.getChecked();
         if (checked != null) {
             AILevel level = AILevel.getByName(checked.getName());
-            if (level != null) {
+            if (level != null)
                 config.setAiLevel(level.id);
+        }
+        checked = aiLevelGroup2.getChecked();
+        if (checked != null) {
+            AILevel level = AILevel.getByName(checked.getName());
+            if (level != null)
                 config.setAiLevel2(level.id);
-            }
         }
         checked = gameTypeGroup.getChecked();
         if (checked != null)
@@ -324,6 +366,23 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         else
             movesSliderLabel.setText("Moves per turn: " + moves);
 
+        boolean isRightAi = gameTypeGroup.getChecked().getName().equals(GameConfig.GameType.AI_VS_AI.name())
+                || gameTypeGroup.getChecked().getName().equals(GameConfig.GameType.AI.name());
+        if (isRightAi != isRightAIShown) {
+            isRightAIShown = isRightAi;
+            Array<TextButton> btns = aiLevelGroup.getButtons();
+            for (TextButton btn : new Array.ArrayIterator<>(btns))
+                btn.setVisible(isRightAi);
+            aiLevelGroupLabel.setVisible(isRightAi);
+        }
+        boolean isLeftAi = gameTypeGroup.getChecked().getName().equals(GameConfig.GameType.AI_VS_AI.name());
+        if (isLeftAi != isLeftAIShown) {
+            isLeftAIShown = isLeftAi;
+            Array<TextButton> btns = aiLevelGroup2.getButtons();
+            for (TextButton btn : new Array.ArrayIterator<>(btns))
+                btn.setVisible(isLeftAi);
+            aiLevelGroupLabel2.setVisible(isLeftAi);
+        }
         //todo
     }
 }

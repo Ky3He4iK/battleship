@@ -43,11 +43,11 @@ public class AIDummy extends AI {
             }
 
             Random random = new Random();
-            turnX = random.nextInt(enemy.getHeight());
-            turnY = random.nextInt(enemy.getWidth());
+            turnX = random.nextInt(enemy.getWidth());
+            turnY = random.nextInt(enemy.getHeight());
             while (enemy.isOpened(turnX, turnY)) {
-                turnX = random.nextInt(enemy.getHeight());
-                turnY = random.nextInt(enemy.getWidth());
+                turnX = random.nextInt(enemy.getWidth());
+                turnY = random.nextInt(enemy.getHeight());
             }
             rememberCell();
         } else {

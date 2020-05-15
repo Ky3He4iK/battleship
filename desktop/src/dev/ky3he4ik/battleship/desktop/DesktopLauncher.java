@@ -10,13 +10,12 @@ public class DesktopLauncher {
     public static void main(String[] arg) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-        config.title = "Battleship";
+        config.title = Constants.GAME_NAME;
         config.width = Constants.APP_WIDTH;
         config.height = Constants.APP_HEIGHT;
         config.foregroundFPS = 60;
         config.backgroundFPS = 20;
         config.allowSoftwareMode = true;
-
 
         new LwjglApplication(new MyGdxGame(), config);
     }

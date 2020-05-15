@@ -1,7 +1,9 @@
 package dev.ky3he4ik.battleship.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import org.jetbrains.annotations.NotNull;
@@ -108,11 +110,17 @@ public final class H {
         drawable.setMinWidth(Gdx.graphics.getWidth() / 10f);
         return drawable;
     }
+
     @NotNull
     public static SpriteDrawable getSpriteDrawableMinimized(@NotNull String spriteName) {
         SpriteDrawable drawable = new SpriteDrawable(SpriteManager.getInstance().getSprite(spriteName));
         drawable.setMinHeight(0);
         drawable.setMinWidth(0);
         return drawable;
+    }
+
+    @NotNull
+    public static CheckBox getCheckbox(@NotNull BitmapFont font) {
+        return new CheckBox(null, new CheckBox.CheckBoxStyle(getSpriteDrawable(Constants.BUTTON_DONE_FRAME), getSpriteDrawable(Constants.BUTTON_DONE_SELECTED), font, font.getColor()));
     }
 }
