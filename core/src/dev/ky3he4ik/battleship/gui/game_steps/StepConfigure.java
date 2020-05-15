@@ -45,7 +45,8 @@ public class StepConfigure extends BaseStep {
     @Override
     public int stepEnd() {
         configGroup.finish().duplicate(callback.config);
-        callback.calcCellSize();
+//        callback.calcCellSize();
+        callback.resize();
 
         GameConfig config = callback.config;
 

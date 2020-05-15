@@ -235,10 +235,15 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         cellSize = Math.min(w / (config.getWidth() * 2), h / config.getHeight());
         redundantX = (w - cellSize * (config.getWidth() * 2)) / 2;
         redundantY = (h - cellSize * config.getHeight()) / 2;
+        Gdx.app.debug("StepsDirector", "cellSize: " + cellSize);
     }
 
     public void resize(int width, int height) {
         getViewport().update(width, height, true);
+        resize();
+    }
+
+    public void resize() {
         calcCellSize();
 
         leftPlayer.setBounds(sideWidth + redundantX, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
