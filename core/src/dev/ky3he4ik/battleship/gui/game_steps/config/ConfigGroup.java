@@ -195,7 +195,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 
         scrollTable = new Table();
         scrollTable.align(Align.center);
-        scrollTable.setFillParent(true);
+//        scrollTable.setFillParent(true);
         scrollTable.defaults().uniform();
 
         scrollPane = new ScrollPane(scrollTable);
@@ -223,8 +223,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
                 Gdx.graphics.getWidth() - callbackCallback.getRedundantX() * 2 - callbackCallback.getSideWidth() * 2,
                 Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight());
 //        tableContainer.height(tableContainer.getHeight() * 5);
-//        scrollPane.setBounds(0, tableContainer.getY(), tableContainer.getWidth(), tableContainer.getHeight());
-//        scrollTable.setBounds(1, 1, tableContainer.getWidth() - 2, tableContainer.getHeight() - 2);
+        scrollPane.setBounds(0, tableContainer.getY(), tableContainer.getWidth(), tableContainer.getHeight());
 
         scrollTable.add(new Label("Game mode:", labelStyle));
         Array<TextButton> btns = gameTypeGroup.getButtons();
@@ -273,12 +272,13 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 //        addShots.setChecked(config.isDecreasingField());
 //        scrollTable.row();
 
-        scrollTable.row().height(callbackCallback.getCellSize() * 2);
+        scrollTable.row();//.height(callbackCallback.getCellSize() * 2);
         int idx = 0;
         for (ShipCntChooser ship : shipCntChoosers) {
             if (idx + 1 >= scrollTable.getColumns()) {
                 idx = 0;
                 scrollTable.row();
+//                break;
             }
             ship.buildTable(callbackCallback.getCellSize());
             scrollTable.add(ship).colspan(2).fill();
@@ -286,12 +286,21 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         }
 
 //        scrollTable.row().height(callbackCallback.getFooterHeight() + callbackCallback.getRedundantY() + callbackCallback.getCellSize() * 10);
-//        scrollTable.add(new Label(null, labelStyle));
-        scrollTable.setHeight(tableContainer.getHeight() * 60);
+//        scrollTable.add(new Label("asasd", labelStyle));
+//        scrollTable.row();
+//        scrollTable.add(new Label("asasdasd", labelStyle));
+//        scrollTable.setHeight(tableContainer.getHeight() * 60);
+
+
+        tableContainer.setBounds(callbackCallback.getRedundantX(),
+                callbackCallback.getRedundantY() + callbackCallback.getFooterHeight(),
+                Gdx.graphics.getWidth() - callbackCallback.getRedundantX() * 2 - callbackCallback.getSideWidth() * 2,
+                Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight());
+//        tableContainer.height(tableContainer.getHeight() * 5);
+        scrollPane.setBounds(0, 0, scrollTable.getWidth(), scrollTable.getHeight());
 
         doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize() - callbackCallback.getSideWidth(),
                 callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() - callbackCallback.getCellSize(), callbackCallback.getCellSize(), callbackCallback.getCellSize());
-
 //        scrollTable.invalidate();
     }
 
