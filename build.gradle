@@ -16,7 +16,7 @@ buildscript {
 allprojects {
     apply plugin: "eclipse"
 
-    version = 'v0.5'
+    version = 'v0.5.1'
     ext {
         appName = "Advanced Battleship"
         gdxVersion = '1.9.10'
