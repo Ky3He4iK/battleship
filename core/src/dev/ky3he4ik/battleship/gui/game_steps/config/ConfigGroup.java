@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Array;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import dev.ky3he4ik.battleship.ai.AILevel;
@@ -107,6 +108,9 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     private Label decrFieldLabel;
 
     @NotNull
+    private ShipCntChooser[] shipCntChoosers;
+
+    @NotNull
     private ScrollPane scrollPane;
 
     @NotNull
@@ -175,6 +179,21 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 
         decrField = H.getCheckbox(font);
         decrFieldLabel = new Label("Decreasing field", labelStyle);
+
+        GameConfig.Ship[] ships = GameConfig.Ship.getAllShipsSamples();
+        ArrayList<GameConfig.Ship> shipArrayList = config.getShips();
+        shipCntChoosers = new ShipCntChooser[ships.length];
+        int id = 0;
+        for (GameConfig.Ship ship : ships) {
+            int cnt = 0;
+            for (GameConfig.Ship ship1 : shipArrayList)
+                if (ship1.name.equals(ship.name))
+                    cnt++;
+
+            shipCntChoosers[id] = new ShipCntChooser(ship, font, cnt, callback.getCallback().getCellSize());
+            id++;
+        }
+
 
         scrollTable = new Table();
         scrollTable.align(Align.center);
@@ -254,6 +273,15 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 //        addShots.setChecked(config.isDecreasingField());
 //        scrollTable.row();
 
+        int idx = 0;
+        for (ShipCntChooser ship : shipCntChoosers) {
+            scrollTable.add(ship);
+            idx++;
+            if (idx >= scrollTable.getColumns()) {
+                idx = 0;
+                scrollTable.row();
+            }
+        }
 
         doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize() - callbackCallback.getSideWidth(),
                 callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() - callbackCallback.getCellSize(), callbackCallback.getCellSize(), callbackCallback.getCellSize());
@@ -269,41 +297,14 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     @NotNull
     public GameConfig finish() {
         Gdx.input.setInputProcessor(inputProcessor);
-
         scrollTable.clearChildren();
-        TextButton checked = aiLevelGroup.getChecked();
-        if (checked != null) {
-            AILevel level = AILevel.getByName(checked.getName());
-            if (level != null)
-                config.setAiLevel(level.id);
-        }
-        checked = aiLevelGroup2.getChecked();
-        if (checked != null) {
-            AILevel level = AILevel.getByName(checked.getName());
-            if (level != null)
-                config.setAiLevel2(level.id);
-        }
-        checked = gameTypeGroup.getChecked();
-        if (checked != null)
-            config.setGameType(GameConfig.GameType.valueOf(checked.getName()));
-        config.setWidth(Math.round(widthSlider.getValue()));
-        config.setHeight(Math.round(heightSlider.getValue()));
-        config.setShotsPerTurn(Math.round(shootsSlider.getValue()));
-        if (movesSlider.getValue() == movesSlider.getMaxValue())
-            config.setMovingPerTurn(-1);
-        else {
-            config.setMovingPerTurn(Math.round(movesSlider.getValue()));
-            if (config.getMovingPerTurn() == 0)
-                config.setMovingEnabled(false);
-            else
-                config.setMovingEnabled(true);
-        }
-        config.setAdditionalShots(addShots.isChecked());
-        //todo
-
         setVisible(false);
         Gdx.app.debug("ConfigGroup/finish", config.toJSON());
         return config;
+    }
+
+    private boolean isValidConfig(@NotNull GameConfig config) {
+        return true; //todo
     }
 
     public void setVisible(boolean visible) {
@@ -314,9 +315,56 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     @Override
     public boolean buttonPressed(int buttonId) {
         if (buttonId == DONE_BUTTON_ID) {
-            //todo: check for correct config
-            callback.ConfigIsDone();
-            return true;
+
+
+            GameConfig mConfig = config.duplicate(null);
+
+            TextButton checked = aiLevelGroup.getChecked();
+            if (checked != null) {
+                AILevel level = AILevel.getByName(checked.getName());
+                if (level != null)
+                    mConfig.setAiLevel(level.id);
+            }
+            checked = aiLevelGroup2.getChecked();
+            if (checked != null) {
+                AILevel level = AILevel.getByName(checked.getName());
+                if (level != null)
+                    mConfig.setAiLevel2(level.id);
+            }
+            checked = gameTypeGroup.getChecked();
+            if (checked != null)
+                mConfig.setGameType(GameConfig.GameType.valueOf(checked.getName()));
+            mConfig.setWidth(Math.round(widthSlider.getValue()));
+            mConfig.setHeight(Math.round(heightSlider.getValue()));
+            mConfig.setShotsPerTurn(Math.round(shootsSlider.getValue()));
+            if (movesSlider.getValue() == movesSlider.getMaxValue())
+                mConfig.setMovingPerTurn(-1);
+            else {
+                mConfig.setMovingPerTurn(Math.round(movesSlider.getValue()));
+                if (mConfig.getMovingPerTurn() == 0)
+                    mConfig.setMovingEnabled(false);
+                else
+                    mConfig.setMovingEnabled(true);
+            }
+            mConfig.setAdditionalShots(addShots.isChecked());
+
+            int id = 1;
+            ArrayList<GameConfig.Ship> ships = new ArrayList<>();
+            for (ShipCntChooser ship : shipCntChoosers) {
+                for (int i = 0; i < ship.getCount(); i++) {
+                    ships.add(ship.getShip().clone(id));
+                    id++;
+                }
+            }
+            mConfig.setShips(ships);
+
+            if (isValidConfig(mConfig)) {
+                mConfig.duplicate(config);
+                //todo: check for correct config
+                callback.ConfigIsDone();
+                return true;
+            }
+            return false;
         }
         return false;
     }

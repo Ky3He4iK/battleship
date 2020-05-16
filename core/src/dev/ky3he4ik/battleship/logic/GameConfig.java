@@ -3,6 +3,7 @@ package dev.ky3he4ik.battleship.logic;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class GameConfig {
         public static ArrayList<Ship> getSampleShipsWest() {
             return new ArrayList<>(Arrays.asList(new Ship(5, 1, Constants.SHIP_CARRIER_IMG),
                     new Ship(4, 2, Constants.SHIP_BATTLESHIP_IMG),
-                    new Ship(3, 3, Constants.SHIP_DESTROYER_IMG),
+                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
                     new Ship(3, 4, Constants.SHIP_SUBMARINE_IMG),
                     new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG)));
         }
@@ -73,10 +74,26 @@ public class GameConfig {
         }
 
         @NotNull
+        public Ship clone(int newId) {
+            return new Ship(length, newId, name);
+        }
+
+        @NotNull
         public String rotatedName() {
             if (name.endsWith(Constants.ROTATED_SUFFIX))
                 return name;
             return name + Constants.ROTATED_SUFFIX;
+        }
+
+        @NotNull
+        public static Ship[] getAllShipsSamples() {
+            return new Ship[]{
+                    new Ship(5, 1, Constants.SHIP_CARRIER_IMG),
+                    new Ship(4, 2, Constants.SHIP_BATTLESHIP_IMG),
+                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 4, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(1, 5, Constants.SHIP_RUBBER_BOAT_IMG)
+            };
         }
     }
 
@@ -296,18 +313,25 @@ public class GameConfig {
         return new Gson().toJson(this);
     }
 
-    public void duplicate(@NotNull GameConfig other) {
-        other.width = width;
-        other.height = height;
-        other.movingEnabled = movingEnabled;
-        other.additionalShots = additionalShots;
-        other.decreasingField = decreasingField;
-        other.movingPerTurn = movingPerTurn;
-        other.shotsPerTurn = shotsPerTurn;
-        other.aiLevel = aiLevel;
-        other.aiLevel2 = aiLevel2;
-        other.version = version;
-        other.gameType = gameType;
-        other.ships = ships;
+    @NotNull
+    public GameConfig duplicate(@Nullable GameConfig other) {
+        if (other == null) {
+            other = new GameConfig(width, height, movingEnabled, additionalShots, decreasingField, movingPerTurn, shotsPerTurn, aiLevel, aiLevel2, gameType, ships);
+            other.version = version;
+        } else {
+            other.width = width;
+            other.height = height;
+            other.movingEnabled = movingEnabled;
+            other.additionalShots = additionalShots;
+            other.decreasingField = decreasingField;
+            other.movingPerTurn = movingPerTurn;
+            other.shotsPerTurn = shotsPerTurn;
+            other.aiLevel = aiLevel;
+            other.aiLevel2 = aiLevel2;
+            other.version = version;
+            other.gameType = gameType;
+            other.ships = ships;
+        }
+        return other;
     }
 }

@@ -2,6 +2,7 @@ package dev.ky3he4ik.battleship.gui.placing;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
-import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
 public class AloneShip extends Actor implements EventListener {
@@ -59,6 +59,10 @@ public class AloneShip extends Actor implements EventListener {
             batch.setColor(getColor());
         else
             setPlaced(callback.isPlaced(id));
+        Color color = getColor();
+        if (color.a > .7f)
+            color.a = .7f;
+        batch.setColor(color);
         batch.draw(sprite, getX(), getY(), sprite.getOriginX(), sprite.getOriginY(),
                 sprite.getWidth(), sprite.getHeight(), 1, 1, sprite.getRotation());
         batch.setColor(1, 1, 1, 1);
@@ -120,6 +124,8 @@ public class AloneShip extends Actor implements EventListener {
     public void setPlaced(boolean placed) {
         this.placed = placed;
         if (placed)
+            setColor(1, 1, 1, .7f);
+        else
             setColor(1, .5f, .5f, .7f);
     }
 

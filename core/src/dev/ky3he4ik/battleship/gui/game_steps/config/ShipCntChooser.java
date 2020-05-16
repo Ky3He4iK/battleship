@@ -1,15 +1,19 @@
 package dev.ky3he4ik.battleship.gui.game_steps.config;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.utils.Align;
 
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.gui.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.utils.Constants;
 
-public class ShipCntChooser extends WidgetGroup {
+public class ShipCntChooser extends WidgetGroup implements ActorWithSpriteListener {
 
     @NotNull
     private Table content;
@@ -20,21 +24,59 @@ public class ShipCntChooser extends WidgetGroup {
     @NotNull
     private ActorWithSprite moreBtn;
 
+    private final int MORE_BTN_ID = 1;
+
     @NotNull
     private ActorWithSprite lessBtn;
+
+    private final int LESS_BTN_ID = 2;
 
     @NotNull
     private Label cntLabel;
 
     private int count = 0;
 
-    ShipCntChooser(@NotNull GameConfig.Ship ship) {
+    ShipCntChooser(@NotNull GameConfig.Ship ship, @NotNull BitmapFont font, int countStart, float cellSize) {
+        lessBtn = new ActorWithSprite(this, Constants.ARROW_LEFT, Constants.ARROW_LEFT_PRESSED, LESS_BTN_ID);
+        moreBtn = new ActorWithSprite(this, Constants.ARROW_RIGHT, Constants.ARROW_RIGHT_PRESSED, MORE_BTN_ID);
+        shipImage = new ShipImage(ship, cellSize);
+        cntLabel = new Label("" + countStart, new Label.LabelStyle(font, font.getColor()));
+        count = countStart;
+
         content = new Table();
+        content.add(lessBtn);
+        content.add(shipImage);
+        content.add(moreBtn);
+        content.row();
+        content.add(cntLabel).colspan(3).align(Align.center);
 
         addActor(content);
     }
 
     public int getCount() {
         return count;
+    }
+
+    @NotNull
+    public GameConfig.Ship getShip() {
+        return shipImage.ship;
+    }
+
+    @Override
+    public boolean buttonPressed(int buttonId) {
+        if (buttonId == MORE_BTN_ID)
+            count = Math.min(count + 1, 10);
+        else if (buttonId == LESS_BTN_ID)
+            count = Math.max(count - 1, 0);
+        cntLabel.setText(count);
+        return true;
+    }
+
+    @Override
+    public void buttonReleased(int buttonId) {
+    }
+
+    @Override
+    public void buttonMoved(int buttonId) {
     }
 }
