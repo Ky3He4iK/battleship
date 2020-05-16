@@ -166,8 +166,6 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         heightSlider = new Slider(4, 20, 1, false, sliderStyle);
         heightSliderLabel = new Label(null, labelStyle);
 
-        //todo:
-        //      ships
         shootsSlider = new Slider(1, 15, 1, false, sliderStyle);
         shootsSliderLabel = new Label(null, labelStyle);
 
@@ -203,7 +201,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         scrollPane = new ScrollPane(scrollTable);
 
         tableContainer = new Container<>(scrollPane);
-        tableContainer.setFillParent(true);
+//        tableContainer.setFillParent(true);
         addActor(tableContainer);
 
         doneButton = new ActorWithSprite(this, Constants.BUTTON_DONE, Constants.BUTTON_DONE_SELECTED, DONE_BUTTON_ID);
@@ -221,10 +219,12 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         Gdx.input.setInputProcessor(this);
 
         tableContainer.setBounds(callbackCallback.getRedundantX(),
-                callbackCallback.getRedundantY(),
+                callbackCallback.getRedundantY() + callbackCallback.getFooterHeight(),
                 Gdx.graphics.getWidth() - callbackCallback.getRedundantX() * 2 - callbackCallback.getSideWidth() * 2,
-                Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getCellSize() - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight());
-
+                Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight());
+//        tableContainer.height(tableContainer.getHeight() * 5);
+//        scrollPane.setBounds(0, tableContainer.getY(), tableContainer.getWidth(), tableContainer.getHeight());
+//        scrollTable.setBounds(1, 1, tableContainer.getWidth() - 2, tableContainer.getHeight() - 2);
 
         scrollTable.add(new Label("Game mode:", labelStyle));
         Array<TextButton> btns = gameTypeGroup.getButtons();
@@ -273,15 +273,21 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 //        addShots.setChecked(config.isDecreasingField());
 //        scrollTable.row();
 
+        scrollTable.row().height(callbackCallback.getCellSize() * 2);
         int idx = 0;
         for (ShipCntChooser ship : shipCntChoosers) {
-            scrollTable.add(ship);
-            idx++;
-            if (idx >= scrollTable.getColumns()) {
+            if (idx + 1 >= scrollTable.getColumns()) {
                 idx = 0;
                 scrollTable.row();
             }
+            ship.buildTable(callbackCallback.getCellSize());
+            scrollTable.add(ship).colspan(2).fill();
+            idx += 2;
         }
+
+//        scrollTable.row().height(callbackCallback.getFooterHeight() + callbackCallback.getRedundantY() + callbackCallback.getCellSize() * 10);
+//        scrollTable.add(new Label(null, labelStyle));
+        scrollTable.setHeight(tableContainer.getHeight() * 60);
 
         doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize() - callbackCallback.getSideWidth(),
                 callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() - callbackCallback.getCellSize(), callbackCallback.getCellSize(), callbackCallback.getCellSize());
@@ -304,7 +310,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     }
 
     private boolean isValidConfig(@NotNull GameConfig config) {
-        return true; //todo
+        return true; //todo: isValidConfig
     }
 
     public void setVisible(boolean visible) {
@@ -360,7 +366,6 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 
             if (isValidConfig(mConfig)) {
                 mConfig.duplicate(config);
-                //todo: check for correct config
                 callback.ConfigIsDone();
                 return true;
             }

@@ -22,9 +22,13 @@ public class ShipImage extends Widget {
     private float cellSize;
 
     ShipImage(@NotNull GameConfig.Ship ship, float cellSize) {
-        shipSprite = SpriteManager.getInstance().getSprite(ship.name);
+        shipSprite = SpriteManager.getInstance().getSprite(ship.rotatedName());
         cellSprite = SpriteManager.getInstance().getSprite(Constants.CELL_CLOSED_IMG);
         this.ship = ship;
+        this.cellSize = cellSize;
+    }
+
+    public void setCellSize(float cellSize) {
         this.cellSize = cellSize;
     }
 
@@ -32,9 +36,8 @@ public class ShipImage extends Widget {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        batch.draw(shipSprite, getX(), getY(), shipSprite.getOriginX(), shipSprite.getOriginY(),
-                ship.length * cellSize, cellSize, 1, 1, shipSprite.getRotation());
         for (int i = 0; i < ship.length; i++)
-            batch.draw(shipSprite, getX() + i * cellSize, getY(), cellSize, cellSize);
+            batch.draw(cellSprite, getX() + i * cellSize, getY(), cellSize, cellSize);
+        batch.draw(shipSprite, getX(), getY(), ship.length * cellSize, cellSize);
     }
 }

@@ -44,13 +44,19 @@ public class ShipCntChooser extends WidgetGroup implements ActorWithSpriteListen
         count = countStart;
 
         content = new Table();
+
+        addActor(content);
+    }
+
+    public void buildTable(float cellSize) {
+        shipImage.setCellSize(cellSize);
+        content.clearChildren();
+        content.row();//.height(cellSize);
         content.add(lessBtn);
         content.add(shipImage);
         content.add(moreBtn);
-        content.row();
+        content.row();//.height(cellSize);
         content.add(cntLabel).colspan(3).align(Align.center);
-
-        addActor(content);
     }
 
     public int getCount() {
