@@ -30,6 +30,7 @@ import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.game_steps.StepConfigure;
 import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
@@ -131,7 +132,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         font.setColor(Color.BLACK);
 
         labelStyle = new Label.LabelStyle(font, font.getColor());
-        setDebugAll(Constants.DEBUG_MODE);
+//        setDebugAll(Constants.DEBUG_MODE);
 
         gameTypeGroup = new ButtonGroup<>();
         GameConfig.GameType[] gameTypes = GameConfig.GameType.values();
@@ -280,8 +281,8 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
                 scrollTable.row();
 //                break;
             }
-            ship.buildTable(callbackCallback.getCellSize());
             scrollTable.add(ship).colspan(2).fill();
+            ship.buildTable(callbackCallback.getCellSize());
             idx += 2;
         }
 
@@ -319,7 +320,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     }
 
     private boolean isValidConfig(@NotNull GameConfig config) {
-        return true; //todo: isValidConfig
+        return config.getShips().size() > 0 && H.placeShipsLines(new World(config.getWidth(), config.getHeight()), config.getShips());
     }
 
     public void setVisible(boolean visible) {

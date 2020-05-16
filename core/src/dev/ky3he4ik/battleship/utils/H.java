@@ -57,7 +57,7 @@ public final class H {
         } while (!done);
     }
 
-    public static void placeShipsLines(@NotNull World world, @NotNull ArrayList<GameConfig.Ship> availableShips) {
+    public static boolean placeShipsLines(@NotNull World world, @NotNull ArrayList<GameConfig.Ship> availableShips) {
         int idx = 0;
         int idy = 0;
         int step = 0;
@@ -72,7 +72,10 @@ public final class H {
             }
             if (success)
                 i++;
+            else
+                return false;
         }
+        return true;
     }
 
     /**

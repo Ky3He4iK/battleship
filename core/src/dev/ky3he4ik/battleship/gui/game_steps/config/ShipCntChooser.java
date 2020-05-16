@@ -38,25 +38,31 @@ public class ShipCntChooser extends WidgetGroup implements ActorWithSpriteListen
 
     ShipCntChooser(@NotNull GameConfig.Ship ship, @NotNull BitmapFont font, int countStart, float cellSize) {
         lessBtn = new ActorWithSprite(this, Constants.ARROW_LEFT, Constants.ARROW_LEFT_PRESSED, LESS_BTN_ID);
+        lessBtn.setColor(1, 1, 1, .7f);
         moreBtn = new ActorWithSprite(this, Constants.ARROW_RIGHT, Constants.ARROW_RIGHT_PRESSED, MORE_BTN_ID);
         shipImage = new ShipImage(ship, cellSize);
         cntLabel = new Label("" + countStart, new Label.LabelStyle(font, font.getColor()));
         count = countStart;
 
         content = new Table();
+        content.setFillParent(true);
+        setHeight(cellSize + font.getCapHeight());
+        setWidth(cellSize * (ship.length + 2));
 
+        setDebug(Constants.DEBUG_MODE);
         addActor(content);
     }
 
     public void buildTable(float cellSize) {
         shipImage.setCellSize(cellSize);
         content.clearChildren();
+        content.row().height(cellSize);
+        content.add(lessBtn).width(cellSize);
+        content.add(shipImage).width(cellSize * shipImage.ship.length);
+        content.add(moreBtn).width(cellSize);
         content.row();//.height(cellSize);
-        content.add(lessBtn);
-        content.add(shipImage);
-        content.add(moreBtn);
-        content.row();//.height(cellSize);
-        content.add(cntLabel).colspan(3).align(Align.center);
+        content.add(cntLabel).colspan(content.getColumns()).align(Align.center);
+        content.align(Align.center);
     }
 
     public int getCount() {
