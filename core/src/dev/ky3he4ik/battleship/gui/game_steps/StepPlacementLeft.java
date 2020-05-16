@@ -24,13 +24,15 @@ public class StepPlacementLeft extends BaseStep {
 
     @Override
     public void stepBegin() {
+        callback.p1Ready = false;
+        callback.p2Ready = false;
         callback.setChildrenEnabled(true, false, false, false, true, true);
         if (callback.config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             callback.shipPlacer.setVisible(false);
             callback.leftPlayer.setVisible(false);
             cTime = 0;
         } else {
-            callback.shipPlacer.restart(callback.middleGap);
+            callback.shipPlacer.restart(callback.middleGap, callback.config.getShips());
             callback.shipPlacer.start(callback.leftPlayer);
         }
         callback.leftPlayer.setPlaceShips();
@@ -39,13 +41,12 @@ public class StepPlacementLeft extends BaseStep {
 
     @Override
     public void act() {
-
+        if (callback.readyCnt == 2 || callback.p1Ready)
+            callback.nextStep();
     }
 
     @Override
     public void draw() {
-        if (callback.readyCnt == 2)
-            callback.nextStep();
         if (callback.config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             cTime += Gdx.graphics.getDeltaTime();
             Batch batch = getBatch();
@@ -58,8 +59,7 @@ public class StepPlacementLeft extends BaseStep {
 
     @Override
     public int stepEnd() {
-        callback.leftPlayer.setShowShips(callback.config.getGameType() != GameConfig.GameType.LOCAL_2P);
-        callback.leftPlayer.start();
+        callback.leftPlayer.setShowShips(callback.config.getGameType() != GameConfig.GameType.LOCAL_2P || Constants.DEBUG_MODE);
         return super.stepEnd();
     }
 

@@ -7,8 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-import dev.ky3he4ik.battleship.utils.Constants;
-
 public class SpriteManager {
     @NotNull
     private HashMap<String, Sprite> sprites;

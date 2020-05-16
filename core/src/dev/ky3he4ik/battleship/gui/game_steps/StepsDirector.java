@@ -13,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-import dev.ky3he4ik.battleship.ai.AIDummy;
-import dev.ky3he4ik.battleship.ai.AILevel;
 import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
@@ -91,6 +89,9 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     @NotNull
     Label stepLabel;
+
+    boolean p1Ready;
+    boolean p2Ready;
 
     public StepsDirector() {
         font = new BitmapFont();
@@ -235,6 +236,15 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         cellSize = Math.min(w / (config.getWidth() * 2), h / config.getHeight());
         redundantX = (w - cellSize * (config.getWidth() * 2)) / 2;
         redundantY = (h - cellSize * config.getHeight()) / 2;
+        if (redundantY + footerHeight < cellSize || redundantY + headerHeight < cellSize) {
+            w = getWidth() - middleGap - sideWidth * 2;
+            h = getHeight();
+            cellSize = Math.min(w / (config.getWidth() * 2), h / (config.getHeight() + 2));
+            redundantY = 0;
+            footerHeight = cellSize;
+            headerHeight = cellSize;
+            redundantX = (w - cellSize * (config.getWidth() * 2)) / 2;
+        }
         Gdx.app.debug("StepsDirector", "cellSize: " + cellSize);
     }
 
@@ -325,8 +335,10 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     public void shipsPlaced(int playerId) {
         readyCnt++;
-        if (playerId == TURN_LEFT || (playerId == TURN_RIGHT && config.getGameType() != GameConfig.GameType.AI_VS_AI && config.getGameType() != GameConfig.GameType.AI) || readyCnt == 2)
-            nextStep();
+        if (playerId == TURN_LEFT)
+            p1Ready = true;
+        else
+            p2Ready = true;
         Gdx.app.debug("GameStage", "" + playerId + " is ready");
     }
 

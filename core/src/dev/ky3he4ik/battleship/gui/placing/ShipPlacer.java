@@ -78,7 +78,8 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         super.draw(batch, parentAlpha);
     }
 
-    public void restart(float middleGap) {
+    public void restart(float middleGap, @NotNull ArrayList<GameConfig.Ship> availableShips) {
+        this.availableShips = availableShips;
         usedShips.set(0, availableShips.size(), false);
         for (AloneShip ship : ships) {
             ship.setVisible(false);

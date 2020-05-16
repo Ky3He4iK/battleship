@@ -162,9 +162,9 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         aiLevelGroup2.setChecked(Objects.requireNonNull(AILevel.getById(config.getAiLevel2())).name);
 
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle(H.getSpriteDrawable(Constants.SLIDER_BACKGROUND), H.getSpriteDrawable(Constants.SLIDER_KNOB));
-        widthSlider = new Slider(4, 20, 1, false, sliderStyle);
+        widthSlider = new Slider(7, 20, 1, false, sliderStyle);
         widthSliderLabel = new Label(null, labelStyle);
-        heightSlider = new Slider(4, 20, 1, false, sliderStyle);
+        heightSlider = new Slider(7, 20, 1, false, sliderStyle);
         heightSliderLabel = new Label(null, labelStyle);
 
         shootsSlider = new Slider(1, 15, 1, false, sliderStyle);
