@@ -247,6 +247,12 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             communication.setCallback(this);
     }
 
+    public void removeCommunication() {
+        if (this.communication != null)
+            this.communication.dispose();
+        communication = null;
+    }
+
     public void removeShip(float x, float y, int shipId) {
         world.removeShip(shipId);
     }

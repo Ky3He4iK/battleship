@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
@@ -179,14 +180,22 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     @Override
     public void act(float delta) {
-        super.act(delta);
-        steps.get(currentStep).act();
+        try {
+            super.act(delta);
+            steps.get(currentStep).act();
+        } catch (Exception e) {
+            Gdx.app.error("StepsDirector/" + steps.get(currentStep).getName(), e.getMessage(), e);
+        }
     }
 
     @Override
     public void draw() {
-        super.draw();
-        steps.get(currentStep).draw();
+        try {
+            super.draw();
+            steps.get(currentStep).draw();
+        } catch (Exception e) {
+            Gdx.app.error("StepsDirector/" + steps.get(currentStep).getName(), e.getMessage(), e);
+        }
     }
 
     public int getTurn() {
