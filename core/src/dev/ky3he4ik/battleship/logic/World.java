@@ -419,4 +419,12 @@ public class World {
     public String toJSON() {
         return new Gson().toJson(this);
     }
+
+    public void duplicate(@NotNull World other) {
+        opened = other.opened;
+        field = other.field;
+        ships = other.ships;
+        width = other.width;
+        height = other.height;
+    }
 }

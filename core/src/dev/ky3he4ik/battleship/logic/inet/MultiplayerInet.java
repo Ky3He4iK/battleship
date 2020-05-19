@@ -1,14 +1,27 @@
 package dev.ky3he4ik.battleship.logic.inet;
 
 import com.badlogic.gdx.Gdx;
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 import dev.ky3he4ik.battleship.logic.Communication;
+import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
+import dev.ky3he4ik.battleship.logic.World;
 
 public class MultiplayerInet extends Thread implements Communication {
+    @NotNull
+    private World enemy;
+
+    @NotNull
+    private World my;
+
+    @NotNull
+    private GameConfig config;
     @Nullable
     private PlayerFinished callback = null;
 
@@ -25,13 +38,21 @@ public class MultiplayerInet extends Thread implements Communication {
     private int i = 0;
 
     private boolean running = true;
+    private boolean isSync = false;
 
     @Nullable
     private Socket client;
 
-    MultiplayerInet(@NotNull String name, long uuid) {
+    @Nullable
+    public String opponent;
+
+
+    MultiplayerInet(@NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config, @NotNull String name, long uuid) {
         this.name = name;
         this.uuid = uuid;
+        this.enemy = enemy;
+        this.my = my;
+        this.config = config;
     }
 
     @Override
@@ -40,19 +61,19 @@ public class MultiplayerInet extends Thread implements Communication {
 
     @Override
     public void setPlaceShips() {
-        //todo
     }
 
     @Override
     public void init() {
         start();
-        //todo
+        running = true;
     }
 
     @Override
     public void dispose() {
-        running = true;
-        //todo
+        running = false;
+        if (client != null)
+            client.disconnect(name, uuid);
     }
 
     @Override
@@ -62,11 +83,15 @@ public class MultiplayerInet extends Thread implements Communication {
 
     @Override
     public void restart() {
-        //todo
+        running = true;
+        if (!isAlive())
+            start();
     }
 
     @Override
     public void run() {
+        if (client != null)
+            client.disconnect(name, uuid);
         try {
             client = new Socket(this);
         } catch (Exception e) {
@@ -74,12 +99,13 @@ public class MultiplayerInet extends Thread implements Communication {
         }
         while (running) {
             try {
-                //todo
                 i++;
-                if (i > 10) {
+                if (i % 10 == 0 && client != null)
+                    client.send(Action.ping(name, uuid));
+
+                if (i > 100) {
                     i = 0;
-                    if (client != null)
-                        client.send(Action.ping(name, uuid).toJson());
+                    sync();
                 }
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -90,17 +116,44 @@ public class MultiplayerInet extends Thread implements Communication {
 
     @Override
     public void enemyTurned(int x, int y) {
-        //todo
+        if (client != null) {
+            ArrayList<World.Ship> ships = enemy.getShips();
+            int[][] shipsA = new int[ships.size()][];
+            for (int i = 0; i < ships.size(); i++) {
+                World.Ship ship = ships.get(i);
+                shipsA[i] = new int[]{ship.code, ship.idx, ship.idy, ship.rotation};
+            }
+            Action action = new Action(Action.ActionType.TURN, name, uuid);
+            action.setPos(new int[]{x, y});
+            action.setShips(shipsA);
+            action.setGameId(gameId);
+            action.setOtherName(opponent);
+            client.send(action);
+        }
     }
 
     @Override
     public void enemyShipsPlaced() {
-        //todo
+        if (client != null) {
+            ArrayList<World.Ship> ships = enemy.getShips();
+            int[][] shipsA = new int[ships.size()][];
+            for (int i = 0; i < ships.size(); i++) {
+                World.Ship ship = ships.get(i);
+                shipsA[i] = new int[]{ship.code, ship.idx, ship.idy, ship.rotation};
+            }
+            Action action = new Action(Action.ActionType.PLACE_SHIPS, name, uuid);
+            action.setShips(shipsA);
+            action.setGameId(gameId);
+            action.setOtherName(opponent);
+            client.send(action);
+        }
     }
 
     @Override
     public void finish() {
-        //todo
+        if (client != null)
+            client.close();
+        client = null;
     }
 
     void onAction(@NotNull Action action) {
@@ -110,32 +163,84 @@ public class MultiplayerInet extends Thread implements Communication {
             case NO:
             case OK:
             case CONNECT:
+                break;
             case PLACE_SHIPS:
+                if (callback != null && action.getShips() != null) {
+                    int[][] shipsA = action.getShips();
+                    ArrayList<World.Ship> ships = new ArrayList<>();
+                    for (int[] ints : shipsA) {
+                        String shipName = "";
+                        int shipL = 0;
+                        for (GameConfig.Ship ship1 : config.getShips())
+                            if (ship1.id == ints[0]) {
+                                shipName = ints[3] == World.ROTATION_VERTICAL ? ship1.name : ship1.rotatedName();
+                                shipL = ship1.length;
+                                break;
+                            }
+                        World.Ship ship = new World.Ship(shipL, ints[0], shipName, ints[1], ints[2], ints[3]);
+                        ships.add(ship);
+                    }
+                    my.setShips(ships);
+                    callback.shipsPlaced();
+                }
                 break;
             case GET_HOSTS:
-                //todo
+                //todo: opponent chooser
+                String m = action.getMsg();
+                if (m != null && m.length() > 0) {
+                    int p = m.indexOf('\n');
+                    if (p != -1)
+                        m = m.substring(0, p);
+                    Action action1 = new Action(Action.ActionType.JOIN, name, uuid);
+                    action1.setOtherName(m);
+                    action1.setMsg(passwd);
+                    if (client != null)
+                        client.send(action1);
+                }
                 break;
             case TURN:
-                //todo
+                if (callback != null && action.getPos() != null)
+                    callback.turnFinished(action.getPos()[0], action.getPos()[1]);
                 break;
             case CONNECTED:
-                //todo
+                opponent = action.getOtherName();
                 break;
             case JOIN:
-                //todo
-                break;
             case INFO:
-                //todo
+                GameConfig config1 = new Gson().fromJson(action.getConfig(), GameConfig.class);
+                if (config1 != null)
+                    config1.duplicate(config);
                 break;
             case GAME_END:
-                //todo
+                if (client != null)
+                    client.close();
                 break;
             case DISCONNECT:
-                //todo
+                if (client != null)
+                    client.close();
+                client = null;
                 break;
             case START_GAME:
                 //todo
                 break;
+            case SYNC:
+                if (!isSync) {
+                    i = 0;
+                    sync();
+                }
+                isSync = false;
+                World e = new Gson().fromJson(action.getMsg(), World.class);
+                e.duplicate(enemy);
+                break;
+        }
+    }
+
+    private void sync() {
+        if (client != null) {
+            isSync = true;
+            Action action = new Action(Action.ActionType.SYNC, name, uuid);
+            action.setMsg(new Gson().toJson(my));
+            client.send(action);
         }
     }
 }

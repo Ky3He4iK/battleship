@@ -15,7 +15,7 @@ public class Socket extends WebSocketClient {
     @NotNull
     private MultiplayerInet callback;
 
-    public Socket(@NotNull MultiplayerInet callback) throws URISyntaxException {
+    Socket(@NotNull MultiplayerInet callback) throws URISyntaxException {
         super(new URI(Constants.HOST_ADRESS));
         this.callback = callback;
     }
@@ -39,5 +39,14 @@ public class Socket extends WebSocketClient {
     @Override
     public void onError(Exception ex) {
         Gdx.app.error("Socket", ex.getMessage(), ex);
+    }
+
+    void send(@NotNull Action action) {
+        send(action.toJson());
+    }
+
+    void disconnect(@NotNull String name, long uuid) {
+        send(new Action(Action.ActionType.DISCONNECT, name, uuid));
+        close();
     }
 }

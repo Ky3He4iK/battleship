@@ -47,6 +47,9 @@ public class StepGame extends BaseStep {
                         callback.rightPlayer.setTurn();
                     else {
                         boolean res = callback.leftPlayer.open(callback.aiXR, callback.aiYR);
+                        Communication communication = callback.leftPlayer.getCommunication();
+                        if (communication != null)
+                            communication.enemyTurned(callback.aiXR, callback.aiYR);
                         callback.registerShoot(StepsDirector.TURN_RIGHT, res);
                         if (callback.leftPlayer.getWorld().isDead()) {
                             callback.nextStep();
@@ -120,6 +123,9 @@ public class StepGame extends BaseStep {
         if (playerId == callback.turn && callback.canShoot(playerId)) {
             Field opponent = callback.getOpponent(playerId);
             boolean res = opponent.open(i, j);
+            Communication communication = callback.getOpponent(playerId).getCommunication();
+            if (communication != null)
+                communication.enemyTurned(i, j);
             callback.registerShoot(playerId, res);
             if (opponent.getWorld().isDead()) {
                 Gdx.app.error("GameStage", "P" + (playerId + 1) + " won");

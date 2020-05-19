@@ -52,6 +52,8 @@ public class Action {
         // Just... no
         NO,     // < -
         // > -
+
+        SYNC,   // msg: World in JSON
     }
 
     @NotNull
@@ -278,7 +280,8 @@ public class Action {
     }
 
 
-    public static @NotNull Action ping(@NotNull String name, long uuid) {
+    public static @NotNull
+    Action ping(@NotNull String name, long uuid) {
         return new Action(ActionType.PING, name, uuid);
     }
 
