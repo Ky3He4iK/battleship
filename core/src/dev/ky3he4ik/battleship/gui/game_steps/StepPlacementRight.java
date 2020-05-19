@@ -40,7 +40,7 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public void act() {
-        if (callback.readyCnt == 2 || callback.p2Ready)
+        if (callback.readyCnt >= 2 || callback.p2Ready)
             callback.nextStep();
     }
 
@@ -58,7 +58,7 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public int stepEnd() {
-        callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI);
+        callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI || callback.isP2);
         callback.leftPlayer.start();
         callback.rightPlayer.start();
         return StepsDirector.STEP_CONNECTING;

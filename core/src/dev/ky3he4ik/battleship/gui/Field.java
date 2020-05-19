@@ -406,4 +406,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public void gotConfig() {
         callback.gotConfig = true;
     }
+
+    @NotNull
+    public StepsDirector getCallback() {
+        return callback;
+    }
 }

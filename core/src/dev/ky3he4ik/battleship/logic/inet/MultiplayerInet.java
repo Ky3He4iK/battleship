@@ -8,9 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
+import dev.ky3he4ik.battleship.gui.Field;
+import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
-import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.logic.World;
 
 public class MultiplayerInet extends Thread implements Communication {
@@ -23,7 +24,7 @@ public class MultiplayerInet extends Thread implements Communication {
     @NotNull
     private GameConfig config;
     @Nullable
-    private PlayerFinished callback = null;
+    private Field callback = null;
 
     @NotNull
     private String name;
@@ -40,7 +41,7 @@ public class MultiplayerInet extends Thread implements Communication {
     private boolean running = true;
     private boolean isSync = false;
     private boolean isHost;
-    private boolean shipsSent;
+    private boolean shipsSent = false;
 
     @Nullable
     private Socket client;
@@ -83,7 +84,7 @@ public class MultiplayerInet extends Thread implements Communication {
     }
 
     @Override
-    public void setCallback(@NotNull PlayerFinished callback) {
+    public void setCallback(@NotNull Field callback) {
         this.callback = callback;
     }
 
@@ -106,6 +107,7 @@ public class MultiplayerInet extends Thread implements Communication {
         } catch (Exception e) {
             Gdx.app.error("MultiplayerInet", e.getMessage(), e);
         }
+        shipsSent = false;
         while (running) {
             try {
                 if (isReconnect && client != null) {
@@ -122,8 +124,12 @@ public class MultiplayerInet extends Thread implements Communication {
                     i = 0;
                     sync();
                 }
+                if (i % 50 == 0) {
+                    if (!isHost && opponent == null && client != null)
+                        client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
+                }
                 Thread.sleep(100);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 Gdx.app.error("MultiplayerInet", e.getMessage(), e);
             }
         }
@@ -186,7 +192,6 @@ public class MultiplayerInet extends Thread implements Communication {
             case PLACE_SHIPS:
                 if (callback != null && action.getShips() != null) {
                     int[][] shipsA = action.getShips();
-                    ArrayList<World.Ship> ships = new ArrayList<>();
                     for (int[] ints : shipsA) {
                         String shipName = "";
                         int shipL = 0;
@@ -197,10 +202,13 @@ public class MultiplayerInet extends Thread implements Communication {
                                 break;
                             }
                         World.Ship ship = new World.Ship(shipL, ints[0], shipName, ints[1], ints[2], ints[3]);
-                        ships.add(ship);
+                        my.placeShip(ship, ship.idx, ship.idy, ship.rotation);
                     }
-                    my.setShips(ships);
                     callback.shipsPlaced();
+                    if (!shipsSent) {
+                        shipsSent = true;
+                        enemyShipsPlaced();
+                    }
                 }
                 break;
             case GET_HOSTS:
@@ -241,11 +249,11 @@ public class MultiplayerInet extends Thread implements Communication {
                 client.send(action1);
                 break;
             case GAME_END:
-                client.close();
-                break;
             case DISCONNECT:
                 client.close();
                 client = null;
+                if (callback != null)
+                    callback.getCallback().setStep(StepsDirector.STEP_AFTERMATH);
                 break;
             case START_GAME:
                 if (callback != null)
@@ -265,10 +273,7 @@ public class MultiplayerInet extends Thread implements Communication {
 
     private void sync() {
         if (client != null) {
-            if (opponent == null) {
-                if (!isHost)
-                    client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
-            } else {
+            if (opponent != null) {
                 isSync = true;
                 Action action = new Action(Action.ActionType.SYNC, name, uuid);
                 action.setMsg(new Gson().toJson(my));

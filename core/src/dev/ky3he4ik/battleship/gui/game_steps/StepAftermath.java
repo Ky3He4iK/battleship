@@ -28,11 +28,15 @@ public class StepAftermath extends BaseStep {
         callback.rightPlayer.setShowShips(true);
         callback.leftPlayer.setTouchable(Touchable.disabled);
         callback.rightPlayer.setTouchable(Touchable.disabled);
-        if (callback.leftPlayer.getWorld().isDead())
+        if (callback.leftPlayer.getWorld().isDead()) {
             callback.rightScore++;
-        else if (callback.rightPlayer.getWorld().isDead())
+            text = "Second" + " player won!\n";
+        } else if (callback.rightPlayer.getWorld().isDead()) {
             callback.leftScore++;
-        text = (callback.leftPlayer.getWorld().isDead() ? "Second" : "First") + " player won!\n" + callback.leftScore + " : " + callback.rightScore;
+            text = "First" + " player won!\n";
+        } else
+            text = "There are no winner\n";
+        text = text + callback.leftScore + " : " + callback.rightScore;
         textLabel.setText(text);
         textLabel.setAlignment(Align.center);
         textLabel.setPosition((callback.getWidth() - textLabel.getWidth()) / 2, (callback.getHeight() - textLabel.getHeight()) / 2);

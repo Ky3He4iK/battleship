@@ -34,7 +34,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     final static int STEP_PLACEMENT_L = 2;
     final static int STEP_PLACEMENT_R = 3;
     final static int STEP_GAME = 4;
-    final static int STEP_AFTERMATH = 5;
+    public final static int STEP_AFTERMATH = 5;
     final static int STEP_CONNECTING = 6;
     final static int STEP_CONNECTING_CLIENT = 7;
 
@@ -168,7 +168,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         setStep(steps.get(currentStep).stepEnd());
     }
 
-    void setStep(int step) {
+    public void setStep(int step) {
         if (currentStep == STEP_BEGINNING)
             restart();
         steps.get(currentStep).stepEnd();
@@ -334,8 +334,12 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     public void cellPressed(int playerId, int idx, int idy) {
-        if (canShoot(1 - playerId) && (playerId == TURN_RIGHT || config.getGameType() == GameConfig.GameType.LOCAL_2P) && turn != playerId)
-            turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
+
+        if (canShoot(1 - playerId) && turn != playerId)
+            if (config.getGameType() == GameConfig.GameType.GLOBAL_INET && ((playerId == TURN_LEFT) == isP2)
+                    || (playerId == TURN_RIGHT && config.getGameType() != GameConfig.GameType.GLOBAL_INET)
+                    || config.getGameType() == GameConfig.GameType.LOCAL_2P)
+                turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
     }
 
     public void turnFinished(int playerId, int i, int j) {

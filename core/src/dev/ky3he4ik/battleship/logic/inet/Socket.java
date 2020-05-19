@@ -72,6 +72,8 @@ public class Socket extends WebSocketClient {
     }
 
     private boolean isConnected() {
-        return getSocket().isConnected();
+        if (getSocket() != null)
+            return getSocket().isConnected();
+        return false;
     }
 }

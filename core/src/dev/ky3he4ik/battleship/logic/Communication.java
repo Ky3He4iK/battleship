@@ -2,6 +2,8 @@ package dev.ky3he4ik.battleship.logic;
 
 import org.jetbrains.annotations.NotNull;
 
+import dev.ky3he4ik.battleship.gui.Field;
+
 public interface Communication {
     void setTurn();
 
@@ -15,7 +17,7 @@ public interface Communication {
 
     void dispose();
 
-    void setCallback(@NotNull PlayerFinished callback);
+    void setCallback(@NotNull Field callback);
 
     void restart();
 

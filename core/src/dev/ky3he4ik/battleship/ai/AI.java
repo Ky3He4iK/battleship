@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
@@ -104,7 +105,7 @@ abstract public class AI extends Thread implements Communication {
     }
 
     @Override
-    public void setCallback(@NotNull PlayerFinished callback) {
+    public void setCallback(@NotNull Field callback) {
         this.callback = callback;
         if (shipsPlaced) {
             callback.shipsPlaced();

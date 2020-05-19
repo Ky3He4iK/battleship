@@ -39,7 +39,7 @@ public class StepGame extends BaseStep {
     @Override
     public void act() {
         if (callback.turn == StepsDirector.TURN_RIGHT) {
-            Gdx.app.debug("StepGame", "turn: right " + callback.aiReadyR + "; " + callback.canShoot(StepsDirector.TURN_RIGHT) + "; " + callback.aiXR + 'x' + callback.aiYR);
+//            Gdx.app.debug("StepGame", "turn: right " + callback.aiReadyR + "; " + callback.canShoot(StepsDirector.TURN_RIGHT) + "; " + callback.aiXR + 'x' + callback.aiYR);
             if (callback.canShoot(StepsDirector.TURN_RIGHT)) {
                 if (callback.aiReadyR) {
                     callback.aiReadyR = false;
