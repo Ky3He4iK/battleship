@@ -3,6 +3,7 @@ package dev.ky3he4ik.battleship.logic.inet;
 import com.badlogic.gdx.Gdx;
 
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,7 +64,11 @@ public class Socket extends WebSocketClient {
         if (!isConnected())
             callback.reconnect(action);
         else
-            send(action.toJson());
+            try {
+                send(action.toJson());
+            } catch (WebsocketNotConnectedException e) {
+                callback.reconnect(action);
+            }
     }
 
     void disconnect(@NotNull String name, long uuid) {

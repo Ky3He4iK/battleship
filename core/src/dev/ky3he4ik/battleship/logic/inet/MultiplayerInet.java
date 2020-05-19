@@ -226,8 +226,22 @@ public class MultiplayerInet extends Thread implements Communication {
                 }
                 break;
             case TURN:
-                if (callback != null && action.getPos() != null)
+                if (callback != null && action.getShips() != null && action.getPos() != null) {
+                    int[][] shipsA = action.getShips();
+                    for (int[] ints : shipsA) {
+                        String shipName = "";
+                        int shipL = 0;
+                        for (GameConfig.Ship ship1 : config.getShips())
+                            if (ship1.id == ints[0]) {
+                                shipName = ints[3] == World.ROTATION_VERTICAL ? ship1.name : ship1.rotatedName();
+                                shipL = ship1.length;
+                                break;
+                            }
+                        World.Ship ship = new World.Ship(shipL, ints[0], shipName, ints[1], ints[2], ints[3]);
+                        my.placeShip(ship, ship.idx, ship.idy, ship.rotation);
+                    }
                     callback.turnFinished(action.getPos()[0], action.getPos()[1]);
+                }
                 break;
             case CONNECTED:
                 opponent = action.getOtherName();

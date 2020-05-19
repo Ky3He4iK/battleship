@@ -320,6 +320,8 @@ public class World {
         else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.length - 1))
             return false;
 
+        removeShip(ship.code);
+
         for (int i = -1; i <= ship.length; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
                 if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || (i >= 0 && i < ship.length && isOpened(idx + i, idy)))
