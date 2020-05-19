@@ -169,6 +169,8 @@ public class MultiplayerInet extends Thread implements Communication {
     }
 
     void onAction(@NotNull Action action) {
+        if (client == null)
+            return;
         switch (action.getActionType()) {
             case HOST:
             case PING:
@@ -206,8 +208,7 @@ public class MultiplayerInet extends Thread implements Communication {
                     Action action1 = new Action(Action.ActionType.JOIN, name, uuid);
                     action1.setOtherName(m);
                     action1.setMsg(passwd);
-                    if (client != null)
-                        client.send(action1);
+                    client.send(action1);
                 }
                 break;
             case TURN:
@@ -218,18 +219,24 @@ public class MultiplayerInet extends Thread implements Communication {
                 opponent = action.getOtherName();
                 break;
             case JOIN:
-            case INFO:
                 GameConfig config1 = new Gson().fromJson(action.getConfig(), GameConfig.class);
-                if (config1 != null)
+                if (config1 != null) {
                     config1.duplicate(config);
+                    if (callback != null)
+                        callback.gotConfig();
+                }
+                break;
+            case INFO:
+                Action action1 = new Action(Action.ActionType.JOIN, name, uuid);
+                action1.setOtherName(action.getOtherName());
+                action1.setMsg(passwd);
+                client.send(action1);
                 break;
             case GAME_END:
-                if (client != null)
-                    client.close();
+                client.close();
                 break;
             case DISCONNECT:
-                if (client != null)
-                    client.close();
+                client.close();
                 client = null;
                 break;
             case START_GAME:

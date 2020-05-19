@@ -36,6 +36,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     final static int STEP_GAME = 4;
     final static int STEP_AFTERMATH = 5;
     final static int STEP_CONNECTING = 6;
+    final static int STEP_CONNECTING_CLIENT = 7;
 
     private static final int ROTATE_BTN_ID = 1;
 
@@ -99,6 +100,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     long uuid;
     boolean isP2 = false;
 
+    public boolean gotConfig = false;
+
     public StepsDirector(@NotNull String name, long uuid) {
         this.name = name;
         this.uuid = uuid;
@@ -119,6 +122,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         steps.add(new StepGame(this, STEP_GAME));
         steps.add(new StepAftermath(this, STEP_AFTERMATH));
         steps.add(new StepConnecting(this, STEP_CONNECTING));
+        steps.add(new StepConnectingClient(this, STEP_CONNECTING_CLIENT));
 
         manager = SpriteManager.getInstance();
         calcCellSize();
@@ -161,9 +165,14 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     void nextStep() {
+        setStep(steps.get(currentStep).stepEnd());
+    }
+
+    void setStep(int step) {
         if (currentStep == STEP_BEGINNING)
             restart();
-        currentStep = steps.get(currentStep).stepEnd();
+        steps.get(currentStep).stepEnd();
+        currentStep = step;
         steps.get(currentStep).stepBegin();
         stepLabel.setText(steps.get(currentStep).getName());
     }

@@ -10,26 +10,27 @@ import org.jetbrains.annotations.NotNull;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-public class StepConnecting extends BaseStep {
+public class StepConnectingClient extends BaseStep {
     @NotNull
     private Animation<TextureRegion> animation;
 
     private float cTime;
 
-    StepConnecting(@NotNull StepsDirector callback, int stepId) {
+    StepConnectingClient(@NotNull StepsDirector callback, int stepId) {
         super(callback, stepId);
         animation = AnimationManager.getInstance().getAnimation(Constants.LOADING_ANIMATION);
     }
 
     @Override
     public void stepBegin() {
+        callback.isP2 = true;
         callback.setChildrenEnabled(false, false);
         cTime = 0;
     }
 
     @Override
     public void act() {
-        if (callback.readyCnt == 2)
+        if (callback.gotConfig)
             callback.nextStep();
     }
 
@@ -47,11 +48,11 @@ public class StepConnecting extends BaseStep {
     @NotNull
     @Override
     public String getName() {
-        return "StepConnecting";
+        return "StepConnectingClient";
     }
 
     @Override
     public int stepEnd() {
-        return StepsDirector.STEP_GAME;
+        return StepsDirector.STEP_PLACEMENT_R;
     }
 }

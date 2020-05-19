@@ -4,4 +4,6 @@ public interface PlayerFinished {
     void turnFinished( int i, int j);
 
     void shipsPlaced();
+
+    void gotConfig();
 }

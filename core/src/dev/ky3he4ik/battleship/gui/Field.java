@@ -401,4 +401,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 }
         return false;
     }
+
+    @Override
+    public void gotConfig() {
+        callback.gotConfig = true;
+    }
 }
