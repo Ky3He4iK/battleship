@@ -39,6 +39,7 @@ public class MultiplayerInet extends Thread implements Communication {
 
     private boolean running = true;
     private boolean isSync = false;
+    private boolean isHost = false;
 
     @Nullable
     private Socket client;
@@ -46,13 +47,13 @@ public class MultiplayerInet extends Thread implements Communication {
     @Nullable
     public String opponent;
 
-
-    MultiplayerInet(@NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config, @NotNull String name, long uuid) {
+    public MultiplayerInet(@NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config, @NotNull String name, long uuid, boolean isHost) {
         this.name = name;
         this.uuid = uuid;
         this.enemy = enemy;
         this.my = my;
         this.config = config;
+        this.isHost = isHost;
     }
 
     @Override
@@ -93,7 +94,8 @@ public class MultiplayerInet extends Thread implements Communication {
         if (client != null)
             client.disconnect(name, uuid);
         try {
-            client = new Socket(this);
+            client = new Socket(this, name, uuid);
+
         } catch (Exception e) {
             Gdx.app.error("MultiplayerInet", e.getMessage(), e);
         }
@@ -242,5 +244,19 @@ public class MultiplayerInet extends Thread implements Communication {
             action.setMsg(new Gson().toJson(my));
             client.send(action);
         }
+    }
+
+    void onOpen() {
+        if (isHost && client != null) {
+            Action action = new Action(Action.ActionType.HOST, name, uuid);
+            action.setMsg(passwd);
+            action.setConfig(config.toJSON());
+            client.send(action);
+        }
+    }
+
+    @Override
+    public boolean isConnected() {
+        return client != null && !client.isClosed();
     }
 }

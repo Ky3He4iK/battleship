@@ -134,4 +134,9 @@ abstract public class AI extends Thread implements Communication {
     @Override
     public void finish() {
     }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
 }

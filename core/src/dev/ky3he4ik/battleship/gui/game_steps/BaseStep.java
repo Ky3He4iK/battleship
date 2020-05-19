@@ -29,7 +29,7 @@ public abstract class BaseStep extends Stage {
         return stepId + 1;
     }
 
-    abstract public void act();
+    public void act() {}
 
     public void draw() {
         super.draw();

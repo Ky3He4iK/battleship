@@ -11,6 +11,7 @@ import dev.ky3he4ik.battleship.gui.game_steps.config.ConfigGroup;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.logic.inet.MultiplayerInet;
 
 public class StepConfigure extends BaseStep {
     private ConfigGroup configGroup;
@@ -55,6 +56,7 @@ public class StepConfigure extends BaseStep {
         World rightWorld = callback.rightPlayer.getWorld();
         rightWorld.reset(config.getWidth(), config.getHeight());
 
+        callback.leftPlayer.removeCommunication();
         if (config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             AILevel aiLevel = AILevel.getById(config.getAiLevel2());
             Communication leftComm;
@@ -65,10 +67,10 @@ public class StepConfigure extends BaseStep {
                 leftComm = aiLevel.getAI(null, rightWorld, leftWorld, config);
             leftComm.init();
             callback.leftPlayer.setCommunication(leftComm);
-        } else
-            callback.leftPlayer.removeCommunication();
+        }
         callback.leftPlayer.init();
 
+        callback.rightPlayer.removeCommunication();
         if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             Communication rightComm;
             AILevel aiLevel = AILevel.getById(config.getAiLevel());
@@ -79,9 +81,12 @@ public class StepConfigure extends BaseStep {
                 rightComm = aiLevel.getAI(null, leftWorld, rightWorld, config);
             rightComm.init();
             callback.rightPlayer.setCommunication(rightComm);
-        } else
-            callback.rightPlayer.removeCommunication();
-        ;
+        } else if (config.getGameType() == GameConfig.GameType.GLOBAL_INET) {
+            Communication rightComm = new MultiplayerInet(leftWorld, rightWorld, config, callback.name, callback.uuid, true);
+            rightComm.init();
+            callback.rightPlayer.setCommunication(rightComm);
+        }
+
         callback.rightPlayer.init();
 
         return super.stepEnd();

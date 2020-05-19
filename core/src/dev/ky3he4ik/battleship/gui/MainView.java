@@ -11,11 +11,15 @@ import dev.ky3he4ik.battleship.utils.Constants;
 public class MainView implements Screen {
     private StepsDirector stage;
     private MyGdxGame game;
+    private String name;
+    private long uuid;
 
-    public MainView(final MyGdxGame game) {
+    public MainView(final MyGdxGame game, String name, long uuid) {
         this.game = game;
-        stage = new StepsDirector();
+        stage = new StepsDirector(name, uuid);
         Gdx.input.setInputProcessor(stage);
+        this.name = name;
+        this.uuid = uuid;
     }
 
     @Override

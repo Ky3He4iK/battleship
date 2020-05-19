@@ -15,13 +15,22 @@ public class Socket extends WebSocketClient {
     @NotNull
     private MultiplayerInet callback;
 
-    Socket(@NotNull MultiplayerInet callback) throws URISyntaxException {
+    @NotNull
+    private String name;
+
+    private long uuid;
+
+    Socket(@NotNull MultiplayerInet callback, @NotNull String name, long uuid) throws URISyntaxException {
         super(new URI(Constants.HOST_ADRESS));
         this.callback = callback;
+        this.name = name;
+        this.uuid = uuid;
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
+        send(new Action(Action.ActionType.CONNECT, name, uuid));
+        callback.onOpen();
     }
 
     @Override

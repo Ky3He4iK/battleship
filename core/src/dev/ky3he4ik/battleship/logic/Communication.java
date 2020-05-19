@@ -20,4 +20,6 @@ public interface Communication {
     void restart();
 
     void finish();
+
+    boolean isConnected();
 }

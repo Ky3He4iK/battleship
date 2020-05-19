@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import java.util.Random;
+
 import dev.ky3he4ik.battleship.gui.MainView;
 import dev.ky3he4ik.battleship.utils.Constants;
 
@@ -18,7 +20,20 @@ public class MyGdxGame extends Game {
     public ShapeRenderer shapeRenderer;
     public OrthographicCamera camera;
 
+    private String name;
+    private long uuid;
 //    public Viewport viewport;
+
+    public MyGdxGame(String name, long uuid) {
+        //todo: store name and uuid
+        this.name = name;
+        this.uuid = uuid;
+    }
+
+    public MyGdxGame() {
+        this.uuid = new Random().nextLong();
+        this.name = "Unknown app#" + uuid;
+    }
 
     @Override
     public void create() {
@@ -38,7 +53,7 @@ public class MyGdxGame extends Game {
             Gdx.app.setLogLevel(Application.LOG_DEBUG);
         else
             Gdx.app.setLogLevel(Application.LOG_ERROR);
-        setScreen(new MainView(this));
+        setScreen(new MainView(this, name, uuid));
     }
 
     @Override

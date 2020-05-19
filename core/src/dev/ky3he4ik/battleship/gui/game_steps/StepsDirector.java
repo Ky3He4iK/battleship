@@ -35,6 +35,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     final static int STEP_PLACEMENT_R = 3;
     final static int STEP_GAME = 4;
     final static int STEP_AFTERMATH = 5;
+    final static int STEP_CONNECTING = 6;
 
     private static final int ROTATE_BTN_ID = 1;
 
@@ -93,7 +94,14 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     boolean p1Ready;
     boolean p2Ready;
 
-    public StepsDirector() {
+    @NotNull
+    String name;
+    long uuid;
+
+    public StepsDirector(@NotNull String name, long uuid) {
+        this.name = name;
+        this.uuid = uuid;
+
         font = new BitmapFont();
         font.getData().setScale(Gdx.graphics.getHeight() / 400f);
         font.setColor(Color.BLACK);
@@ -109,6 +117,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         steps.add(new StepPlacementRight(this, STEP_PLACEMENT_R));
         steps.add(new StepGame(this, STEP_GAME));
         steps.add(new StepAftermath(this, STEP_AFTERMATH));
+        steps.add(new StepConnecting(this, STEP_CONNECTING));
 
         manager = SpriteManager.getInstance();
         calcCellSize();
