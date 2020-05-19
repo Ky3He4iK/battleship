@@ -24,11 +24,14 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public void stepBegin() {
-        if (callback.config.getGameType() == GameConfig.GameType.LOCAL_2P) {
+        boolean place = callback.config.getGameType() == GameConfig.GameType.LOCAL_2P || (callback.config.getGameType() == GameConfig.GameType.GLOBAL_INET && callback.isP2);
+        if (place) {
             callback.setChildrenEnabled(false, false, true, false, true, true);
             callback.shipPlacer.restart(callback.middleGap, callback.config.getShips());
             callback.shipPlacer.start(callback.rightPlayer);
             callback.rightPlayer.setPosition(callback.redundantX + callback.sideWidth, callback.redundantY + callback.footerHeight);
+        } else if (callback.config.getGameType() == GameConfig.GameType.GLOBAL_INET) {
+            callback.nextStep();
         } else {
             callback.shipPlacer.setVisible(false);
             cTime = 0;
@@ -58,7 +61,7 @@ public class StepPlacementRight extends BaseStep {
         callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI);
         callback.leftPlayer.start();
         callback.rightPlayer.start();
-        return super.stepEnd();
+        return StepsDirector.STEP_CONNECTING;
     }
 
     @NotNull

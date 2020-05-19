@@ -37,6 +37,9 @@ public class StepPlacementLeft extends BaseStep {
         }
         callback.leftPlayer.setPlaceShips();
         callback.rightPlayer.setPlaceShips();
+        if (callback.isP2) {
+            callback.nextStep();
+        }
     }
 
     @Override

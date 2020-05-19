@@ -86,7 +86,7 @@ public class StepConfigure extends BaseStep {
             rightComm.init();
             callback.rightPlayer.setCommunication(rightComm);
         }
-
+        callback.isP2 = false;
         callback.rightPlayer.init();
 
         return super.stepEnd();

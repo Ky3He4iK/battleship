@@ -97,6 +97,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     @NotNull
     String name;
     long uuid;
+    boolean isP2 = false;
 
     public StepsDirector(@NotNull String name, long uuid) {
         this.name = name;

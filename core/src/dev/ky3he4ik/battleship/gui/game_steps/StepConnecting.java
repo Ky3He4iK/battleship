@@ -20,19 +20,17 @@ public class StepConnecting extends BaseStep {
     StepConnecting(@NotNull StepsDirector callback, int stepId) {
         super(callback, stepId);
         animation = AnimationManager.getInstance().getAnimation(Constants.LOADING_ANIMATION);
-        callback.setChildrenEnabled(false, false);
     }
 
     @Override
     public void stepBegin() {
+        callback.setChildrenEnabled(false, false);
         cTime = 0;
     }
 
     @Override
     public void act() {
-        if (callback.config.getGameType() != GameConfig.GameType.GLOBAL_INET || callback.readyCnt == 2
-                || ((callback.leftPlayer.getCommunication() == null || callback.leftPlayer.getCommunication().isConnected())
-                && (callback.rightPlayer.getCommunication() == null || callback.rightPlayer.getCommunication().isConnected())))
+        if (callback.readyCnt == 2)
             callback.nextStep();
     }
 
@@ -42,7 +40,7 @@ public class StepConnecting extends BaseStep {
         Batch batch = getBatch();
         batch.begin();
         TextureRegion frame = animation.getKeyFrame(cTime);
-        batch.draw(frame, callback.getWidth() / 2 - callback.middleGap * .45f, callback.getHeight() / 2 - callback.middleGap * .45f, callback.middleGap * .9f, callback.middleGap * .9f);
+        batch.draw(frame, callback.getWidth() / 2 - callback.middleGap * .5f, callback.getHeight() / 2 - callback.middleGap * .5f, callback.middleGap, callback.middleGap);
         batch.end();
     }
 
@@ -55,6 +53,6 @@ public class StepConnecting extends BaseStep {
 
     @Override
     public int stepEnd() {
-        return StepsDirector.STEP_PLACEMENT_L;
+        return StepsDirector.STEP_GAME;
     }
 }

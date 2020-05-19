@@ -23,11 +23,13 @@ public class DesktopLauncher {
         long uuid = new Random().nextLong();
         String name = "Desktop#" + uuid;
         try {
-            byte[] address = NetworkInterface.getByIndex(0).getHardwareAddress();
-            uuid = 0;
-            for (byte b: address)
-                uuid = (uuid << 8) | b;
-            name = "Desktop" + uuid;
+            if (NetworkInterface.getByIndex(0) != null) {
+                byte[] address = NetworkInterface.getByIndex(0).getHardwareAddress();
+                uuid = 0;
+                for (byte b : address)
+                    uuid = (uuid << 8) | b;
+                name = "Desktop" + uuid;
+            }
         } catch (Exception e) {
             System.err.println("Exception during startup: " + e.getMessage());
             e.printStackTrace();

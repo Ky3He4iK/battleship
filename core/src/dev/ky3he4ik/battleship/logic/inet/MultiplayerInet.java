@@ -47,6 +47,10 @@ public class MultiplayerInet extends Thread implements Communication {
     @Nullable
     public String opponent;
 
+    @Nullable
+    private Action pending;
+    private boolean isReconnect;
+
     public MultiplayerInet(@NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config, @NotNull String name, long uuid, boolean isHost) {
         this.name = name;
         this.uuid = uuid;
@@ -95,12 +99,17 @@ public class MultiplayerInet extends Thread implements Communication {
             client.disconnect(name, uuid);
         try {
             client = new Socket(this, name, uuid);
-
         } catch (Exception e) {
             Gdx.app.error("MultiplayerInet", e.getMessage(), e);
         }
         while (running) {
             try {
+                if (isReconnect && client != null) {
+                    client.reconnect();
+                    if (pending != null)
+                        client.send(pending);
+                    isReconnect = false;
+                }
                 i++;
                 if (i % 10 == 0 && client != null)
                     client.send(Action.ping(name, uuid));
@@ -114,6 +123,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 Gdx.app.error("MultiplayerInet", e.getMessage(), e);
             }
         }
+
     }
 
     @Override
@@ -258,5 +268,10 @@ public class MultiplayerInet extends Thread implements Communication {
     @Override
     public boolean isConnected() {
         return client != null && !client.isClosed();
+    }
+
+    void reconnect(@Nullable Action action) {
+        isReconnect = true;
+        pending = action;
     }
 }
