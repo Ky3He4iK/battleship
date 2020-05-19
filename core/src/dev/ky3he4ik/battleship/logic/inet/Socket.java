@@ -6,7 +6,6 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -22,7 +21,7 @@ public class Socket extends WebSocketClient {
     private long uuid;
 
     Socket(@NotNull MultiplayerInet callback, @NotNull String name, long uuid) throws URISyntaxException {
-        super(new URI(Constants.HOST_ADRESS));
+        super(new URI(Constants.HOST_ADDRESS));
         this.callback = callback;
         this.name = name;
         this.uuid = uuid;
@@ -37,10 +36,12 @@ public class Socket extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
-        Gdx.app.debug("Socket", "Receive: " + message);
         Action action = Action.fromJson(message);
+        if (action != null && action.getActionType() != Action.ActionType.PING)
+            Gdx.app.debug("Socket", "Receive: " + message);
         if (action != null && action.getActionType() != Action.ActionType.OK && action.getActionType() != Action.ActionType.NO)
             callback.onAction(action);
+
     }
 
     @Override
@@ -57,7 +58,8 @@ public class Socket extends WebSocketClient {
     }
 
     void send(@NotNull Action action) {
-        Gdx.app.debug("Socket", "Sending: " + action.toJson());
+        if (action.getActionType() != Action.ActionType.PING)
+            Gdx.app.debug("Socket", "Sending: " + action.toJson());
         if (!isConnected())
             callback.reconnect(action);
         else

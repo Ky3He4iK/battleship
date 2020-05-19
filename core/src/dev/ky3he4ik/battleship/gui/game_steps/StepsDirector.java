@@ -362,10 +362,15 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     public void shipsPlaced(int playerId) {
         readyCnt++;
-        if (playerId == TURN_LEFT)
+        if (playerId == TURN_LEFT) {
             p1Ready = true;
-        else
+            if (rightPlayer.getCommunication() != null)
+                rightPlayer.getCommunication().enemyShipsPlaced();
+        } else {
             p2Ready = true;
+            if (leftPlayer.getCommunication() != null)
+                leftPlayer.getCommunication().enemyShipsPlaced();
+        }
         Gdx.app.debug("GameStage", "" + playerId + " is ready");
     }
 

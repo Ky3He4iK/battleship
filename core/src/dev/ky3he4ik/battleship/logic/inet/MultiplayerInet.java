@@ -39,7 +39,8 @@ public class MultiplayerInet extends Thread implements Communication {
 
     private boolean running = true;
     private boolean isSync = false;
-    private boolean isHost = false;
+    private boolean isHost;
+    private boolean shipsSent;
 
     @Nullable
     private Socket client;
@@ -99,6 +100,9 @@ public class MultiplayerInet extends Thread implements Communication {
             client.disconnect(name, uuid);
         try {
             client = new Socket(this, name, uuid);
+            if (!isHost) {
+                client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
+            }
         } catch (Exception e) {
             Gdx.app.error("MultiplayerInet", e.getMessage(), e);
         }
@@ -159,6 +163,7 @@ public class MultiplayerInet extends Thread implements Communication {
             action.setOtherName(opponent);
             client.send(action);
         }
+        Gdx.app.debug("MultyplayerInet", "ships sent");
     }
 
     @Override
@@ -209,6 +214,7 @@ public class MultiplayerInet extends Thread implements Communication {
                     action1.setOtherName(m);
                     action1.setMsg(passwd);
                     client.send(action1);
+                    opponent = m;
                 }
                 break;
             case TURN:
@@ -217,6 +223,8 @@ public class MultiplayerInet extends Thread implements Communication {
                 break;
             case CONNECTED:
                 opponent = action.getOtherName();
+                if (enemy.getShips().size() == config.getShips().size())
+                    enemyShipsPlaced();
                 break;
             case JOIN:
                 GameConfig config1 = new Gson().fromJson(action.getConfig(), GameConfig.class);
@@ -240,7 +248,8 @@ public class MultiplayerInet extends Thread implements Communication {
                 client = null;
                 break;
             case START_GAME:
-                //todo
+                if (callback != null)
+                    callback.gotConfig();
                 break;
             case SYNC:
                 if (!isSync) {
@@ -256,10 +265,15 @@ public class MultiplayerInet extends Thread implements Communication {
 
     private void sync() {
         if (client != null) {
-            isSync = true;
-            Action action = new Action(Action.ActionType.SYNC, name, uuid);
-            action.setMsg(new Gson().toJson(my));
-            client.send(action);
+            if (opponent == null) {
+                if (!isHost)
+                    client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
+            } else {
+                isSync = true;
+                Action action = new Action(Action.ActionType.SYNC, name, uuid);
+                action.setMsg(new Gson().toJson(my));
+                client.send(action);
+            }
         }
     }
 
