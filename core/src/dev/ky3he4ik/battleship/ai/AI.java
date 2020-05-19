@@ -122,4 +122,19 @@ abstract public class AI extends Thread implements Communication {
         if (!isAlive())
             start();
     }
+
+    @Override
+    public void enemyTurned(int x, int y) {
+
+    }
+
+    @Override
+    public void enemyShipsPlaced() {
+
+    }
+
+    @Override
+    public void finish() {
+
+    }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
+import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
 
@@ -64,6 +65,9 @@ public class StepGame extends BaseStep {
                 if (callback.aiReadyL) {
                     callback.aiReadyL = false;
                     boolean res = callback.rightPlayer.open(callback.aiXL, callback.aiYL);
+                    Communication communication = callback.rightPlayer.getCommunication();
+                    if (communication != null)
+                        communication.enemyTurned(callback.aiXL, callback.aiYL);
                     callback.registerShoot(StepsDirector.TURN_LEFT, res);
                     if (callback.rightPlayer.getWorld().isDead()) {
                         callback.nextStep();
@@ -141,6 +145,10 @@ public class StepGame extends BaseStep {
     @Override
     public int stepEnd() {
         callback.rotateBtn.setVisible(false);
+        if (callback.leftPlayer.getCommunication() != null)
+            callback.leftPlayer.getCommunication().finish();
+        if (callback.rightPlayer.getCommunication() != null)
+            callback.rightPlayer.getCommunication().finish();
         return super.stepEnd();
     }
 

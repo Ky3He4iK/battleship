@@ -102,7 +102,7 @@ public class GameConfig {
         AI,
 //        LOCAL_INET,
 //        BLUETOOTH,
-//        GLOBAL_INET,
+        GLOBAL_INET,
         AI_VS_AI
     }
 

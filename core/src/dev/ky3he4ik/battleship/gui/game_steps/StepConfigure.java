@@ -66,7 +66,7 @@ public class StepConfigure extends BaseStep {
             leftComm.init();
             callback.leftPlayer.setCommunication(leftComm);
         } else
-            callback.leftPlayer.removeCommunication();;
+            callback.leftPlayer.removeCommunication();
         callback.leftPlayer.init();
 
         if (config.getGameType() == GameConfig.GameType.AI || config.getGameType() == GameConfig.GameType.AI_VS_AI) {
@@ -80,7 +80,8 @@ public class StepConfigure extends BaseStep {
             rightComm.init();
             callback.rightPlayer.setCommunication(rightComm);
         } else
-            callback.rightPlayer.removeCommunication();;
+            callback.rightPlayer.removeCommunication();
+        ;
         callback.rightPlayer.init();
 
         return super.stepEnd();

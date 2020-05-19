@@ -55,4 +55,6 @@ public class Constants {
     public static final AnimationManager.AnimationInfo WATER_BLOW_ANIMATION = AnimationManager.AnimationInfo.byDuration(.8f, "water_blow_animation_6_4.png", 6, 4, false);
     public static final AnimationManager.AnimationInfo WATER_ANIMATION = AnimationManager.AnimationInfo.byFPS(60, "water_animation_8_4.jpg", 8, 4, true);
     public static final AnimationManager.AnimationInfo LOADING_ANIMATION = AnimationManager.AnimationInfo.byDuration(1, "loading_animation_4_3.png", 4, 3, true);
+
+    public static final String HOST_ADRESS = "ws://ky3he4ik.dev:6683";
 }

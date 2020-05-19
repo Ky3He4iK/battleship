@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 
 import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;

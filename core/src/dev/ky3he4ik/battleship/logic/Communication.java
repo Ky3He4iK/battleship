@@ -7,6 +7,10 @@ public interface Communication {
 
     void setPlaceShips();
 
+    void enemyTurned(int x, int y);
+
+    void enemyShipsPlaced();
+
     void init();
 
     void dispose();
@@ -14,4 +18,6 @@ public interface Communication {
     void setCallback(@NotNull PlayerFinished callback);
 
     void restart();
+
+    void finish();
 }
