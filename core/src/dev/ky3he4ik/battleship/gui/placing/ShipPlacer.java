@@ -20,6 +20,9 @@ import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
 public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpriteListener {
+    private final int BUTTON_ROTATE;
+    private final int BUTTON_RANDOM;
+    private final int BUTTON_DONE;
     @NotNull
     private ArrayList<GameConfig.Ship> availableShips;
     @NotNull
@@ -32,11 +35,6 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     private ArrayList<ActorWithSprite> childrens;
     @NotNull
     private StepsDirector callback;
-
-    private final int BUTTON_ROTATE;
-    private final int BUTTON_RANDOM;
-    private final int BUTTON_DONE;
-
     private float cellSize;
 
     private int lastAccessId = 0;

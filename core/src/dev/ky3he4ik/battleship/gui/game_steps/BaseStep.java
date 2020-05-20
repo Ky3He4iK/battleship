@@ -1,8 +1,5 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,7 +12,7 @@ public abstract class BaseStep extends Stage {
     protected StepsDirector callback;
 
     @NotNull
-    protected ShapeRenderer renderer;
+    private ShapeRenderer renderer;
 
     BaseStep(@NotNull StepsDirector callback, int stepId) {
         this.callback = callback;
@@ -29,7 +26,8 @@ public abstract class BaseStep extends Stage {
         return stepId + 1;
     }
 
-    public void act() {}
+    public void act() {
+    }
 
     public void draw() {
         super.draw();
@@ -48,7 +46,7 @@ public abstract class BaseStep extends Stage {
         return false;
     }
 
-    public boolean relayKeyDown(InputEvent event, int keycode) {
+    boolean relayKeyDown(InputEvent event, int keycode) {
         return false;
     }
 

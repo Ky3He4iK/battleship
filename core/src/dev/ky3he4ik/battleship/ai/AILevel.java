@@ -24,7 +24,7 @@ public enum AILevel {
             return new AIDummy(callback, enemy, my, config);
         }
     },
-//    MIDDLE(2, "Middle") {
+    //    MIDDLE(2, "Middle") {
 //        @NotNull
 //        @Override
 //        public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {

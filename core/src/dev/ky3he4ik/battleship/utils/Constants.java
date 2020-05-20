@@ -36,26 +36,21 @@ public class Constants {
     public static final String BUTTON_RND_SELECTED = "Button_rnd_selected.png";
     public static final String BUTTON_DONE = "Button_done.png";
     public static final String BUTTON_DONE_SELECTED = "Button_done_selected.png";
-    public static final String BUTTON_DONE_FRAME = "Button_done_frame.png";
     public static final String BUTTON_FRAME = "Button_frame_selected.png";
     public static final String BUTTON_FRAME_SELECTED = "Button_frame_selected.png";
     public static final String BUTTON_FRAME_SELECTED_2 = "Button_frame_selected_2.png";
-
     public static final String SLIDER_BACKGROUND = "slider_background.png";
     public static final String SLIDER_KNOB = "slider_knob.png";
-
     public static final String ARROW_RIGHT = "arrow_right.png";
     public static final String ARROW_RIGHT_PRESSED = "arrow_right_pressed.png";
     public static final String ARROW_LEFT = "arrow_left.png";
     public static final String ARROW_LEFT_PRESSED = "arrow_left_pressed.png";
-
     public static final String ROTATED_SUFFIX = "_rot.png";
-
     public static final AnimationManager.AnimationInfo BLOW_ANIMATION = AnimationManager.AnimationInfo.byDuration(1, "explosion_animation_4_3.png", 4, 3, false);
     public static final AnimationManager.AnimationInfo WATER_BLOW_ANIMATION = AnimationManager.AnimationInfo.byDuration(.8f, "water_blow_animation_6_4.png", 6, 4, false);
     public static final AnimationManager.AnimationInfo WATER_ANIMATION = AnimationManager.AnimationInfo.byFPS(60, "water_animation_8_4.jpg", 8, 4, true);
     public static final AnimationManager.AnimationInfo LOADING_ANIMATION = AnimationManager.AnimationInfo.byDuration(1, "loading_animation_4_3.png", 4, 3, true);
-
     public static final String HOST_ADDRESS = DEBUG_MODE ? "ws://localhost:6683" : "ws://ky3he4ik.dev:6683";
+    static final String BUTTON_DONE_FRAME = "Button_done_frame.png";
 //    public static final String HOST_ADDRESS = "ws://localhost:6683";
 }

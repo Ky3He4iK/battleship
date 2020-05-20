@@ -26,19 +26,7 @@ public class Cell extends Actor {
     private boolean isWaterBlow = false;
     private float animationPassed = 0;
 
-    public int getIdx() {
-        return idx;
-    }
-
-    public int getIdy() {
-        return idy;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public Cell(final Field field, final int idx, final int idy) {
+    Cell(final Field field, final int idx, final int idy) {
         this.field = field;
         this.idx = idx;
         this.idy = idy;
@@ -120,6 +108,18 @@ public class Cell extends Actor {
         });
     }
 
+    public int getIdx() {
+        return idx;
+    }
+
+    public int getIdy() {
+        return idy;
+    }
+
+    public int getState() {
+        return state;
+    }
+
     @Override
     public void draw(Batch batch, float parentAlpha) {
         updateState(field.getState(idx, idy), field.isOpened(idx, idy));
@@ -187,7 +187,7 @@ public class Cell extends Actor {
         manager.dispose(Constants.CELL_CLOSED_IMG);
     }
 
-    public void blow(boolean isWater) {
+    void blow(boolean isWater) {
         isWaterBlow = isWater;
         if (isWaterBlow)
             animation = AnimationManager.getInstance().getAnimation(Constants.WATER_BLOW_ANIMATION);
@@ -196,7 +196,7 @@ public class Cell extends Actor {
         animationPassed = 0;
     }
 
-    public void clearAnimation() {
+    void clearAnimation() {
         animation = null;
     }
 }

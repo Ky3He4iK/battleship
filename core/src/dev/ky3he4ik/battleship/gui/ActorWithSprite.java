@@ -14,17 +14,17 @@ import org.jetbrains.annotations.Nullable;
 
 public class ActorWithSprite extends Actor implements EventListener {
     @NotNull
-    protected Sprite sprite;
+    private Sprite sprite;
 
     @Nullable
-    protected Sprite altSprite;
+    private Sprite altSprite;
 
     @NotNull
     protected ActorWithSpriteListener callback;
 
-    protected int buttonId;
+    private int buttonId;
 
-    protected boolean isPressed;
+    private boolean isPressed;
 
     public ActorWithSprite(@NotNull ActorWithSpriteListener callback, @NotNull String spriteName, @Nullable String altSpriteName, int buttonId) {
         this.callback = callback;
@@ -76,34 +76,21 @@ public class ActorWithSprite extends Actor implements EventListener {
             case touchDown:
                 if (event.getButton() == Input.Buttons.LEFT) {
                     isPressed = true;
-                    onPress();
-                    callback.buttonPressed(buttonId);
-                    return true;
+                    return callback.buttonPressed(buttonId);
                 }
                 return false;
             case touchUp:
                 if (event.getButton() == Input.Buttons.LEFT) {
                     isPressed = false;
-                    onRelease();
                     callback.buttonReleased(buttonId);
                     return true;
                 }
                 return false;
             case touchDragged:
-                onDrag();
                 callback.buttonMoved(buttonId);
                 return true;
             default:
                 return false;
         }
-    }
-
-    protected void onPress() {
-    }
-
-    protected void onRelease() {
-    }
-
-    protected void onDrag() {
     }
 }

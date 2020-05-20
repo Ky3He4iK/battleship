@@ -13,22 +13,18 @@ import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.H;
 
 abstract public class AI extends Thread implements Communication {
-    @Nullable
-    private PlayerFinished callback;
-
     @NotNull
     protected World enemy;
-
     @NotNull
     protected World my;
+    @NotNull
+    protected GameConfig config;
+    protected int turnX, turnY;
+    @Nullable
+    private PlayerFinished callback;
     private boolean isMyTurn;
     private boolean isPlaceShips;
     private boolean running;
-
-    @NotNull
-    protected GameConfig config;
-
-    protected int turnX, turnY;
     private boolean turn = false;
     private boolean shipsPlaced = false;
 

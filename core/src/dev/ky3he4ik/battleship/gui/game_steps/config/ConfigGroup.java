@@ -119,6 +119,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 
     private boolean isLeftAIShown = true;
     private boolean isRightAIShown = true;
+    private float cellSize;
 
     public ConfigGroup(@NotNull StepConfigure callback) {
         this.callback = callback;
@@ -131,13 +132,16 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         font.getData().setScale(Gdx.graphics.getHeight() / 800f);
         font.setColor(Color.BLACK);
 
+        cellSize = Math.min(Gdx.graphics.getWidth() / 25f, Gdx.graphics.getHeight() / 12.5f);
+
         labelStyle = new Label.LabelStyle(font, font.getColor());
 //        setDebugAll(Constants.DEBUG_MODE);
 
         gameTypeGroup = new ButtonGroup<>();
         GameConfig.GameType[] gameTypes = GameConfig.GameType.values();
 
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(H.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED_2), H.getSpriteDrawable(Constants.BUTTON_FRAME), H.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED), font);
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(H.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED_2),
+                H.getSpriteDrawable(Constants.BUTTON_FRAME), H.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED), font);
         for (GameConfig.GameType gameType : gameTypes) {
             TextButton btn = new TextButton(gameType.name(), style);
             btn.setName(gameType.name());
@@ -189,7 +193,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
                 if (ship1.name.equals(ship.name))
                     cnt++;
 
-            shipCntChoosers[id] = new ShipCntChooser(ship, font, cnt, callback.getCallback().getCellSize());
+            shipCntChoosers[id] = new ShipCntChooser(ship, font, cnt, cellSize);
             id++;
         }
 
@@ -282,7 +286,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 //                break;
             }
             scrollTable.add(ship).colspan(2).fill();
-            ship.buildTable(callbackCallback.getCellSize());
+            ship.buildTable(cellSize);
             idx += 2;
         }
 
@@ -300,8 +304,8 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
 //        tableContainer.height(tableContainer.getHeight() * 5);
         scrollPane.setBounds(0, 0, scrollTable.getWidth(), scrollTable.getHeight());
 
-        doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - callbackCallback.getCellSize() - callbackCallback.getSideWidth(),
-                callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() - callbackCallback.getCellSize(), callbackCallback.getCellSize(), callbackCallback.getCellSize());
+        doneButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - cellSize - callbackCallback.getSideWidth(),
+                callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() - cellSize, cellSize, cellSize);
 //        scrollTable.invalidate();
     }
 
@@ -323,7 +327,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         return config.getShips().size() > 0 && H.placeShipsLines(new World(config.getWidth(), config.getHeight()), config.getShips());
     }
 
-    public void setVisible(boolean visible) {
+    private void setVisible(boolean visible) {
         scrollTable.setVisible(visible);
         doneButton.setVisible(visible);
     }
@@ -445,6 +449,5 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
                 btn.setVisible(isLeftAi);
             aiLevelGroupLabel2.setVisible(isLeftAi);
         }
-        //todo
     }
 }

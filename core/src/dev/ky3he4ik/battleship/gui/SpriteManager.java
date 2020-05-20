@@ -9,17 +9,20 @@ import java.util.HashMap;
 
 public class SpriteManager {
     @NotNull
+    private static SpriteManager manager = new SpriteManager();
+    @NotNull
     private HashMap<String, Sprite> sprites;
-
     @NotNull
     private HashMap<String, Integer> usageCnt;
-
-    @NotNull
-    private static SpriteManager manager = new SpriteManager();
 
     private SpriteManager() {
         sprites = new HashMap<>();
         usageCnt = new HashMap<>();
+    }
+
+    @NotNull
+    public static SpriteManager getInstance() {
+        return manager;
     }
 
     @NotNull
@@ -28,24 +31,6 @@ public class SpriteManager {
         if (sprite == null)
             sprite = initSprite(name);
         return sprite;
-    }
-
-    /**
-     * Loads a new sprite from disk and scale it to (width x height)
-     * if this sprite had already loaded then do nothing
-     */
-    @NotNull
-    public Sprite initSprite(@NotNull String name, int width, int height) {
-        if (sprites.containsKey(name))
-            usageCnt.put(name, usageCnt.get(name) + 1);
-        else {
-            Sprite sprite = new Sprite(new Texture(name));
-            if (width != -1)
-                sprite.setScale(width / sprite.getX(), height / sprite.getY());
-            sprites.put(name, sprite);
-            usageCnt.put(name, 1);
-        }
-        return sprites.get(name);
     }
 
     @NotNull
@@ -65,8 +50,15 @@ public class SpriteManager {
     }
 
     @NotNull
-    public Sprite initSprite(@NotNull String name) {
-        return initSprite(name, -1, -1);
+    Sprite initSprite(@NotNull String name) {
+        if (sprites.containsKey(name))
+            usageCnt.put(name, usageCnt.get(name) + 1);
+        else {
+            Sprite sprite = new Sprite(new Texture(name));
+            sprites.put(name, sprite);
+            usageCnt.put(name, 1);
+        }
+        return sprites.get(name);
     }
 
     public void dispose(@NotNull String name) {
@@ -91,16 +83,11 @@ public class SpriteManager {
         sprites.clear();
     }
 
-    public boolean contains(@NotNull String name) {
+    boolean contains(@NotNull String name) {
         return sprites.containsKey(name);
     }
 
     public int getUsageCount(@NotNull String name) {
         return usageCnt.get(name);
-    }
-
-    @NotNull
-    public static SpriteManager getInstance() {
-        return manager;
     }
 }

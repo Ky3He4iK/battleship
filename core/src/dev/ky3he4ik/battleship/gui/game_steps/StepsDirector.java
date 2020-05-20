@@ -21,43 +21,32 @@ import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.RelayTouch;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.gui.placing.ShipPlacer;
-import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class StepsDirector extends Stage implements ActorWithSpriteListener {
+    public final static int STEP_AFTERMATH = 5;
     final static int TURN_LEFT = 0;
     final static int TURN_RIGHT = 1;
-
     final static int STEP_BEGINNING = 0;
-    final static int STEP_CHOOSE_CONFIG = 1;
-    final static int STEP_PLACEMENT_L = 2;
+    private final static int STEP_CHOOSE_CONFIG = 1;
+    private final static int STEP_PLACEMENT_L = 2;
     final static int STEP_PLACEMENT_R = 3;
     final static int STEP_GAME = 4;
-    public final static int STEP_AFTERMATH = 5;
     final static int STEP_CONNECTING = 6;
     final static int STEP_CONNECTING_CLIENT = 7;
 
     private static final int ROTATE_BTN_ID = 1;
-
-    @NotNull
-    private ArrayList<BaseStep> steps;
-
-    @NotNull
-    private SpriteManager manager;
-
-    private int currentStep = STEP_BEGINNING;
+    public boolean gotConfig = false;
     int turn = 0;
-
     float cellSize;
     float redundantX;
     float redundantY;
     float middleGap;
-    float headerHeight;
+    private float headerHeight;
     float footerHeight;
     float sideWidth;
-
     int readyCnt = 0;
     boolean aiReadyR = false;
     int aiXR = -1;
@@ -65,13 +54,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     boolean aiReadyL = false;
     int aiXL = -1;
     int aiYL = -1;
-
     int leftScore = 0;
     int rightScore = 0;
-
-    private int movedCurrentTurn;
-    private int shootedCurrentTurn;
-
     @NotNull
     Field leftPlayer;
     @NotNull
@@ -80,28 +64,27 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     GameConfig config;
     @NotNull
     ShipPlacer shipPlacer;
-
     @NotNull
     RelayTouch touchListener;
-
     @NotNull
     ActorWithSprite rotateBtn;
-
     @NotNull
     BitmapFont font;
-
     @NotNull
     Label stepLabel;
-
     boolean p1Ready;
     boolean p2Ready;
-
     @NotNull
     String name;
     long uuid;
     boolean isP2 = false;
-
-    public boolean gotConfig = false;
+    @NotNull
+    private ArrayList<BaseStep> steps;
+    @NotNull
+    private SpriteManager manager;
+    private int currentStep = STEP_BEGINNING;
+    private int movedCurrentTurn;
+    private int shootedCurrentTurn;
 
     public StepsDirector(@NotNull String name, long uuid) {
         this.name = name;
@@ -136,9 +119,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         leftPlayer.setVisible(false);
         addActor(leftPlayer);
 
-        Communication rightComm = null;
-        //todo: communication for different gamemodes
-        rightPlayer = new Field(rightWorld, cellSize, rightComm, TURN_RIGHT, this);
+        rightPlayer = new Field(rightWorld, cellSize, null, TURN_RIGHT, this);
         rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
         rightPlayer.setVisible(false);
         addActor(rightPlayer);
@@ -165,7 +146,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
                 Gdx.app.error("StepsDirector", "invalid step #" + steps.get(i).stepId + " at pos " + i);
     }
 
-    void prevStep() {
+    private void prevStep() {
         steps.get(currentStep).stepEnd();
         currentStep = STEP_BEGINNING;
         steps.get(currentStep).stepBegin();
@@ -178,22 +159,6 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         currentStep = steps.get(currentStep).stepEnd();
         steps.get(currentStep).stepBegin();
         stepLabel.setText(steps.get(currentStep).getName());
-    }
-
-    public void setStep(int step) {
-        if (currentStep == STEP_BEGINNING)
-            restart();
-        steps.get(currentStep).stepEnd();
-        currentStep = step;
-        steps.get(currentStep).stepBegin();
-        stepLabel.setText(steps.get(currentStep).getName());
-    }
-
-    void setTurn(int turn) {
-        shootedCurrentTurn = 0;
-        movedCurrentTurn = 0;
-        if (this.turn != turn)
-            nextTurn();
     }
 
     void nextTurn() {
@@ -230,6 +195,13 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     public int getTurn() {
         return turn;
+    }
+
+    void setTurn(int turn) {
+        shootedCurrentTurn = 0;
+        movedCurrentTurn = 0;
+        if (this.turn != turn)
+            nextTurn();
     }
 
     void setChildrenEnabled(boolean left, boolean right) {
@@ -292,7 +264,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         resize();
     }
 
-    public void resize() {
+    void resize() {
         calcCellSize();
 
         leftPlayer.setBounds(sideWidth + redundantX, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
@@ -343,6 +315,15 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     @NotNull
     private BaseStep getStep() {
         return steps.get(currentStep);
+    }
+
+    public void setStep(int step) {
+        if (currentStep == STEP_BEGINNING)
+            restart();
+        steps.get(currentStep).stepEnd();
+        currentStep = step;
+        steps.get(currentStep).stepBegin();
+        stepLabel.setText(steps.get(currentStep).getName());
     }
 
     public void cellPressed(int playerId, int idx, int idy) {
@@ -450,7 +431,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         return config;
     }
 
-    public boolean canShoot(int playerId) {
+    boolean canShoot(int playerId) {
         return turn == playerId && shootedCurrentTurn < config.getShotsPerTurn();
     }
 
@@ -463,7 +444,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
             movedCurrentTurn++;
     }
 
-    public void registerShoot(int playerId, boolean itWasShip) {
+    void registerShoot(int playerId, boolean itWasShip) {
         if (config.isAdditionalShots() && canShoot(playerId) && !itWasShip)
             shootedCurrentTurn++;
         else if (!config.isAdditionalShots() && canShoot(playerId))

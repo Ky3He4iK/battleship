@@ -12,100 +12,6 @@ import dev.ky3he4ik.battleship.ai.AILevel;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class GameConfig {
-    public static class Ship {
-        public final int length;
-        public final int id;
-
-        @NotNull
-        public final String name;
-
-
-        public Ship(int length, int id, @NotNull String name) {
-            this.length = length;
-            this.id = id;
-            this.name = name;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Ship)) return false;
-
-            Ship ship = (Ship) o;
-
-            if (length != ship.length) return false;
-            return name.equals(ship.name);
-        }
-
-        @Override
-        public int hashCode() {
-            int result = length;
-            result = 31 * result + id;
-            result = 31 * result + name.hashCode();
-            return result;
-        }
-
-        @NotNull
-        public static ArrayList<Ship> getSampleShipsWest() {
-            return new ArrayList<>(Arrays.asList(new Ship(5, 1, Constants.SHIP_CARRIER_IMG),
-                    new Ship(4, 2, Constants.SHIP_BATTLESHIP_IMG),
-                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(3, 4, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG)));
-        }
-
-        @NotNull
-        public static ArrayList<Ship> getSampleShipsEast() {
-            return new ArrayList<>(Arrays.asList(new Ship(4, 1, Constants.SHIP_BATTLESHIP_IMG),
-                    new Ship(3, 2, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(2, 4, Constants.SHIP_PATROL_BOAT_IMG),
-                    new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG),
-                    new Ship(2, 6, Constants.SHIP_PATROL_BOAT_IMG),
-                    new Ship(1, 7, Constants.SHIP_RUBBER_BOAT_IMG),
-                    new Ship(1, 8, Constants.SHIP_RUBBER_BOAT_IMG),
-                    new Ship(1, 9, Constants.SHIP_RUBBER_BOAT_IMG),
-                    new Ship(1, 10, Constants.SHIP_RUBBER_BOAT_IMG)));
-        }
-
-        @NotNull
-        public World.Ship convert() {
-            return new World.Ship(length, id, name, 0, 0, 0);
-        }
-
-        @NotNull
-        public Ship clone(int newId) {
-            return new Ship(length, newId, name);
-        }
-
-        @NotNull
-        public String rotatedName() {
-            if (name.endsWith(Constants.ROTATED_SUFFIX))
-                return name;
-            return name + Constants.ROTATED_SUFFIX;
-        }
-
-        @NotNull
-        public static Ship[] getAllShipsSamples() {
-            return new Ship[]{
-                    new Ship(5, 1, Constants.SHIP_CARRIER_IMG),
-                    new Ship(4, 2, Constants.SHIP_BATTLESHIP_IMG),
-                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
-                    new Ship(2, 4, Constants.SHIP_PATROL_BOAT_IMG),
-                    new Ship(1, 5, Constants.SHIP_RUBBER_BOAT_IMG)
-            };
-        }
-    }
-
-    public enum GameType {
-        LOCAL_2P,
-        AI,
-//        LOCAL_INET,
-//        BLUETOOTH,
-        GLOBAL_INET,
-        AI_VS_AI
-    }
-
     private int width, height;
     private boolean movingEnabled;
     private boolean additionalShots;
@@ -115,10 +21,8 @@ public class GameConfig {
     private int aiLevel;
     private int aiLevel2;
     private int version;
-
     @NotNull
     private GameType gameType;
-
     @NotNull
     private ArrayList<Ship> ships;
 
@@ -147,6 +51,29 @@ public class GameConfig {
         this.version = 1;
         this.gameType = gameType;
         this.ships = ships;
+    }
+
+    @NotNull
+    public static GameConfig getSampleConfigWest() {
+        return new GameConfig(10, 10, false,
+                true, false, 0, 1, AILevel.EASY.id, AILevel.NOVICE.id, GameType.AI, Ship.getSampleShipsWest());
+    }
+
+    @NotNull
+    public static GameConfig getSampleConfigEast() {
+        return new GameConfig(10, 10, false,
+                true, false, 0, 1, AILevel.EASY.id, AILevel.NOVICE.id, GameType.AI, Ship.getSampleShipsEast());
+    }
+
+    @NotNull
+    public static GameConfig getSampleMoving() {
+        return new GameConfig(10, 10, true,
+                true, false, -1, 1, AILevel.EASY.id, AILevel.EASY.id, GameType.AI, Ship.getSampleShipsEast());
+    }
+
+    @NotNull
+    public static GameConfig fromJSON(@NotNull String json) {
+        return new Gson().fromJson(json, GameConfig.class);
     }
 
     @Override
@@ -286,29 +213,6 @@ public class GameConfig {
     }
 
     @NotNull
-    public static GameConfig getSampleConfigWest() {
-        return new GameConfig(10, 10, false,
-                true, false, 0, 1, AILevel.EASY.id, AILevel.NOVICE.id, GameType.AI, Ship.getSampleShipsWest());
-    }
-
-    @NotNull
-    public static GameConfig getSampleConfigEast() {
-        return new GameConfig(10, 10, false,
-                true, false, 0, 1, AILevel.EASY.id, AILevel.NOVICE.id, GameType.AI, Ship.getSampleShipsEast());
-    }
-
-    @NotNull
-    public static GameConfig getSampleMoving() {
-        return new GameConfig(10, 10, true,
-                true, false, -1, 1, AILevel.EASY.id, AILevel.EASY.id, GameType.AI, Ship.getSampleShipsEast());
-    }
-
-    @NotNull
-    public static GameConfig fromJSON(@NotNull String json) {
-        return new Gson().fromJson(json, GameConfig.class);
-    }
-
-    @NotNull
     public String toJSON() {
         return new Gson().toJson(this);
     }
@@ -333,5 +237,99 @@ public class GameConfig {
             other.ships = ships;
         }
         return other;
+    }
+
+    public enum GameType {
+        LOCAL_2P,
+        AI,
+        //        LOCAL_INET,
+//        BLUETOOTH,
+        GLOBAL_INET,
+        AI_VS_AI
+    }
+
+    public static class Ship {
+        public final int length;
+        public final int id;
+
+        @NotNull
+        public final String name;
+
+
+        public Ship(int length, int id, @NotNull String name) {
+            this.length = length;
+            this.id = id;
+            this.name = name;
+        }
+
+        @NotNull
+        static ArrayList<Ship> getSampleShipsWest() {
+            return new ArrayList<>(Arrays.asList(new Ship(5, 1, Constants.SHIP_CARRIER_IMG),
+                    new Ship(4, 2, Constants.SHIP_BATTLESHIP_IMG),
+                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(3, 4, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG)));
+        }
+
+        @NotNull
+        static ArrayList<Ship> getSampleShipsEast() {
+            return new ArrayList<>(Arrays.asList(new Ship(4, 1, Constants.SHIP_BATTLESHIP_IMG),
+                    new Ship(3, 2, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 4, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(2, 5, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(2, 6, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(1, 7, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 8, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 9, Constants.SHIP_RUBBER_BOAT_IMG),
+                    new Ship(1, 10, Constants.SHIP_RUBBER_BOAT_IMG)));
+        }
+
+        @NotNull
+        public static Ship[] getAllShipsSamples() {
+            return new Ship[]{
+                    new Ship(5, 1, Constants.SHIP_CARRIER_IMG),
+                    new Ship(4, 2, Constants.SHIP_BATTLESHIP_IMG),
+                    new Ship(3, 3, Constants.SHIP_SUBMARINE_IMG),
+                    new Ship(2, 4, Constants.SHIP_PATROL_BOAT_IMG),
+                    new Ship(1, 5, Constants.SHIP_RUBBER_BOAT_IMG)
+            };
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Ship)) return false;
+
+            Ship ship = (Ship) o;
+
+            if (length != ship.length) return false;
+            return name.equals(ship.name);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = length;
+            result = 31 * result + id;
+            result = 31 * result + name.hashCode();
+            return result;
+        }
+
+        @NotNull
+        public World.Ship convert() {
+            return new World.Ship(length, id, name, 0, 0, 0);
+        }
+
+        @NotNull
+        public Ship clone(int newId) {
+            return new Ship(length, newId, name);
+        }
+
+        @NotNull
+        public String rotatedName() {
+            if (name.endsWith(Constants.ROTATED_SUFFIX))
+                return name;
+            return name + Constants.ROTATED_SUFFIX;
+        }
     }
 }

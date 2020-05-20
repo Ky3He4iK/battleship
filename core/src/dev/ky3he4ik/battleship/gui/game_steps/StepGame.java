@@ -155,6 +155,8 @@ public class StepGame extends BaseStep {
             callback.leftPlayer.getCommunication().finish();
         if (callback.rightPlayer.getCommunication() != null)
             callback.rightPlayer.getCommunication().finish();
+        callback.leftPlayer.removeCommunication();
+        callback.rightPlayer.removeCommunication();
         return super.stepEnd();
     }
 

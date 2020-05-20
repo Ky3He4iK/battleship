@@ -15,26 +15,20 @@ import dev.ky3he4ik.battleship.utils.Constants;
 
 public class ShipCntChooser extends WidgetGroup implements ActorWithSpriteListener {
 
+    private final int MORE_BTN_ID = 1;
+    private final int LESS_BTN_ID = 2;
     @NotNull
     private Table content;
-
     @NotNull
     private ShipImage shipImage;
-
     @NotNull
     private ActorWithSprite moreBtn;
-
-    private final int MORE_BTN_ID = 1;
-
     @NotNull
     private ActorWithSprite lessBtn;
-
-    private final int LESS_BTN_ID = 2;
-
     @NotNull
     private Label cntLabel;
 
-    private int count = 0;
+    private int count;
 
     ShipCntChooser(@NotNull GameConfig.Ship ship, @NotNull BitmapFont font, int countStart, float cellSize) {
         lessBtn = new ActorWithSprite(this, Constants.ARROW_LEFT, Constants.ARROW_LEFT_PRESSED, LESS_BTN_ID);
@@ -53,7 +47,7 @@ public class ShipCntChooser extends WidgetGroup implements ActorWithSpriteListen
         addActor(content);
     }
 
-    public void buildTable(float cellSize) {
+    void buildTable(float cellSize) {
         shipImage.setCellSize(cellSize);
         content.clearChildren();
         content.row().height(cellSize);
@@ -65,7 +59,7 @@ public class ShipCntChooser extends WidgetGroup implements ActorWithSpriteListen
         content.align(Align.center);
     }
 
-    public int getCount() {
+    int getCount() {
         return count;
     }
 

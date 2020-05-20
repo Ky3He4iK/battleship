@@ -7,6 +7,7 @@ import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -39,7 +40,7 @@ public class Socket extends WebSocketClient {
     public void onMessage(String message) {
         Action action = Action.fromJson(message);
         if (action != null && action.getActionType() != Action.ActionType.PING)
-            Gdx.app.debug("Socket", "Receive: " + message);
+            Gdx.app.error("Socket", "Receive: " + message);
         if (action != null && action.getActionType() != Action.ActionType.OK && action.getActionType() != Action.ActionType.NO)
             callback.onAction(action);
 
@@ -47,20 +48,20 @@ public class Socket extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-
+        callback.reconnect(null);
     }
 
     @Override
     public void onError(Exception ex) {
-//        if (ex instanceof ConnectException) {
-//            callback.reconnect(null);
-//        }
+        if (ex instanceof ConnectException || ex instanceof WebsocketNotConnectedException) {
+            callback.reconnect(null);
+        }
         Gdx.app.error("Socket", ex.getMessage(), ex);
     }
 
     void send(@NotNull Action action) {
         if (action.getActionType() != Action.ActionType.PING)
-            Gdx.app.debug("Socket", "Sending: " + action.toJson());
+            Gdx.app.error("Socket", "Sending: " + action.toJson());
         if (!isConnected())
             callback.reconnect(action);
         else

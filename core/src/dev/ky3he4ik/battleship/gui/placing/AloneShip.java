@@ -20,22 +20,16 @@ import dev.ky3he4ik.battleship.utils.H;
 
 public class AloneShip extends Actor implements EventListener {
     @NotNull
-    private final AloneShipListener callback;
-
-    @NotNull
-    private String[] names;
-
-    private int rotation;
-
-    @NotNull
-    private Sprite sprite;
-
-    @NotNull
     public final GameConfig.Ship ship;
-
     public final int length;
     public final int id;
-
+    @NotNull
+    private final AloneShipListener callback;
+    @NotNull
+    private String[] names;
+    private int shipRotation;
+    @NotNull
+    private Sprite sprite;
     private boolean placed = false;
     private boolean canBeMoved = false;
     private boolean dead = false;
@@ -48,8 +42,8 @@ public class AloneShip extends Actor implements EventListener {
                 ship.rotatedName(), ship.name
         };
         this.id = ship.id;
-        rotation = World.ROTATION_HORIZONTAL;
-        sprite = SpriteManager.getInstance().getSprite(names[rotation]);
+        shipRotation = World.ROTATION_HORIZONTAL;
+        sprite = SpriteManager.getInstance().getSprite(names[shipRotation]);
         addListener(this);
     }
 
@@ -70,8 +64,8 @@ public class AloneShip extends Actor implements EventListener {
 
     public void rotate() {
         setSize(getHeight(), getWidth());
-        rotation = 1 - rotation;
-        sprite = SpriteManager.getInstance().getSprite(names[rotation]);
+        shipRotation = 1 - shipRotation;
+        sprite = SpriteManager.getInstance().getSprite(names[shipRotation]);
     }
 
     @Override
@@ -114,7 +108,12 @@ public class AloneShip extends Actor implements EventListener {
     }
 
     public int getShipRotation() {
-        return rotation;
+        return shipRotation;
+    }
+
+    void setShipRotation(int rotation) {
+        if (this.shipRotation != rotation)
+            rotate();
     }
 
     public boolean isPlaced() {
@@ -139,12 +138,7 @@ public class AloneShip extends Actor implements EventListener {
 
     @NotNull
     public String getShipName() {
-        return names[rotation];
-    }
-
-    public void setShipRotation(int rotation) {
-        if (this.rotation != rotation)
-            rotate();
+        return names[shipRotation];
     }
 
     public void setDead() {

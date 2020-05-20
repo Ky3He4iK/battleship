@@ -10,40 +10,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 
 public class AnimationManager {
-    public static class AnimationInfo {
-        public final float frameLength;
-        public final String name;
-        public final int colons;
-        public final int rows;
-        public final boolean isLooped;
-
-        public AnimationInfo(float frameLength, @NotNull String name, int colons, int rows, boolean isLooped) {
-            this.frameLength = frameLength;
-            this.name = name;
-            this.colons = colons;
-            this.rows = rows;
-            this.isLooped = isLooped;
-        }
-
-        @NotNull
-        public static AnimationInfo byFPS(float fps, @NotNull String name, int colons, int rows, boolean isLooped) {
-            return new AnimationInfo(1 / fps, name, colons, rows, isLooped);
-        }
-
-        @NotNull
-        public static AnimationInfo byDuration(float duration, @NotNull String name, int colons, int rows, boolean isLooped) {
-            return new AnimationInfo(duration / (colons * rows), name, colons, rows, isLooped);
-        }
-    }
-
+    @NotNull
+    private static AnimationManager animationManager = new AnimationManager();
     @NotNull
     private HashMap<String, Animation<TextureRegion>> animations;
 
     @NotNull
     private HashMap<String, Integer> usageCnt;
-
-    @NotNull
-    private static AnimationManager animationManager = new AnimationManager();
 
     private AnimationManager() {
         animations = new HashMap<>();
@@ -70,7 +43,7 @@ public class AnimationManager {
     }
 
     @Nullable
-    public Animation<TextureRegion> getAnimation(@NotNull String name) {
+    private Animation<TextureRegion> getAnimation(@NotNull String name) {
         return animations.get(name);
     }
 
@@ -112,7 +85,7 @@ public class AnimationManager {
         return animations.get(newName);
     }
 
-    public boolean contains(@NotNull String name) {
+    private boolean contains(@NotNull String name) {
         return animations.containsKey(name);
     }
 
@@ -155,5 +128,31 @@ public class AnimationManager {
             dispose(name, true);
         usageCnt.clear();
         animations.clear();
+    }
+
+    public static class AnimationInfo {
+        final float frameLength;
+        public final String name;
+        final int colons;
+        final int rows;
+        final boolean isLooped;
+
+        AnimationInfo(float frameLength, @NotNull String name, int colons, int rows, boolean isLooped) {
+            this.frameLength = frameLength;
+            this.name = name;
+            this.colons = colons;
+            this.rows = rows;
+            this.isLooped = isLooped;
+        }
+
+        @NotNull
+        public static AnimationInfo byFPS(float fps, @NotNull String name, int colons, int rows, boolean isLooped) {
+            return new AnimationInfo(1 / fps, name, colons, rows, isLooped);
+        }
+
+        @NotNull
+        public static AnimationInfo byDuration(float duration, @NotNull String name, int colons, int rows, boolean isLooped) {
+            return new AnimationInfo(duration / (colons * rows), name, colons, rows, isLooped);
+        }
     }
 }

@@ -17,16 +17,16 @@ public class AIDummy extends AI {
     private int hitX = -1, hitY = -1;
     private Queue<int[]> queue;
 
+    public AIDummy(@Nullable PlayerFinished callback, @NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
+        super(callback, enemy, my, config);
+        queue = new LinkedList<>();
+    }
+
     @Override
     public void restart() {
         super.restart();
         queue.clear();
         hitX = -1;
-    }
-
-    public AIDummy(@Nullable PlayerFinished callback, @NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
-        super(callback, enemy, my, config);
-        queue = new LinkedList<>();
     }
 
     @Override

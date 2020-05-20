@@ -25,7 +25,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     @NotNull
     private Cell[][] cells;
     @NotNull
-    private ArrayList<AloneShip> children;
+    private ArrayList<AloneShip> childrenShips;
 
     private int clickX, clickY;
     private boolean clicked = false;
@@ -53,7 +53,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         this.communication = communication;
         this.playerId = playerId;
         this.callback = callback;
-        children = new ArrayList<>();
+        childrenShips = new ArrayList<>();
 
         if (communication != null)
             communication.setCallback(this);
@@ -97,16 +97,16 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     public void start() {
         shipsCnt = world.getShips().size();
-        for (AloneShip ship : children)
+        for (AloneShip ship : childrenShips)
             removeActor(ship);
-        children.clear();
+        childrenShips.clear();
         for (World.Ship ship : world.getShips()) {
             AloneShip child = new AloneShip(this, ship.convert());
 //            child.setRotation(ship.rotation);
             child.setPlaced(true);
             child.setVisible(showShips);
             addActor(child);
-            children.add(child);
+            childrenShips.add(child);
             child.setBounds(ship.idx * cellSize, ship.idy * cellSize, cellSize * ship.length, cellSize);
             if (ship.rotation == World.ROTATION_VERTICAL)
                 child.rotate();
@@ -133,14 +133,20 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 //                    child.setVisible(false);
 //        }
 //        batch.setColor(1, 0, 0, 0.5f);
-        for (AloneShip ship : children)
+        for (AloneShip ship : childrenShips)
             if (world.shipDead(ship.id)) {
                 ship.setDead();
+                World.Ship ship1 = world.findShip(ship.id);
+                if (ship1 != null) {
+                    ship.setBounds(ship1.idx * cellSize, ship1.idy * cellSize, cellSize * ship.length, cellSize);
+                    if (ship1.rotation != ship.getShipRotation())
+                        ship.rotate();
+                }
                 ship.setVisible(true);
             }
     }
 
-    public int getState(int idx, int idy) {
+    int getState(int idx, int idy) {
         return world.getState(idx, idy);
     }
 
@@ -148,13 +154,13 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         return world.isOpened(idx, idy);
     }
 
-    public void registerClick(int idx, int idy) {
+    void registerClick(int idx, int idy) {
         clicked = true;
         clickX = idx;
         clickY = idy;
     }
 
-    public void registerRelease(int idx, int idy) {
+    void registerRelease(int idx, int idy) {
         clicked = false;
         if (idx < 0 || idy < 0 || idx >= world.getWidth() || idy >= world.getHeight())
             return;
@@ -165,7 +171,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     @NotNull
-    public int[] getClick() {
+    int[] getClick() {
         return new int[]{(H.I(clicked)), clickX, clickY};
     }
 
@@ -189,7 +195,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 removeActor(cell);
             }
         }
-        for (AloneShip child : children)
+        for (AloneShip child : childrenShips)
             removeActor(child);
     }
 
@@ -231,7 +237,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         for (Cell[] cells1 : cells)
             for (Cell cell : cells1)
                 cell.clearAnimation();
-        for (AloneShip child : children)
+        for (AloneShip child : childrenShips)
             removeActor(child);
     }
 
@@ -300,23 +306,23 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         return Math.round((y - H.getAbsCoord(this)[1]) / cellSize);
     }
 
-    public boolean getShadow() {
+    boolean getShadow() {
         return shadow;
     }
 
-    public int getShadowUX() {
+    int getShadowUX() {
         return shadowUX;
     }
 
-    public int getShadowUY() {
+    int getShadowUY() {
         return shadowUY;
     }
 
-    public int getShadowLX() {
+    int getShadowLX() {
         return shadowLX;
     }
 
-    public int getShadowLY() {
+    int getShadowLY() {
         return shadowLY;
     }
 
@@ -355,7 +361,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         ship.setPosition(Math.min(curPos[0] + getWidth() - cellSize, Math.max(curPos[0], pos[0])) - curPos[0],
                 Math.min(curPos[1] + getHeight() - cellSize, Math.max(curPos[1], pos[1])) - curPos[1]);
 //        }
-        for (AloneShip child : children) {
+        for (AloneShip child : childrenShips) {
             if (!child.isPlaced()) {
                 pos = H.getAbsCoord(child);
                 float[] newPos = unHighlight(child.ship, pos[0], pos[1], child.getShipRotation());
@@ -384,13 +390,13 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     public void setShowShips(boolean showShips) {
         this.showShips = showShips;
-        for (AloneShip ship : children)
+        for (AloneShip ship : childrenShips)
             ship.setVisible(showShips);
     }
 
     public boolean rotateButtonPressed() {
         if (lastAccessId != -1)
-            for (AloneShip child : children)
+            for (AloneShip child : childrenShips)
                 if (child.id == lastAccessId) {
                     shadowLX = innerCellX(child.getGlobalX());
                     shadowLY = innerCellY(child.getGlobalY());
@@ -420,7 +426,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public void moveShip(int shipId, int idx, int idy, int rotation) {
         if (movingShips)
             return;
-        for (AloneShip child : children)
+        for (AloneShip child : childrenShips)
             if (child.id == shipId) {
                 child.setPlaced(true);
                 child.setVisible(showShips);

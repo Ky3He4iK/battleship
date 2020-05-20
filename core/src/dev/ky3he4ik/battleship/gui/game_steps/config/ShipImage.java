@@ -13,13 +13,11 @@ import dev.ky3he4ik.battleship.utils.Constants;
 
 public class ShipImage extends Widget {
     @NotNull
+    public final GameConfig.Ship ship;
+    @NotNull
     private Sprite cellSprite;
     @NotNull
     private Sprite shipSprite;
-
-    @NotNull
-    public final GameConfig.Ship ship;
-
     private float cellSize;
 
     ShipImage(@NotNull GameConfig.Ship ship, float cellSize) {
@@ -29,7 +27,7 @@ public class ShipImage extends Widget {
         this.cellSize = cellSize;
     }
 
-    public void setCellSize(float cellSize) {
+    void setCellSize(float cellSize) {
         this.cellSize = cellSize;
     }
 

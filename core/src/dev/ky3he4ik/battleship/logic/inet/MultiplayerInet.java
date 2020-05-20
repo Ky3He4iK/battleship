@@ -15,40 +15,29 @@ import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 
 public class MultiplayerInet extends Thread implements Communication {
+    @Nullable
+    public String opponent;
     @NotNull
     private World enemy;
-
     @NotNull
     private World my;
-
     @NotNull
     private GameConfig config;
     @Nullable
     private Field callback = null;
-
     @NotNull
     private String name;
-
     private long uuid;
-
     private long gameId;
-
     @NotNull
     private String passwd = "";
-
     private int i = 0;
-
     private boolean running = true;
     private boolean isSync = false;
     private boolean isHost;
     private boolean shipsSent = false;
-
     @Nullable
     private Socket client;
-
-    @Nullable
-    public String opponent;
-
     @Nullable
     private Action pending;
     private boolean isReconnect;
@@ -107,7 +96,16 @@ public class MultiplayerInet extends Thread implements Communication {
         } catch (Exception e) {
             Gdx.app.error("MultiplayerInet", e.getMessage(), e);
         }
+        running = true;
+        Gdx.app.error("MultiplayerInet", "isHost: " + isHost);
+        opponent = null;
         shipsSent = false;
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ignored) {
+        }
+        running = true;
+        Gdx.app.error("MulpiplayerInet", "Start looping: " + running);
         while (running) {
             try {
                 if (isReconnect && client != null) {
@@ -125,8 +123,12 @@ public class MultiplayerInet extends Thread implements Communication {
                     sync();
                 }
                 if (i % 50 == 0) {
-                    if (!isHost && opponent == null && client != null)
+                    if (!isHost && opponent == null) {
+                        if (client == null)
+                            client = new Socket(this, name, uuid);
                         client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
+                    }
+                    Gdx.app.error("MultiplayerInet", "opponent: " + opponent + "; isHost: " + isHost);
                 }
                 Thread.sleep(100);
             } catch (Exception e) {
@@ -218,11 +220,14 @@ public class MultiplayerInet extends Thread implements Communication {
                     int p = m.indexOf('\n');
                     if (p != -1)
                         m = m.substring(0, p);
+                    if (m.equals(name))
+                        break;
                     Action action1 = new Action(Action.ActionType.JOIN, name, uuid);
                     action1.setOtherName(m);
                     action1.setMsg(passwd);
                     client.send(action1);
                     opponent = m;
+                    Gdx.app.error("MultiplayerInet", "new opponent: " + opponent);
                 }
                 break;
             case TURN:
@@ -244,7 +249,10 @@ public class MultiplayerInet extends Thread implements Communication {
                 }
                 break;
             case CONNECTED:
+                if (name.equals(action.getOtherName()))
+                    break;
                 opponent = action.getOtherName();
+                Gdx.app.error("MultiplayerInet", "new opponent: " + opponent);
                 if (enemy.getShips().size() == config.getShips().size())
                     enemyShipsPlaced();
                 break;
@@ -290,7 +298,7 @@ public class MultiplayerInet extends Thread implements Communication {
             if (opponent != null) {
                 isSync = true;
                 Action action = new Action(Action.ActionType.SYNC, name, uuid);
-                action.setMsg(new Gson().toJson(my));
+                action.setMsg(my.toJson());
                 client.send(action);
             }
         }
@@ -313,5 +321,9 @@ public class MultiplayerInet extends Thread implements Communication {
     void reconnect(@Nullable Action action) {
         isReconnect = true;
         pending = action;
+    }
+
+    public void setHost(boolean isHost) {
+        this.isHost = isHost;
     }
 }

@@ -9,79 +9,36 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
 public class World {
-    public static class Ship {
-        public final int length;
-        public final String name;
-        public final int code;
-        public final int idx;
-        public final int idy;
-        public final int rotation;
-
-
-        public Ship(int length, int code, String name, int idx, int idy, int rotation) {
-            this.length = length;
-            this.code = code;
-            this.name = name;
-            this.idx = idx;
-            this.idy = idy;
-            this.rotation = rotation;
-        }
-
-        public Ship copy() {
-            return new Ship(length, code, name, idx, idy, rotation);
-        }
-
-        public Ship move(int idx, int idy, int rotation) {
-            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-            return new Ship(length, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
-                    idx, idy, rotation);
-        }
-
-        public boolean containsCell(int i, int j) {
-            if (rotation == ROTATION_HORIZONTAL)
-                return idy == j && idx <= i && idx + length > i;
-            else
-                return idx == i && idy <= j && idy + length > j;
-        }
-
-        @NotNull
-        public GameConfig.Ship convert() {
-            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-            return new GameConfig.Ship(length, code, name_);
-        }
-    }
-
     public static final int ROTATION_HORIZONTAL = 0;
     public static final int ROTATION_VERTICAL = 1;
-
-    // cell states:
-    public static final int STATE_MASK = 0xf; // reserved for more states
-    public static final int STATE_SHIFT = 0;
-
     public static final int STATE_EMPTY = 0x0; // no ship
     public static final int STATE_UNDAMAGED = 0x1; // ship
     public static final int STATE_DAMAGED = 0x2; // damaged ship
     public static final int STATE_SUNK = 0x3; // sunk ship
-
     // ship codes
     public static final int SHIP_MASK = 0xff00; // reserved for more ships
-    public static final int SHIP_SHIFT = 8;
-
     public static final int INVALID = -1;
-
+    // cell states:
+    private static final int STATE_MASK = 0xf; // reserved for more states
+    private static final int STATE_SHIFT = 0;
+    private static final int SHIP_SHIFT = 8;
     private BitSet[] opened;
     private int[][] field;
     private ArrayList<Ship> ships;
     private int width;
     private int height;
+    public World(int width, int height) {
+        reset(width, height);
+    }
 
-    @Nullable
-    private Field ownedField;
+    @NotNull
+    public static World fromJSON(@NotNull String json) {
+        return new Gson().fromJson(json, World.class);
+    }
 
     @Contract(pure = true)
     public ArrayList<Ship> getShips() {
@@ -106,7 +63,7 @@ public class World {
         return opened;
     }
 
-    public void setOpened(BitSet[] opened) {
+    private void setOpened(BitSet[] opened) {
         this.opened = opened;
     }
 
@@ -127,10 +84,6 @@ public class World {
         this.height = height;
     }
 
-    public World(int width, int height) {
-        reset(width, height);
-    }
-
     @Contract(pure = true)
     public World copy() {
         World child = new World(width, height);
@@ -139,7 +92,7 @@ public class World {
         return child;
     }
 
-    public void setState(int i, int j, int state) {
+    private void setState(int i, int j, int state) {
         if (inBounds(i, j))
             field[i][j] = field[i][j] & (~STATE_MASK) | (state << STATE_SHIFT);
     }
@@ -325,8 +278,6 @@ public class World {
             return false;
 
         removeShip(ship.code);
-        if (ownedField != null)
-            ownedField.moveShip(ship.code, ship.idx, ship.idy, ship.rotation);
         for (int i = -1; i <= ship.length; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
                 if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || (i >= 0 && i < ship.length && isOpened(idx + i, idy)))
@@ -352,7 +303,7 @@ public class World {
     }
 
     @Contract(pure = true)
-    public boolean inBounds(int idx, int idy) {
+    private boolean inBounds(int idx, int idy) {
         return idx >= 0 && idy >= 0 && idx < width && idy < height;
     }
 
@@ -417,16 +368,6 @@ public class World {
         return false;
     }
 
-    @NotNull
-    public static World fromJSON(@NotNull String json) {
-        return new Gson().fromJson(json, World.class);
-    }
-
-    @NotNull
-    public String toJSON() {
-        return new Gson().toJson(this);
-    }
-
     public void duplicate(@NotNull World other) {
         opened = other.opened;
         field = other.field;
@@ -435,7 +376,50 @@ public class World {
         height = other.height;
     }
 
-    public void setOwnedField(@NotNull Field ownedField) {
-        this.ownedField = ownedField;
+    @NotNull
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
+
+    public static class Ship {
+        public final int length;
+        public final String name;
+        public final int code;
+        public final int idx;
+        public final int idy;
+        public final int rotation;
+
+
+        public Ship(int length, int code, String name, int idx, int idy, int rotation) {
+            this.length = length;
+            this.code = code;
+            this.name = name;
+            this.idx = idx;
+            this.idy = idy;
+            this.rotation = rotation;
+        }
+
+        public Ship copy() {
+            return new Ship(length, code, name, idx, idy, rotation);
+        }
+
+        Ship move(int idx, int idy, int rotation) {
+            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+            return new Ship(length, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
+                    idx, idy, rotation);
+        }
+
+        public boolean containsCell(int i, int j) {
+            if (rotation == ROTATION_HORIZONTAL)
+                return idy == j && idx <= i && idx + length > i;
+            else
+                return idx == i && idy <= j && idy + length > j;
+        }
+
+        @NotNull
+        public GameConfig.Ship convert() {
+            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+            return new GameConfig.Ship(length, code, name_);
+        }
     }
 }
