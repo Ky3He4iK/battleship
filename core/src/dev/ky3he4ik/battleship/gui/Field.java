@@ -37,6 +37,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     private int shadowRot;
     private int lastAccessId = -1;
     private int shipsCnt;
+    private boolean movingShips = false;
 
     @Nullable
     private Communication communication;
@@ -101,7 +102,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         children.clear();
         for (World.Ship ship : world.getShips()) {
             AloneShip child = new AloneShip(this, ship.convert());
-            child.setRotation(ship.rotation);
+//            child.setRotation(ship.rotation);
             child.setPlaced(true);
             child.setVisible(showShips);
             addActor(child);
@@ -323,8 +324,12 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public float[] rotate(@NotNull AloneShip ship, @NotNull float[] coord, int rotation) {
         if (!world.rotate(ship.id)) {
             shadow = false;
-            if (world.placeShip(ship.ship.convert(), innerCellX(coord[0]), innerCellY(coord[1]), rotation))
+            movingShips = true;
+            if (world.placeShip(ship.ship.convert(), innerCellX(coord[0]), innerCellY(coord[1]), rotation)) {
+                movingShips = false;
                 return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
+            }
+            movingShips = false;
             return null;
         } else
             return new float[]{coord[0], coord[1]};
@@ -410,5 +415,18 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     @NotNull
     public StepsDirector getCallback() {
         return callback;
+    }
+
+    public void moveShip(int shipId, int idx, int idy, int rotation) {
+        if (movingShips)
+            return;
+        for (AloneShip child : children)
+            if (child.id == shipId) {
+                child.setPlaced(true);
+                child.setVisible(showShips);
+                child.setBounds(idx * cellSize, idy * cellSize, cellSize * child.length, cellSize);
+                if (rotation != child.getShipRotation())
+                    child.rotate();
+            }
     }
 }

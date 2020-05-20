@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -164,8 +165,19 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
                 Gdx.app.error("StepsDirector", "invalid step #" + steps.get(i).stepId + " at pos " + i);
     }
 
+    void prevStep() {
+        steps.get(currentStep).stepEnd();
+        currentStep = STEP_BEGINNING;
+        steps.get(currentStep).stepBegin();
+        stepLabel.setText(steps.get(currentStep).getName());
+    }
+
     void nextStep() {
-        setStep(steps.get(currentStep).stepEnd());
+        if (currentStep == STEP_BEGINNING)
+            restart();
+        currentStep = steps.get(currentStep).stepEnd();
+        steps.get(currentStep).stepBegin();
+        stepLabel.setText(steps.get(currentStep).getName());
     }
 
     public void setStep(int step) {
@@ -254,7 +266,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         rightPlayer.restart();
     }
 
-    void calcCellSize() {
+    private void calcCellSize() {
         middleGap = getWidth() * Constants.MIDDLE_GAP_PART;
         sideWidth = getWidth() * Constants.SIDE_PART;
         headerHeight = getHeight() * Constants.HEADER_PART;
@@ -348,6 +360,16 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     public boolean relayTouch(InputEvent event, float x, float y, int pointer, int button) {
         return getStep().relayTouch(event, x, y, pointer, button);
+    }
+
+    public boolean relayKeyDown(InputEvent event, int keycode) {
+        if (getStep().relayKeyDown(event, keycode))
+            return true;
+        if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
+            prevStep();
+            return true;
+        } else
+            return false;
     }
 
     @Override

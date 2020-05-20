@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.BitSet;
 
+import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
@@ -78,6 +79,9 @@ public class World {
     private ArrayList<Ship> ships;
     private int width;
     private int height;
+
+    @Nullable
+    private Field ownedField;
 
     @Contract(pure = true)
     public ArrayList<Ship> getShips() {
@@ -321,7 +325,8 @@ public class World {
             return false;
 
         removeShip(ship.code);
-
+        if (ownedField != null)
+            ownedField.moveShip(ship.code, ship.idx, ship.idy, ship.rotation);
         for (int i = -1; i <= ship.length; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
                 if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || (i >= 0 && i < ship.length && isOpened(idx + i, idy)))
@@ -428,5 +433,9 @@ public class World {
         ships = other.ships;
         width = other.width;
         height = other.height;
+    }
+
+    public void setOwnedField(@NotNull Field ownedField) {
+        this.ownedField = ownedField;
     }
 }

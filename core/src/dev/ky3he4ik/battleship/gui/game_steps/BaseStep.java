@@ -48,6 +48,10 @@ public abstract class BaseStep extends Stage {
         return false;
     }
 
+    public boolean relayKeyDown(InputEvent event, int keycode) {
+        return false;
+    }
+
     public void resize() {
     }
 
