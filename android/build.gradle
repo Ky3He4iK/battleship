@@ -20,8 +20,8 @@ android {
         applicationId "dev.ky3he4ik.battleship"
         minSdkVersion 14
         targetSdkVersion 29
-        versionCode 6
-        versionName "0.5.1"
+        versionCode 7
+        versionName "0.5.2"
     }
     buildTypes {
         release {

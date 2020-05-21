@@ -71,8 +71,8 @@ public class GameConfig {
                 true, false, -1, 1, AILevel.EASY.id, AILevel.EASY.id, GameType.AI, Ship.getSampleShipsEast());
     }
 
-    @NotNull
-    public static GameConfig fromJSON(@NotNull String json) {
+    @Nullable
+    public static GameConfig fromJSON(@Nullable String json) {
         return new Gson().fromJson(json, GameConfig.class);
     }
 

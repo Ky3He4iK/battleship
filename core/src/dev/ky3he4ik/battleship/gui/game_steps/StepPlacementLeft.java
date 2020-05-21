@@ -44,7 +44,7 @@ public class StepPlacementLeft extends BaseStep {
 
     @Override
     public void act() {
-        if (callback.readyCnt >= 2 || callback.p1Ready)
+        if (callback.p1Ready)
             callback.nextStep();
     }
 

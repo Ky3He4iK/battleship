@@ -29,7 +29,7 @@ public class StepConnecting extends BaseStep {
 
     @Override
     public void act() {
-        if (callback.readyCnt >= 2)
+        if (callback.p1Ready && callback.p2Ready)
             callback.nextStep();
     }
 

@@ -33,7 +33,6 @@ public class StepBeginning extends BaseStep {
         callback.p2Ready = false;
         callback.isP2 = false;
         callback.gotConfig = false;
-        callback.readyCnt = 0;
     }
 
     @Override

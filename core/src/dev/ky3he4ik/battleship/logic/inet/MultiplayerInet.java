@@ -1,7 +1,6 @@
 package dev.ky3he4ik.battleship.logic.inet;
 
 import com.badlogic.gdx.Gdx;
-import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -167,7 +166,7 @@ public class MultiplayerInet extends Thread implements Communication {
 
     @Override
     public void enemyShipsPlaced() {
-        if (client != null) {
+        if (client != null && localField.getShips().size() == config.getShips().size()) {
             ArrayList<World.Ship> ships = localField.getShips();
             int[][] shipsA = new int[ships.size()][];
             for (int i = 0; i < ships.size(); i++) {
@@ -179,8 +178,8 @@ public class MultiplayerInet extends Thread implements Communication {
             action.setGameId(gameId);
             action.setOtherName(opponent);
             client.send(action);
+            Gdx.app.debug("MultyplayerInet", "ships sent");
         }
-        Gdx.app.debug("MultyplayerInet", "ships sent");
     }
 
     @Override
@@ -270,7 +269,7 @@ public class MultiplayerInet extends Thread implements Communication {
                     enemyShipsPlaced();
                 break;
             case JOIN:
-                GameConfig config1 = new Gson().fromJson(action.getConfig(), GameConfig.class);
+                GameConfig config1 = GameConfig.fromJSON(action.getConfig());
                 if (config1 != null) {
                     config1.duplicate(config);
                     if (callback != null)
@@ -291,8 +290,13 @@ public class MultiplayerInet extends Thread implements Communication {
                     callback.getCallback().setStep(StepsDirector.STEP_AFTERMATH);
                 break;
             case START_GAME:
-                if (callback != null)
+
+                if (callback != null) {
+                    GameConfig config2 = GameConfig.fromJSON(action.getConfig());
+                    if (config2 != null)
+                        config2.duplicate(config);
                     callback.gotConfig();
+                }
                 break;
             case SYNC:
                 if (!isSync) {
@@ -300,7 +304,7 @@ public class MultiplayerInet extends Thread implements Communication {
                     sync();
                 }
                 isSync = false;
-                World e = new Gson().fromJson(action.getMsg(), World.class);
+//                World e = World.fromJSON(action.getMsg());
 //                e.duplicate(inetField);
                 break;
         }

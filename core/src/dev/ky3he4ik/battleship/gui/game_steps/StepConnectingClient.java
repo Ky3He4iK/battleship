@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.logic.inet.MultiplayerInet;
 import dev.ky3he4ik.battleship.utils.Constants;
 
@@ -27,6 +28,7 @@ public class StepConnectingClient extends BaseStep {
     @Override
     public void stepBegin() {
         callback.gotConfig = false;
+        callback.p1Ready = false;
         callback.p2Ready = false;
         callback.rightPlayer.removeCommunication();
         callback.config.setGameType(GameConfig.GameType.GLOBAL_INET);
@@ -67,7 +69,11 @@ public class StepConnectingClient extends BaseStep {
 
     @Override
     public int stepEnd() {
-        callback.readyCnt = 1;
+        callback.resize();
+        callback.leftPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
+        callback.rightPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
+        callback.leftPlayer.init();
+        callback.rightPlayer.init();
         return StepsDirector.STEP_PLACEMENT_R;
     }
 

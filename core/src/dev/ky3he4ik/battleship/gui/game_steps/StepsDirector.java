@@ -238,7 +238,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         rightPlayer.restart();
     }
 
-    private void calcCellSize() {
+    void calcCellSize() {
         middleGap = getWidth() * Constants.MIDDLE_GAP_PART;
         sideWidth = getWidth() * Constants.SIDE_PART;
         headerHeight = getHeight() * Constants.HEADER_PART;
@@ -368,12 +368,15 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     public void shipsPlaced(int playerId) {
-        readyCnt++;
         if (playerId == TURN_LEFT) {
+            if (!p1Ready)
+                readyCnt++;
             p1Ready = true;
             if (rightPlayer.getCommunication() != null)
                 rightPlayer.getCommunication().enemyShipsPlaced();
         } else {
+            if (!p2Ready)
+                readyCnt++;
             p2Ready = true;
             if (leftPlayer.getCommunication() != null)
                 leftPlayer.getCommunication().enemyShipsPlaced();
