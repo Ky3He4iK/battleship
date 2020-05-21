@@ -301,7 +301,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 }
                 isSync = false;
                 World e = new Gson().fromJson(action.getMsg(), World.class);
-                e.duplicate(inetField);
+//                e.duplicate(inetField);
                 break;
         }
     }

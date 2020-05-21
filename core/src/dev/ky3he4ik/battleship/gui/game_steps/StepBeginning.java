@@ -29,6 +29,11 @@ public class StepBeginning extends BaseStep {
         startLabel.setPosition((callback.getWidth() - startLabel.getWidth()) / 2, (callback.getHeight() / 2 * 3 - startLabel.getHeight()) / 2);
         joinLabel.setAlignment(Align.center);
         joinLabel.setPosition((callback.getWidth() - joinLabel.getWidth()) / 2, (callback.getHeight() / 2 - joinLabel.getHeight()) / 2);
+        callback.p1Ready = false;
+        callback.p2Ready = false;
+        callback.isP2 = false;
+        callback.gotConfig = false;
+        callback.readyCnt = 0;
     }
 
     @Override
@@ -49,6 +54,7 @@ public class StepBeginning extends BaseStep {
         if (y > Gdx.graphics.getHeight() / 2f) {
             callback.nextStep();
         } else {
+            callback.gotConfig = false;
             callback.setStep(StepsDirector.STEP_CONNECTING_CLIENT);
         }
         return true;

@@ -36,7 +36,6 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     private int shadowUX, shadowUY, shadowLX, shadowLY;
     private int shadowRot;
     private int lastAccessId = -1;
-    private int shipsCnt;
     private boolean movingShips = false;
 
     @Nullable
@@ -96,7 +95,6 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     public void start() {
-        shipsCnt = world.getShips().size();
         for (AloneShip ship : childrenShips)
             removeActor(ship);
         childrenShips.clear();
@@ -166,7 +164,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             return;
         clickX = idx;
         clickY = idy;
-        if (!isOpened(idx, idy) && callback.getOpponent(playerId).getWorld().getShips().size() == shipsCnt)
+        if (!isOpened(idx, idy) && callback.getOpponent(playerId).getWorld().getShips().size() >= world.getShips().size())
             callback.cellPressed(playerId, idx, idy);
     }
 
@@ -390,8 +388,20 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     public void setShowShips(boolean showShips) {
         this.showShips = showShips;
-        for (AloneShip ship : childrenShips)
-            ship.setVisible(showShips);
+        if (childrenShips.isEmpty()) {
+            for (World.Ship ship : world.getShips()) {
+                AloneShip child = new AloneShip(this, ship.convert());
+                child.setPlaced(true);
+                child.setVisible(showShips);
+                addActor(child);
+                childrenShips.add(child);
+                child.setBounds(ship.idx * cellSize, ship.idy * cellSize, cellSize * ship.length, cellSize);
+                if (ship.rotation == World.ROTATION_VERTICAL)
+                    child.rotate();
+            }
+        } else
+            for (AloneShip ship : childrenShips)
+                ship.setVisible(showShips);
     }
 
     public boolean rotateButtonPressed() {

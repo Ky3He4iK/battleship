@@ -27,6 +27,7 @@ public class StepConnectingClient extends BaseStep {
     @Override
     public void stepBegin() {
         callback.gotConfig = false;
+        callback.p2Ready = false;
         callback.rightPlayer.removeCommunication();
         callback.config.setGameType(GameConfig.GameType.GLOBAL_INET);
         Communication leftComm = new MultiplayerInet(callback.rightPlayer.getWorld(), callback.leftPlayer.getWorld(), callback.config, callback.name, callback.uuid, false);
@@ -34,6 +35,7 @@ public class StepConnectingClient extends BaseStep {
         callback.leftPlayer.setCommunication(leftComm);
         callback.rightPlayer.removeCommunication();
         callback.isP2 = true;
+        callback.leftPlayer.init();
         callback.rightPlayer.init();
 
         callback.setChildrenEnabled(false, false);
@@ -65,6 +67,7 @@ public class StepConnectingClient extends BaseStep {
 
     @Override
     public int stepEnd() {
+        callback.readyCnt = 1;
         return StepsDirector.STEP_PLACEMENT_R;
     }
 

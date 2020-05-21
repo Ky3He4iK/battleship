@@ -243,6 +243,15 @@ public class World {
         return true;
     }
 
+    @Contract(pure = true)
+    public boolean isEmpty() {
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                if (field[i][j] != 0)
+                    return false;
+        return true;
+    }
+
     public void reset(int width, int height) {
         this.width = width;
         this.height = height;
@@ -279,6 +288,10 @@ public class World {
             return false;
         else if (rotation == ROTATION_VERTICAL && !inBounds(idx, idy + ship.length - 1))
             return false;
+
+        Ship cShip = findShip(ship.code);
+        if (cShip != null && idx == cShip.idx && idy == cShip.idy && rotation == cShip.rotation)
+            return true;
 
         removeShip(ship.code);
         for (int i = -1; i <= ship.length; i++) {
@@ -379,7 +392,7 @@ public class World {
         }
         if (!Arrays.deepEquals(other.field, field)) {
             Gdx.app.debug("World", "fields mismatch");
-//        other.field = field;
+            other.field = field;
         }
         other.width = width;
         other.height = height;

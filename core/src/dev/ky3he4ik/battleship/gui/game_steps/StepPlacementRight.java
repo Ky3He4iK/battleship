@@ -30,7 +30,7 @@ public class StepPlacementRight extends BaseStep {
             callback.shipPlacer.restart(callback.middleGap, callback.config.getShips());
             callback.shipPlacer.start(callback.rightPlayer);
             callback.rightPlayer.setPosition(callback.redundantX + callback.sideWidth, callback.redundantY + callback.footerHeight);
-        } else if (callback.config.getGameType() == GameConfig.GameType.GLOBAL_INET) {
+        } else if (callback.config.getGameType() == GameConfig.GameType.GLOBAL_INET && !callback.isP2) {
             callback.nextStep();
         } else {
             callback.shipPlacer.setVisible(false);
