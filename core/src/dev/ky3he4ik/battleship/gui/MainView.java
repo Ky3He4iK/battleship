@@ -2,6 +2,7 @@ package dev.ky3he4ik.battleship.gui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 
 import dev.ky3he4ik.battleship.MyGdxGame;
@@ -11,11 +12,16 @@ import dev.ky3he4ik.battleship.utils.Constants;
 public class MainView implements Screen {
     private StepsDirector stage;
     private MyGdxGame game;
+    private Music music;
 
     public MainView(final MyGdxGame game, String name, long uuid) {
         this.game = game;
         stage = new StepsDirector(name, uuid);
         Gdx.input.setInputProcessor(stage);
+        music = Gdx.audio.newMusic(Gdx.files.internal("TRG_Banks_-_Grandpas_great_escape.ogg"));
+        music.setLooping(true);
+        music.play();
+        music.setVolume(.4f);
     }
 
     @Override
@@ -30,6 +36,7 @@ public class MainView implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        music.dispose();
     }
 
     @Override
