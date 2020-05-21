@@ -408,16 +408,19 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         if (lastAccessId != -1)
             for (AloneShip child : childrenShips)
                 if (child.id == lastAccessId) {
-                    shadowLX = innerCellX(child.getGlobalX());
-                    shadowLY = innerCellY(child.getGlobalY());
-                    child.rotate();
-                    float[] res = rotate(child, H.getAbsCoord(child), child.getShipRotation());
-                    if (res != null) {
-                        child.setPlaced(true);
-                        child.setPosition(res[0] - getX(), res[1] - getY());
-                        return true;
+                    if (callback.canMove(playerId)) {
+                        shadowLX = innerCellX(child.getGlobalX());
+                        shadowLY = innerCellY(child.getGlobalY());
+                        child.rotate();
+                        float[] res = rotate(child, H.getAbsCoord(child), child.getShipRotation());
+                        if (res != null) {
+                            child.setPlaced(true);
+                            child.setPosition(res[0] - getX(), res[1] - getY());
+                            callback.registerMove(playerId);
+                            return true;
+                        }
+                        child.setPlaced(false);
                     }
-                    child.setPlaced(false);
                     break;
                 }
         return false;
