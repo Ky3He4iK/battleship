@@ -1,5 +1,6 @@
 package dev.ky3he4ik.battleship.gui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -72,25 +73,30 @@ public class ActorWithSprite extends Actor implements EventListener {
         Vector2 tmpCoords = new Vector2();
         event.toCoordinates(event.getListenerActor(), tmpCoords);
 
-        switch (event.getType()) {
-            case touchDown:
-                if (event.getButton() == Input.Buttons.LEFT) {
-                    isPressed = true;
-                    return callback.buttonPressed(buttonId);
-                }
-                return false;
-            case touchUp:
-                if (event.getButton() == Input.Buttons.LEFT) {
-                    isPressed = false;
-                    callback.buttonReleased(buttonId);
+        try {
+            switch (event.getType()) {
+                case touchDown:
+                    if (event.getButton() == Input.Buttons.LEFT) {
+                        isPressed = true;
+                        return callback.buttonPressed(buttonId);
+                    }
+                    return false;
+                case touchUp:
+                    if (event.getButton() == Input.Buttons.LEFT) {
+                        isPressed = false;
+                        callback.buttonReleased(buttonId);
+                        return true;
+                    }
+                    return false;
+                case touchDragged:
+                    callback.buttonMoved(buttonId);
                     return true;
-                }
-                return false;
-            case touchDragged:
-                callback.buttonMoved(buttonId);
-                return true;
-            default:
-                return false;
+                default:
+                    return false;
+            }
+        } catch (NoClassDefFoundError err) {
+            Gdx.app.error("ActorWithSprite", err.getMessage(), err);
+            return callback.buttonPressed(buttonId);
         }
     }
 }

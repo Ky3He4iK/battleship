@@ -22,12 +22,12 @@ public class Socket extends WebSocketClient {
 
     private long uuid;
 
-    Socket(@NotNull MultiplayerInet callback, @NotNull String name, long uuid) throws URISyntaxException {
+    Socket(@NotNull MultiplayerInet callback, @NotNull String name, long uuid) throws URISyntaxException, InterruptedException {
         super(new URI(Constants.HOST_ADDRESS));
         this.callback = callback;
         this.name = name;
         this.uuid = uuid;
-        connect();
+        connectBlocking();
     }
 
     @Override

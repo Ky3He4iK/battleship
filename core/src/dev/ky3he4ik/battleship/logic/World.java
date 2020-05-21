@@ -1,5 +1,6 @@
 package dev.ky3he4ik.battleship.logic;
 
+import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.Contract;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -31,6 +33,7 @@ public class World {
     private ArrayList<Ship> ships;
     private int width;
     private int height;
+
     public World(int width, int height) {
         reset(width, height);
     }
@@ -369,11 +372,17 @@ public class World {
     }
 
     public void duplicate(@NotNull World other) {
-        opened = other.opened;
-        field = other.field;
-        ships = other.ships;
-        width = other.width;
-        height = other.height;
+        other.opened = opened;
+        if (!other.ships.equals(ships)) {
+            other.ships.clear();
+            other.ships.addAll(ships);
+        }
+        if (!Arrays.deepEquals(other.field, field)) {
+            Gdx.app.debug("World", "fields mismatch");
+//        other.field = field;
+        }
+        other.width = width;
+        other.height = height;
     }
 
     @NotNull

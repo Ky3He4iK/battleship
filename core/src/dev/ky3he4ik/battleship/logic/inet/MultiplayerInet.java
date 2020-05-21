@@ -15,12 +15,14 @@ import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 
 public class MultiplayerInet extends Thread implements Communication {
+    private static String TAG = "MultiplayerInet";
+
     @Nullable
-    public String opponent;
+    private String opponent;
     @NotNull
-    private World enemy;
+    private World localField;
     @NotNull
-    private World my;
+    private World inetField;
     @NotNull
     private GameConfig config;
     @Nullable
@@ -42,11 +44,11 @@ public class MultiplayerInet extends Thread implements Communication {
     private Action pending;
     private boolean isReconnect;
 
-    public MultiplayerInet(@NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config, @NotNull String name, long uuid, boolean isHost) {
+    public MultiplayerInet(@NotNull final World localField, @NotNull final World inetField, @NotNull GameConfig config, @NotNull String name, long uuid, boolean isHost) {
         this.name = name;
         this.uuid = uuid;
-        this.enemy = enemy;
-        this.my = my;
+        this.localField = localField;
+        this.inetField = inetField;
         this.config = config;
         this.isHost = isHost;
     }
@@ -94,10 +96,10 @@ public class MultiplayerInet extends Thread implements Communication {
                 client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
             }
         } catch (Exception e) {
-            Gdx.app.error("MultiplayerInet", e.getMessage(), e);
+            Gdx.app.error(TAG, e.getMessage(), e);
         }
         running = true;
-        Gdx.app.error("MultiplayerInet", "isHost: " + isHost);
+        Gdx.app.error(TAG, "isHost: " + isHost);
         opponent = null;
         shipsSent = false;
         try {
@@ -108,31 +110,38 @@ public class MultiplayerInet extends Thread implements Communication {
         Gdx.app.error("MulpiplayerInet", "Start looping: " + running);
         while (running) {
             try {
-                if (isReconnect && client != null) {
-                    client.reconnect();
+                if (client == null)
+                    client = new Socket(this, name, uuid);
+                if (isReconnect) {
+                    client.reconnectBlocking();
                     if (pending != null)
                         client.send(pending);
                     isReconnect = false;
                 }
                 i++;
-                if (i % 10 == 0 && client != null)
+                if (i % 10 == 0) {
                     client.send(Action.ping(name, uuid));
+                    Gdx.app.error(TAG, "ping: " + name);
+                }
 
                 if (i > 100) {
                     i = 0;
                     sync();
                 }
+                if (client == null)
+                    client = new Socket(this, name, uuid);
                 if (i % 50 == 0) {
-                    if (!isHost && opponent == null) {
-                        if (client == null)
-                            client = new Socket(this, name, uuid);
-                        client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
+                    if (opponent == null) {
+                        if (isHost)
+                            onOpen();
+                        else
+                            client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
                     }
-                    Gdx.app.error("MultiplayerInet", "opponent: " + opponent + "; isHost: " + isHost);
+                    Gdx.app.error(TAG, "opponent: " + opponent + "; isHost: " + isHost);
                 }
                 Thread.sleep(100);
             } catch (Exception e) {
-                Gdx.app.error("MultiplayerInet", e.getMessage(), e);
+                Gdx.app.error(TAG, e.getMessage(), e);
             }
         }
 
@@ -141,7 +150,7 @@ public class MultiplayerInet extends Thread implements Communication {
     @Override
     public void enemyTurned(int x, int y) {
         if (client != null) {
-            ArrayList<World.Ship> ships = enemy.getShips();
+            ArrayList<World.Ship> ships = localField.getShips();
             int[][] shipsA = new int[ships.size()][];
             for (int i = 0; i < ships.size(); i++) {
                 World.Ship ship = ships.get(i);
@@ -159,7 +168,7 @@ public class MultiplayerInet extends Thread implements Communication {
     @Override
     public void enemyShipsPlaced() {
         if (client != null) {
-            ArrayList<World.Ship> ships = enemy.getShips();
+            ArrayList<World.Ship> ships = localField.getShips();
             int[][] shipsA = new int[ships.size()][];
             for (int i = 0; i < ships.size(); i++) {
                 World.Ship ship = ships.get(i);
@@ -204,8 +213,10 @@ public class MultiplayerInet extends Thread implements Communication {
                                 break;
                             }
                         World.Ship ship = new World.Ship(shipL, ints[0], shipName, ints[1], ints[2], ints[3]);
-                        my.placeShip(ship, ship.idx, ship.idy, ship.rotation);
+                        inetField.placeShip(ship, ship.idx, ship.idy, ship.rotation);
                     }
+                    if (opponent == null)
+                        opponent = action.getOtherName();
                     callback.shipsPlaced();
                     if (!shipsSent) {
                         shipsSent = true;
@@ -227,7 +238,7 @@ public class MultiplayerInet extends Thread implements Communication {
                     action1.setMsg(passwd);
                     client.send(action1);
                     opponent = m;
-                    Gdx.app.error("MultiplayerInet", "new opponent: " + opponent);
+                    Gdx.app.error(TAG, "new opponent: " + opponent);
                 }
                 break;
             case TURN:
@@ -243,8 +254,10 @@ public class MultiplayerInet extends Thread implements Communication {
                                 break;
                             }
                         World.Ship ship = new World.Ship(shipL, ints[0], shipName, ints[1], ints[2], ints[3]);
-                        my.placeShip(ship, ship.idx, ship.idy, ship.rotation);
+                        inetField.placeShip(ship, ship.idx, ship.idy, ship.rotation);
                     }
+                    if (opponent == null)
+                        opponent = action.getOtherName();
                     callback.turnFinished(action.getPos()[0], action.getPos()[1]);
                 }
                 break;
@@ -252,8 +265,8 @@ public class MultiplayerInet extends Thread implements Communication {
                 if (name.equals(action.getOtherName()))
                     break;
                 opponent = action.getOtherName();
-                Gdx.app.error("MultiplayerInet", "new opponent: " + opponent);
-                if (enemy.getShips().size() == config.getShips().size())
+                Gdx.app.error(TAG, "new opponent: " + opponent);
+                if (localField.getShips().size() == config.getShips().size())
                     enemyShipsPlaced();
                 break;
             case JOIN:
@@ -288,7 +301,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 }
                 isSync = false;
                 World e = new Gson().fromJson(action.getMsg(), World.class);
-                e.duplicate(enemy);
+                e.duplicate(inetField);
                 break;
         }
     }
@@ -298,7 +311,7 @@ public class MultiplayerInet extends Thread implements Communication {
             if (opponent != null) {
                 isSync = true;
                 Action action = new Action(Action.ActionType.SYNC, name, uuid);
-                action.setMsg(my.toJson());
+                action.setMsg(localField.toJson());
                 client.send(action);
             }
         }
