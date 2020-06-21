@@ -8,9 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import dev.ky3he4ik.battleship.platform.FileAPI;
+import dev.ky3he4ik.battleship.platform.PlatformSpecific;
 
-public class FileAPIDesktop implements FileAPI {
+public class PlatformSpecificDesktop implements PlatformSpecific {
     @Nullable
     @Override
     public String read(@NotNull String filename) {
@@ -43,5 +43,11 @@ public class FileAPIDesktop implements FileAPI {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @NotNull
+    @Override
+    public String platformName() {
+        return "Desktop";
     }
 }

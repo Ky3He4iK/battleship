@@ -1,6 +1,7 @@
 package dev.ky3he4ik.battleship;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
@@ -9,13 +10,13 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import dev.ky3he4ik.battleship.platform.FileAPI;
+import dev.ky3he4ik.battleship.platform.PlatformSpecific;
 
-public class FileAPIAndroid implements FileAPI {
+public class PlatformSpecificAndroid implements PlatformSpecific {
     private @NotNull
     Context context;
 
-    FileAPIAndroid(@NotNull Context context) {
+    PlatformSpecificAndroid(@NotNull Context context) {
         this.context = context;
     }
 
@@ -36,5 +37,11 @@ public class FileAPIAndroid implements FileAPI {
             Log.e("FileAPIAndroid", e.getMessage(), e);
         }
         return false;
+    }
+
+    @NotNull
+    @Override
+    public String platformName() {
+        return "Android" + Build.VERSION.SDK_INT;
     }
 }

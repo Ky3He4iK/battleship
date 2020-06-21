@@ -9,9 +9,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.gui.MainView;
+import dev.ky3he4ik.battleship.platform.PlatformSpecific;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class MyGdxGame extends Game {
@@ -19,20 +22,17 @@ public class MyGdxGame extends Game {
     public BitmapFont font;
     public ShapeRenderer shapeRenderer;
     public OrthographicCamera camera;
+    public final @NotNull
+    PlatformSpecific platformSpecific;
 
     private String name;
     private long uuid;
 //    public Viewport viewport;
 
-    public MyGdxGame(String name, long uuid) {
-        //todo: store name and uuid
-        this.name = name;
-        this.uuid = uuid;
-    }
-
-    public MyGdxGame() {
+    public MyGdxGame(@NotNull final PlatformSpecific platformSpecific) {
         this.uuid = new Random().nextLong();
         this.name = "Unknown app#" + uuid;
+        this.platformSpecific = platformSpecific;
     }
 
     @Override

@@ -52,5 +52,7 @@ public class Constants {
     public static final AnimationManager.AnimationInfo LOADING_ANIMATION = AnimationManager.AnimationInfo.byDuration(1, "loading_animation_4_3.png", 4, 3, true);
     public static final String HOST_ADDRESS = DEBUG_MODE ? "ws://localhost:6683" : "ws://ky3he4ik.dev:6683";
     static final String BUTTON_DONE_FRAME = "Button_done_frame.png";
+
+    public static final String FILENAME_DEVICEID = "deviceid.txt";
 //    public static final String HOST_ADDRESS = "ws://localhost:6683";
 }
