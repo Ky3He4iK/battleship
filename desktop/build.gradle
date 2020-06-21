@@ -35,6 +35,10 @@ task dist(type: Jar) {
     with jar
 }
 
+dependencies {
+    implementation 'org.jetbrains:annotations-java5:19.0.0'
+}
+
 
 dist.dependsOn classes
 
