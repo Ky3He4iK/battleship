@@ -14,9 +14,9 @@ public class MainView implements Screen {
     private MyGdxGame game;
     private Music music;
 
-    public MainView(final MyGdxGame game, String name, long uuid) {
+    public MainView(final MyGdxGame game) {
         this.game = game;
-        stage = new StepsDirector(name, uuid);
+        stage = new StepsDirector();
         Gdx.input.setInputProcessor(stage);
         music = Gdx.audio.newMusic(Gdx.files.internal("TRG_Banks_-_Grandpas_great_escape.ogg"));
         music.setLooping(true);

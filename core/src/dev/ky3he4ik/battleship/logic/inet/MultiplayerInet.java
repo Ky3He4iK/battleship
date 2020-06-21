@@ -11,10 +11,13 @@ import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.StaticContent;
 import dev.ky3he4ik.battleship.logic.World;
 
 public class MultiplayerInet extends Thread implements Communication {
     private static String TAG = "MultiplayerInet";
+
+    private StaticContent staticContent = StaticContent.getInstance();
 
     @Nullable
     private String opponent;
@@ -26,9 +29,6 @@ public class MultiplayerInet extends Thread implements Communication {
     private GameConfig config;
     @Nullable
     private Field callback = null;
-    @NotNull
-    private String name;
-    private long uuid;
     private long gameId;
     @NotNull
     private String passwd = "";
@@ -43,9 +43,7 @@ public class MultiplayerInet extends Thread implements Communication {
     private Action pending;
     private boolean isReconnect;
 
-    public MultiplayerInet(@NotNull final World localField, @NotNull final World inetField, @NotNull GameConfig config, @NotNull String name, long uuid, boolean isHost) {
-        this.name = name;
-        this.uuid = uuid;
+    public MultiplayerInet(@NotNull final World localField, @NotNull final World inetField, @NotNull GameConfig config, boolean isHost) {
         this.localField = localField;
         this.inetField = inetField;
         this.config = config;
@@ -70,7 +68,7 @@ public class MultiplayerInet extends Thread implements Communication {
     public void dispose() {
         running = false;
         if (client != null)
-            client.disconnect(name, uuid);
+            client.disconnect(staticContent.deviceId);
     }
 
     @Override
@@ -88,11 +86,11 @@ public class MultiplayerInet extends Thread implements Communication {
     @Override
     public void run() {
         if (client != null)
-            client.disconnect(name, uuid);
+            client.disconnect(staticContent.deviceId);
         try {
-            client = new Socket(this, name, uuid);
+            client = new Socket(this, staticContent.deviceId);
             if (!isHost) {
-                client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
+                client.send(new Action(Action.ActionType.GET_HOSTS, staticContent.deviceId));
             }
         } catch (Exception e) {
             Gdx.app.error(TAG, e.getMessage(), e);
@@ -110,7 +108,7 @@ public class MultiplayerInet extends Thread implements Communication {
         while (running) {
             try {
                 if (client == null)
-                    client = new Socket(this, name, uuid);
+                    client = new Socket(this, staticContent.deviceId);
                 if (isReconnect) {
                     client.reconnectBlocking();
                     if (pending != null)
@@ -119,8 +117,8 @@ public class MultiplayerInet extends Thread implements Communication {
                 }
                 i++;
                 if (i % 10 == 0) {
-                    client.send(Action.ping(name, uuid));
-                    Gdx.app.error(TAG, "ping: " + name);
+                    client.send(Action.ping(staticContent.deviceId));
+                    Gdx.app.error(TAG, "ping: " + staticContent.deviceId);
                 }
 
                 if (i > 100) {
@@ -128,13 +126,13 @@ public class MultiplayerInet extends Thread implements Communication {
                     sync();
                 }
                 if (client == null)
-                    client = new Socket(this, name, uuid);
+                    client = new Socket(this, staticContent.deviceId);
                 if (i % 50 == 0) {
                     if (opponent == null) {
                         if (isHost)
                             onOpen();
                         else
-                            client.send(new Action(Action.ActionType.GET_HOSTS, name, uuid));
+                            client.send(new Action(Action.ActionType.GET_HOSTS, staticContent.deviceId));
                     }
                     Gdx.app.error(TAG, "opponent: " + opponent + "; isHost: " + isHost);
                 }
@@ -155,7 +153,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 World.Ship ship = ships.get(i);
                 shipsA[i] = new int[]{ship.code, ship.idx, ship.idy, ship.rotation};
             }
-            Action action = new Action(Action.ActionType.TURN, name, uuid);
+            Action action = new Action(Action.ActionType.TURN, staticContent.deviceId);
             action.setPos(new int[]{x, y});
             action.setShips(shipsA);
             action.setGameId(gameId);
@@ -173,7 +171,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 World.Ship ship = ships.get(i);
                 shipsA[i] = new int[]{ship.code, ship.idx, ship.idy, ship.rotation};
             }
-            Action action = new Action(Action.ActionType.PLACE_SHIPS, name, uuid);
+            Action action = new Action(Action.ActionType.PLACE_SHIPS, staticContent.deviceId);
             action.setShips(shipsA);
             action.setGameId(gameId);
             action.setOtherName(opponent);
@@ -230,9 +228,9 @@ public class MultiplayerInet extends Thread implements Communication {
                     int p = m.indexOf('\n');
                     if (p != -1)
                         m = m.substring(0, p);
-                    if (m.equals(name))
+                    if (m.equals(staticContent.deviceId))
                         break;
-                    Action action1 = new Action(Action.ActionType.JOIN, name, uuid);
+                    Action action1 = new Action(Action.ActionType.JOIN, staticContent.deviceId);
                     action1.setOtherName(m);
                     action1.setMsg(passwd);
                     client.send(action1);
@@ -261,7 +259,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 }
                 break;
             case CONNECTED:
-                if (name.equals(action.getOtherName()))
+                if (staticContent.deviceId.equals(action.getOtherName()))
                     break;
                 opponent = action.getOtherName();
                 Gdx.app.error(TAG, "new opponent: " + opponent);
@@ -277,7 +275,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 }
                 break;
             case INFO:
-                Action action1 = new Action(Action.ActionType.JOIN, name, uuid);
+                Action action1 = new Action(Action.ActionType.JOIN, staticContent.deviceId);
                 action1.setOtherName(action.getOtherName());
                 action1.setMsg(passwd);
                 client.send(action1);
@@ -314,7 +312,7 @@ public class MultiplayerInet extends Thread implements Communication {
         if (client != null) {
             if (opponent != null) {
                 isSync = true;
-                Action action = new Action(Action.ActionType.SYNC, name, uuid);
+                Action action = new Action(Action.ActionType.SYNC, staticContent.deviceId);
                 action.setMsg(localField.toJson());
                 client.send(action);
             }
@@ -323,7 +321,7 @@ public class MultiplayerInet extends Thread implements Communication {
 
     void onOpen() {
         if (isHost && client != null) {
-            Action action = new Action(Action.ActionType.HOST, name, uuid);
+            Action action = new Action(Action.ActionType.HOST, staticContent.deviceId);
             action.setMsg(passwd);
             action.setConfig(config.toJSON());
             client.send(action);

@@ -22,6 +22,7 @@ import dev.ky3he4ik.battleship.gui.RelayTouch;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.gui.placing.ShipPlacer;
 import dev.ky3he4ik.battleship.logic.GameConfig;
+import dev.ky3he4ik.battleship.logic.StaticContent;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
@@ -38,6 +39,10 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     final static int STEP_CONNECTING_CLIENT = 7;
 
     private static final int ROTATE_BTN_ID = 1;
+
+    public @NotNull
+    StaticContent staticContent = StaticContent.getInstance();
+
     public boolean gotConfig = false;
     int turn = 0;
     float cellSize;
@@ -61,8 +66,6 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     @NotNull
     Field rightPlayer;
     @NotNull
-    GameConfig config;
-    @NotNull
     ShipPlacer shipPlacer;
     @NotNull
     RelayTouch touchListener;
@@ -74,9 +77,6 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     Label stepLabel;
     boolean p1Ready;
     boolean p2Ready;
-    @NotNull
-    String name;
-    long uuid;
     boolean isP2 = false;
     @NotNull
     private ArrayList<BaseStep> steps;
@@ -86,15 +86,10 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     private int movedCurrentTurn;
     private int shootedCurrentTurn;
 
-    public StepsDirector(@NotNull String name, long uuid) {
-        this.name = name;
-        this.uuid = uuid;
-
+    public StepsDirector() {
         font = new BitmapFont();
         font.getData().setScale(Gdx.graphics.getHeight() / 400f);
         font.setColor(Color.BLACK);
-
-        config = GameConfig.getSampleMoving();
 
         stepLabel = new Label("", new Label.LabelStyle(font, font.getColor()));
 
@@ -111,22 +106,22 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         manager = SpriteManager.getInstance();
         calcCellSize();
 
-        World leftWorld = new World(config.getWidth(), config.getHeight());
-        World rightWorld = new World(config.getWidth(), config.getHeight());
+        World leftWorld = new World(staticContent.config.getWidth(), staticContent.config.getHeight());
+        World rightWorld = new World(staticContent.config.getWidth(), staticContent.config.getHeight());
 
         leftPlayer = new Field(leftWorld, cellSize, null, TURN_LEFT, this);
-        leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         leftPlayer.setVisible(false);
         addActor(leftPlayer);
 
         rightPlayer = new Field(rightWorld, cellSize, null, TURN_RIGHT, this);
-        rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth(), redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         rightPlayer.setVisible(false);
         addActor(rightPlayer);
 
-        shipPlacer = new ShipPlacer(this, config.getShips(), cellSize);
+        shipPlacer = new ShipPlacer(this, staticContent.config.getShips(), cellSize);
         shipPlacer.setVisible(false);
-        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth(), redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         addActor(shipPlacer);
 
         AnimationManager.getInstance().initAnimation(Constants.BLOW_ANIMATION);
@@ -244,17 +239,17 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         headerHeight = getHeight() * Constants.HEADER_PART;
         footerHeight = getHeight() * Constants.FOOTER_PART;
         float w = getWidth() - middleGap - sideWidth * 2, h = getHeight() - headerHeight - footerHeight;
-        cellSize = Math.min(w / (config.getWidth() * 2), h / config.getHeight());
-        redundantX = (w - cellSize * (config.getWidth() * 2)) / 2;
-        redundantY = (h - cellSize * config.getHeight()) / 2;
+        cellSize = Math.min(w / (staticContent.config.getWidth() * 2), h / staticContent.config.getHeight());
+        redundantX = (w - cellSize * (staticContent.config.getWidth() * 2)) / 2;
+        redundantY = (h - cellSize * staticContent.config.getHeight()) / 2;
         if (redundantY + footerHeight < cellSize || redundantY + headerHeight < cellSize) {
             w = getWidth() - middleGap - sideWidth * 2;
             h = getHeight();
-            cellSize = Math.min(w / (config.getWidth() * 2), h / (config.getHeight() + 2));
+            cellSize = Math.min(w / (staticContent.config.getWidth() * 2), h / (staticContent.config.getHeight() + 2));
             redundantY = 0;
             footerHeight = cellSize;
             headerHeight = cellSize;
-            redundantX = (w - cellSize * (config.getWidth() * 2)) / 2;
+            redundantX = (w - cellSize * (staticContent.config.getWidth() * 2)) / 2;
         }
         Gdx.app.debug("StepsDirector", "cellSize: " + cellSize);
     }
@@ -267,17 +262,17 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     void resize() {
         calcCellSize();
 
-        leftPlayer.setBounds(sideWidth + redundantX, redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+        leftPlayer.setBounds(sideWidth + redundantX, redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         rightPlayer.setY(redundantY + footerHeight);
         if (currentStep == STEP_PLACEMENT_R)
             rightPlayer.setX(sideWidth + redundantX);
         else
-            rightPlayer.setX(sideWidth + redundantX + middleGap + cellSize * config.getWidth());
-        rightPlayer.setSize(cellSize * config.getWidth(), cellSize * config.getHeight());
-        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * config.getWidth(), redundantY + footerHeight, cellSize * config.getWidth(), cellSize * config.getHeight());
+            rightPlayer.setX(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth());
+        rightPlayer.setSize(cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
+        shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth(), redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         shipPlacer.setCellSize(cellSize);
 
-        for (GameConfig.Ship ship : config.getShips()) {
+        for (GameConfig.Ship ship : staticContent.config.getShips()) {
             Sprite sprite = manager.getSprite(ship.name);
             sprite.setSize(cellSize, ship.length * cellSize);
 //            sprite.setOrigin(cellSize / 2, cellSize / 2);
@@ -329,9 +324,9 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     public void cellPressed(int playerId, int idx, int idy) {
 
         if (canShoot(1 - playerId) && turn != playerId)
-            if (config.getGameType() == GameConfig.GameType.GLOBAL_INET && ((playerId == TURN_LEFT) == isP2)
-                    || (playerId == TURN_RIGHT && config.getGameType() != GameConfig.GameType.GLOBAL_INET)
-                    || config.getGameType() == GameConfig.GameType.LOCAL_2P)
+            if (staticContent.config.getGameType() == GameConfig.GameType.GLOBAL_INET && ((playerId == TURN_LEFT) == isP2)
+                    || (playerId == TURN_RIGHT && staticContent.config.getGameType() != GameConfig.GameType.GLOBAL_INET)
+                    || staticContent.config.getGameType() == GameConfig.GameType.LOCAL_2P)
                 turnFinished(getOpponent(playerId).getPlayerId(), idx, idy);
     }
 
@@ -431,15 +426,15 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     @NotNull
     public GameConfig getConfig() {
-        return config;
+        return staticContent.config;
     }
 
     boolean canShoot(int playerId) {
-        return turn == playerId && shootedCurrentTurn < config.getShotsPerTurn();
+        return turn == playerId && shootedCurrentTurn < staticContent.config.getShotsPerTurn();
     }
 
     public boolean canMove(int playerId) {
-        return turn == playerId && config.isMovingEnabled() && (movedCurrentTurn < config.getMovingPerTurn() || config.getMovingPerTurn() == -1);
+        return turn == playerId && staticContent.config.isMovingEnabled() && (movedCurrentTurn < staticContent.config.getMovingPerTurn() || staticContent.config.getMovingPerTurn() == -1);
     }
 
     public void registerMove(int playerId) {
@@ -448,9 +443,9 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     }
 
     void registerShoot(int playerId, boolean itWasShip) {
-        if (config.isAdditionalShots() && canShoot(playerId) && !itWasShip)
+        if (staticContent.config.isAdditionalShots() && canShoot(playerId) && !itWasShip)
             shootedCurrentTurn++;
-        else if (!config.isAdditionalShots() && canShoot(playerId))
+        else if (!staticContent.config.isAdditionalShots() && canShoot(playerId))
             shootedCurrentTurn++;
     }
 }

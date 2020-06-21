@@ -28,7 +28,7 @@ public class StepGame extends BaseStep {
 
     @Override
     public void stepBegin() {
-        callback.rightPlayer.setPosition(callback.sideWidth + callback.middleGap + callback.redundantX + callback.cellSize * callback.config.getWidth(), callback.redundantY + callback.footerHeight);
+        callback.rightPlayer.setPosition(callback.sideWidth + callback.middleGap + callback.redundantX + callback.cellSize * callback.staticContent.config.getWidth(), callback.redundantY + callback.footerHeight);
         callback.setChildrenEnabled(true, true);
         callback.leftPlayer.start();
         callback.rightPlayer.start();
@@ -136,12 +136,12 @@ public class StepGame extends BaseStep {
             else
                 callback.nextTurn();
         } else if (playerId == StepsDirector.TURN_RIGHT && !callback.aiReadyR
-                && (callback.config.getGameType() == GameConfig.GameType.AI || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI)) {
+                && (callback.staticContent.config.getGameType() == GameConfig.GameType.AI || callback.staticContent.config.getGameType() == GameConfig.GameType.AI_VS_AI)) {
             Gdx.app.debug("StepGame", "set right turn");
             callback.aiReadyR = true;
             callback.aiXR = i;
             callback.aiYR = j;
-        } else if (playerId == StepsDirector.TURN_LEFT && callback.config.getGameType() == GameConfig.GameType.AI_VS_AI) {
+        } else if (playerId == StepsDirector.TURN_LEFT && callback.staticContent.config.getGameType() == GameConfig.GameType.AI_VS_AI) {
             callback.aiReadyL = true;
             callback.aiXL = i;
             callback.aiYL = j;
@@ -166,11 +166,11 @@ public class StepGame extends BaseStep {
         super.resize();
         float shift = callback.middleGap * 0.1f;
         float arrowSize = callback.middleGap - shift * 2;
-        arrowSprite.setBounds(callback.redundantX + callback.sideWidth + callback.config.getWidth() * callback.cellSize + shift,
-                callback.redundantY + callback.footerHeight + callback.config.getHeight() * callback.cellSize / 2 - arrowSize / 2,
+        arrowSprite.setBounds(callback.redundantX + callback.sideWidth + callback.staticContent.config.getWidth() * callback.cellSize + shift,
+                callback.redundantY + callback.footerHeight + callback.staticContent.config.getHeight() * callback.cellSize / 2 - arrowSize / 2,
                 arrowSize, arrowSize);
-        callback.rotateBtn.setBounds(callback.redundantX + callback.sideWidth + callback.config.getWidth() * callback.cellSize + callback.middleGap / 4,
-                callback.redundantY + callback.footerHeight + callback.config.getHeight() * callback.cellSize / 2 - arrowSize / 2 - callback.middleGap / 2,
+        callback.rotateBtn.setBounds(callback.redundantX + callback.sideWidth + callback.staticContent.config.getWidth() * callback.cellSize + callback.middleGap / 4,
+                callback.redundantY + callback.footerHeight + callback.staticContent.config.getHeight() * callback.cellSize / 2 - arrowSize / 2 - callback.middleGap / 2,
                 callback.middleGap / 2, callback.middleGap / 2);
     }
 

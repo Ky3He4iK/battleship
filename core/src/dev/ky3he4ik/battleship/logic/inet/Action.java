@@ -26,9 +26,8 @@ public class Action {
     private String msg;
     private long gameId;
     private int code;
-    private long uuid;
 
-    public Action(@NotNull ActionType actionType, @Nullable String config, int playerId, @NotNull String name, @Nullable int[] pos, @Nullable int[][] ships, @Nullable String otherName, @Nullable String msg, long gameId, int code, long uuid) {
+    public Action(@NotNull ActionType actionType, @Nullable String config, int playerId, @NotNull String name, @Nullable int[] pos, @Nullable int[][] ships, @Nullable String otherName, @Nullable String msg, long gameId, int code) {
         this.actionType = actionType;
         this.config = config;
         this.playerId = playerId;
@@ -39,7 +38,6 @@ public class Action {
         this.msg = msg;
         this.gameId = gameId;
         this.code = code;
-        this.uuid = uuid;
     }
 
     public Action(@NotNull Action action) {
@@ -53,10 +51,9 @@ public class Action {
         this.msg = action.msg;
         this.gameId = action.gameId;
         this.code = action.code;
-        this.uuid = action.uuid;
     }
 
-    Action(@NotNull ActionType actionType, @NotNull String name, long uuid) {
+    Action(@NotNull ActionType actionType, @NotNull String name) {
         this.actionType = actionType;
         this.config = null;
         this.playerId = 0;
@@ -67,7 +64,6 @@ public class Action {
         this.msg = null;
         this.gameId = 0;
         this.code = 0;
-        this.uuid = uuid;
     }
 
     static @Nullable
@@ -77,17 +73,17 @@ public class Action {
 
     public static @NotNull
     Action ok() {
-        return new Action(ActionType.OK, "", 0);
+        return new Action(ActionType.OK, "");
     }
 
     public static @NotNull
     Action no() {
-        return new Action(ActionType.NO, "", 0);
+        return new Action(ActionType.NO, "");
     }
 
     static @NotNull
-    Action ping(@NotNull String name, long uuid) {
-        return new Action(ActionType.PING, name, uuid);
+    Action ping(@NotNull String name) {
+        return new Action(ActionType.PING, name);
     }
 
     @Override
@@ -100,7 +96,6 @@ public class Action {
         if (playerId != action.playerId) return false;
         if (gameId != action.gameId) return false;
         if (code != action.code) return false;
-        if (uuid != action.uuid) return false;
         if (actionType != action.actionType) return false;
         if (config != null ? !config.equals(action.config) : action.config != null) return false;
         if (!name.equals(action.name)) return false;
@@ -123,7 +118,6 @@ public class Action {
         result = 31 * result + (msg != null ? msg.hashCode() : 0);
         result = 31 * result + (int) (gameId ^ (gameId >>> 32));
         result = 31 * result + code;
-        result = 31 * result + (int) (uuid ^ (uuid >>> 32));
         return result;
     }
 
@@ -214,21 +208,13 @@ public class Action {
         this.code = code;
     }
 
-    public long getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(long uuid) {
-        this.uuid = uuid;
-    }
-
     @NotNull
     String toJson() {
         return new Gson().toJson(this);
     }
 
 
-    enum ActionType { // name, uuid for all
+    enum ActionType { // name for all
         CONNECT, // < -
         // > if success
 

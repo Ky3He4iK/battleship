@@ -27,11 +27,8 @@ public class MyGdxGame extends Game {
 
     private String name;
     private long uuid;
-//    public Viewport viewport;
 
     public MyGdxGame(@NotNull final PlatformSpecific platformSpecific) {
-        this.uuid = new Random().nextLong();
-        this.name = "Unknown app#" + uuid;
         this.platformSpecific = platformSpecific;
     }
 
@@ -53,7 +50,7 @@ public class MyGdxGame extends Game {
             Gdx.app.setLogLevel(Application.LOG_DEBUG);
         else
             Gdx.app.setLogLevel(Application.LOG_ERROR);
-        setScreen(new MainView(this, name, uuid));
+        setScreen(new MainView(this));
     }
 
     @Override

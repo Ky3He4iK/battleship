@@ -20,19 +20,16 @@ public class Socket extends WebSocketClient {
     @NotNull
     private String name;
 
-    private long uuid;
-
-    Socket(@NotNull MultiplayerInet callback, @NotNull String name, long uuid) throws URISyntaxException, InterruptedException {
+    Socket(@NotNull MultiplayerInet callback, @NotNull String name) throws URISyntaxException, InterruptedException {
         super(new URI(Constants.HOST_ADDRESS));
         this.callback = callback;
         this.name = name;
-        this.uuid = uuid;
         connectBlocking();
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        send(new Action(Action.ActionType.CONNECT, name, uuid));
+        send(new Action(Action.ActionType.CONNECT, name));
         callback.onOpen();
     }
 
@@ -72,8 +69,8 @@ public class Socket extends WebSocketClient {
             }
     }
 
-    void disconnect(@NotNull String name, long uuid) {
-        send(new Action(Action.ActionType.DISCONNECT, name, uuid));
+    void disconnect(@NotNull String name) {
+        send(new Action(Action.ActionType.DISCONNECT, name));
         close();
     }
 

@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
-import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.logic.inet.MultiplayerInet;
 import dev.ky3he4ik.battleship.utils.Constants;
 
@@ -31,8 +30,8 @@ public class StepConnectingClient extends BaseStep {
         callback.p1Ready = false;
         callback.p2Ready = false;
         callback.rightPlayer.removeCommunication();
-        callback.config.setGameType(GameConfig.GameType.GLOBAL_INET);
-        Communication leftComm = new MultiplayerInet(callback.rightPlayer.getWorld(), callback.leftPlayer.getWorld(), callback.config, callback.name, callback.uuid, false);
+        callback.staticContent.config.setGameType(GameConfig.GameType.GLOBAL_INET);
+        Communication leftComm = new MultiplayerInet(callback.rightPlayer.getWorld(), callback.leftPlayer.getWorld(), callback.staticContent.config, false);
         leftComm.init();
         callback.leftPlayer.setCommunication(leftComm);
         callback.rightPlayer.removeCommunication();
@@ -70,8 +69,8 @@ public class StepConnectingClient extends BaseStep {
     @Override
     public int stepEnd() {
         callback.resize();
-        callback.leftPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
-        callback.rightPlayer.getWorld().reset(callback.config.getWidth(), callback.config.getHeight());
+        callback.leftPlayer.getWorld().reset(callback.staticContent.config.getWidth(), callback.staticContent.config.getHeight());
+        callback.rightPlayer.getWorld().reset(callback.staticContent.config.getWidth(), callback.staticContent.config.getHeight());
         callback.leftPlayer.init();
         callback.rightPlayer.init();
         return StepsDirector.STEP_PLACEMENT_R;

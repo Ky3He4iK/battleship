@@ -24,13 +24,13 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public void stepBegin() {
-        boolean place = callback.config.getGameType() == GameConfig.GameType.LOCAL_2P || (callback.config.getGameType() == GameConfig.GameType.GLOBAL_INET && callback.isP2);
+        boolean place = callback.staticContent.config.getGameType() == GameConfig.GameType.LOCAL_2P || (callback.staticContent.config.getGameType() == GameConfig.GameType.GLOBAL_INET && callback.isP2);
         if (place) {
             callback.setChildrenEnabled(false, false, true, false, true, true);
-            callback.shipPlacer.restart(callback.middleGap, callback.config.getShips());
+            callback.shipPlacer.restart(callback.middleGap, callback.staticContent.config.getShips());
             callback.shipPlacer.start(callback.rightPlayer);
             callback.rightPlayer.setPosition(callback.redundantX + callback.sideWidth, callback.redundantY + callback.footerHeight);
-        } else if (callback.config.getGameType() == GameConfig.GameType.GLOBAL_INET && !callback.isP2) {
+        } else if (callback.staticContent.config.getGameType() == GameConfig.GameType.GLOBAL_INET && !callback.isP2) {
             callback.nextStep();
         } else {
             callback.shipPlacer.setVisible(false);
@@ -46,7 +46,7 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public void draw() {
-        if (callback.config.getGameType() != GameConfig.GameType.LOCAL_2P && callback.config.getGameType() != GameConfig.GameType.GLOBAL_INET) {
+        if (callback.staticContent.config.getGameType() != GameConfig.GameType.LOCAL_2P && callback.staticContent.config.getGameType() != GameConfig.GameType.GLOBAL_INET) {
             cTime += Gdx.graphics.getDeltaTime();
             Batch batch = getBatch();
             batch.begin();
@@ -58,7 +58,7 @@ public class StepPlacementRight extends BaseStep {
 
     @Override
     public int stepEnd() {
-        callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.config.getGameType() == GameConfig.GameType.AI_VS_AI || callback.isP2);
+        callback.rightPlayer.setShowShips(Constants.DEBUG_MODE || callback.staticContent.config.getGameType() == GameConfig.GameType.AI_VS_AI || callback.isP2);
         return StepsDirector.STEP_CONNECTING;
     }
 

@@ -45,11 +45,11 @@ public class StepConfigure extends BaseStep {
 
     @Override
     public int stepEnd() {
-        configGroup.finish().duplicate(callback.config);
+        configGroup.finish().duplicate(callback.staticContent.config);
 //        callback.calcCellSize();
         callback.resize();
 
-        GameConfig config = callback.config;
+        GameConfig config = callback.staticContent.config;
 
         World leftWorld = callback.leftPlayer.getWorld();
         leftWorld.reset(config.getWidth(), config.getHeight());
@@ -82,7 +82,7 @@ public class StepConfigure extends BaseStep {
             rightComm.init();
             callback.rightPlayer.setCommunication(rightComm);
         } else if (config.getGameType() == GameConfig.GameType.GLOBAL_INET) {
-            Communication rightComm = new MultiplayerInet(leftWorld, rightWorld, config, callback.name, callback.uuid, true);
+            Communication rightComm = new MultiplayerInet(leftWorld, rightWorld, config, true);
             rightComm.init();
             callback.rightPlayer.setCommunication(rightComm);
         }
@@ -100,7 +100,7 @@ public class StepConfigure extends BaseStep {
 
     @NotNull
     public GameConfig getConfig() {
-        return callback.config;
+        return callback.staticContent.config;
     }
 
     @NotNull
