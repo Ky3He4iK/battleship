@@ -332,4 +332,10 @@ public class GameConfig {
             return name + Constants.ROTATED_SUFFIX;
         }
     }
+
+    @Nullable
+    public static GameConfig load() {
+        //todo
+        return null;
+    }
 }
