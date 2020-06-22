@@ -21,7 +21,7 @@ public class AIUnfair extends AIDummy {
         else {
             for (int i = 0; i < enemy.getWidth(); i++)
                 for (int j = 0; j < enemy.getHeight(); j++)
-                    if (!enemy.isOpened(i, j) && enemy.getState(i, j) == World.EMPTY_CELL) {
+                    if (!enemy.isOpened(i, j) && enemy.isEmptyCell(i, j)) {
                         turnX = i;
                         turnY = j;
                         rememberCell();

@@ -75,7 +75,6 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             cellSize = callback.getCellSize();
             for (Cell[] cells1 : cells)
                 for (Cell cell : cells1) {
-                    cell.dispose();
                     removeActor(cell);
                 }
 
@@ -144,8 +143,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             }
     }
 
-    int getState(int idx, int idy) {
-        return world.getState(idx, idy);
+    boolean isEmptyCell(int idx, int idy) {
+        return world.isEmptyCell(idx, idy);
     }
 
     public boolean isOpened(int idx, int idy) {
@@ -187,7 +186,6 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
             SpriteManager.getInstance().dispose(ship.name);
         for (Cell[] cells1 : cells) {
             for (Cell cell : cells1) {
-                cell.dispose();
                 cell.clearActions();
                 cell.clearListeners();
                 removeActor(cell);
@@ -200,8 +198,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public boolean open(int idx, int idy) {
         ArrayList<int[]> openedCells = world.open(idx, idy);
         for (int[] pair : openedCells)
-            cells[pair[0]][pair[1]].blow(world.getState(pair[0], pair[1]) == World.EMPTY_CELL);
-        return world.getState(idx, idy) != World.EMPTY_CELL;
+            cells[pair[0]][pair[1]].blow(world.isEmptyCell(pair[0], pair[1]));
+        return !world.isEmptyCell(idx, idy);
     }
 
     public void setTurn() {

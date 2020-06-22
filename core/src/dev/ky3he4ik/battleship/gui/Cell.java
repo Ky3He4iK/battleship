@@ -12,14 +12,14 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 import org.jetbrains.annotations.Nullable;
 
-import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
 public class Cell extends Actor {
     private final Field field;
     private Sprite sprite;
-    private int idx, idy, state = -1;
+    private int idx, idy;
     private boolean isOpened = false;
+    private boolean isEmpty = false;
 
     @Nullable
     private Animation<TextureRegion> animation = null;
@@ -35,7 +35,7 @@ public class Cell extends Actor {
         manager.initSprite(Constants.CELL_DAMAGED_IMG);
         manager.initSprite(Constants.CELL_CLOSED_IMG);
 
-        updateState(field.getState(idx, idy), field.isOpened(idx, idy));
+        updateState(field.isEmptyCell(idx, idy), field.isOpened(idx, idy));
 
         addListener(new InputListener() {
             @Override
@@ -105,66 +105,44 @@ public class Cell extends Actor {
         });
     }
 
-    public int getIdx() {
-        return idx;
-    }
-
-    public int getIdy() {
-        return idy;
-    }
-
-    public int getState() {
-        return state;
-    }
-
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        updateState(field.getState(idx, idy), field.isOpened(idx, idy));
+        updateState(field.isEmptyCell(idx, idy), field.isOpened(idx, idy));
         int[] click = field.getClick();
         if (click[0] == 1 && (click[1] == idx || click[2] == idy)) {
-            if (click[1] == idx && click[2] == idy) {
+            if (click[1] == idx && click[2] == idy)
                 batch.setColor(1, 0.5f, 0.5f, 1);
-            } else {
+            else
                 batch.setColor(0.5f, 0.5f, 0.7f, 1);
-            }
         } else if (field.getShadow() && field.getShadowLX() <= idx && idx <= field.getShadowUX()
                 && field.getShadowLY() <= idy && idy <= field.getShadowUY())
             batch.setColor(0.3f, 0.3f, 0.3f, 1);
         else
             batch.setColor(1, 1, 1, 1);
-        batch.draw(sprite, getX(), getY(), getOriginX(), getOriginY(),
-                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        batch.draw(sprite, getX(), getY(), getWidth(), getHeight());
         if (animation != null) {
             animationPassed += Gdx.graphics.getDeltaTime();
             if (animation.isAnimationFinished(animationPassed))
                 animation = null;
-            else {
-                batch.draw(animation.getKeyFrame(animationPassed), getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
-            }
+            else
+                batch.draw(animation.getKeyFrame(animationPassed), getX(), getY(), getWidth(), getHeight());
         }
 
         batch.setColor(1, 1, 1, 1);
     }
 
-    private void updateState(int state, boolean isOpened) {
-        if (state == this.state && isOpened == this.isOpened)
+    private void updateState(boolean isEmpty, boolean isOpened) {
+        if (isEmpty == this.isEmpty && isOpened == this.isOpened)
             return;
-        this.state = state;
+        this.isEmpty = isEmpty;
         this.isOpened = isOpened;
-        if (isOpened)
-            if (state == World.EMPTY_CELL)
+        if (isOpened) {
+            if (isEmpty)
                 sprite = SpriteManager.getInstance().getSprite(Constants.CELL_EMPTY_IMG);
             else
                 sprite = SpriteManager.getInstance().getSprite(Constants.CELL_DAMAGED_IMG);
-        else
+        } else
             sprite = SpriteManager.getInstance().getSprite(Constants.CELL_CLOSED_IMG);
-    }
-
-    public void dispose() {
-        SpriteManager manager = SpriteManager.getInstance();
-        manager.dispose(Constants.CELL_EMPTY_IMG);
-        manager.dispose(Constants.CELL_DAMAGED_IMG);
-        manager.dispose(Constants.CELL_CLOSED_IMG);
     }
 
     void blow(boolean isWater) {
