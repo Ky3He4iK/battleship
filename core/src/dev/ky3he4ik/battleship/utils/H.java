@@ -16,6 +16,7 @@ import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.utils.vectors.Vec2d;
 
 /**
  * Class with several useful functions
@@ -86,11 +87,11 @@ public final class H {
     }
 
     @NotNull
-    public static float[] getAbsCoord(@Nullable Actor actor) {
-        float[] coord = new float[]{0, 0};
+    public static dev.ky3he4ik.battleship.utils.vectors.Vec2d getAbsCoord(@Nullable Actor actor) {
+        dev.ky3he4ik.battleship.utils.vectors.Vec2d coord = new Vec2d(0, 0);
         while (actor != null) {
-            coord[0] += actor.getX();
-            coord[1] += actor.getY();
+            coord.x += actor.getX();
+            coord.y += actor.getY();
             actor = actor.getParent();
         }
         return coord;

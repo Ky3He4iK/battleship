@@ -18,6 +18,7 @@ import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
+import dev.ky3he4ik.battleship.utils.vectors.Vec2d;
 
 public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpriteListener {
     private final int BUTTON_ROTATE;
@@ -112,7 +113,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     }
 
     @Override
-    public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
+    public boolean shipPressed(@NotNull Vec2d pos, @NotNull AloneShip ship) {
         lastAccessId = ship.id - 1;
         if (field != null)
             field.removeShip(ship.id);
@@ -120,8 +121,8 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     }
 
     @Override
-    public void shipReleased(@NotNull float[] pos, @NotNull AloneShip ship) {
-        Gdx.app.debug("ShipPlacer", "Release at " + pos[0] + "x" + pos[1]);
+    public void shipReleased(@NotNull Vec2d pos, @NotNull AloneShip ship) {
+        Gdx.app.debug("ShipPlacer", "Release at " + pos.x + "x" + pos.y);
         lastAccessId = ship.id - 1;
         if (availableShips.get(ship.id - 1).id != ship.id) {
             Gdx.app.error("ShipPlacer", "Error: ship with id " + availableShips.get(ship.id - 1).id + " at pos " + ship.id);
@@ -131,23 +132,23 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
             }
         }
         if (field != null) {
-            float[] newPos = field.unHighlight(availableShips.get(ship.id - 1), pos[0], pos[1], ship.getShipRotation());
-            float[] curPos = H.getAbsCoord(this);
+            Vec2d newPos = field.unHighlight(availableShips.get(ship.id - 1), pos.x, pos.y, ship.getShipRotation());
+            Vec2d curPos = H.getAbsCoord(this);
             if (newPos != null) {
                 ship.setPlaced(true);
                 Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
-                ship.setPosition(newPos[0] - curPos[0], newPos[1] - curPos[1]);
+                ship.setPosition(newPos.x - curPos.x, newPos.y - curPos.y);
             } else
                 ship.setPlaced(false);
         }
     }
 
     @Override
-    public void shipMoved(@NotNull float[] pos, @NotNull AloneShip ship) {
-        Gdx.app.debug("ShipPlacer", "Hover at " + pos[1] + "x" + pos[1]);
+    public void shipMoved(@NotNull Vec2d pos, @NotNull AloneShip ship) {
+        Gdx.app.debug("ShipPlacer", "Hover at " + pos.x + "x" + pos.y);
         lastAccessId = ship.id - 1;
         if (field != null)
-            field.highlight(pos[0], pos[1], ship.getShipRotation(), ship.length);
+            field.highlight(pos.x, pos.y, ship.getShipRotation(), ship.length);
     }
 
     @Override
@@ -169,14 +170,13 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
             ships.get(lastAccessId).rotate();
             if (field != null) {
                 AloneShip ship = ships.get(lastAccessId);
-                float[] res = field.rotate(ship, H.getAbsCoord(ship), ship.getShipRotation());
+                Vec2d res = field.rotate(ship, H.getAbsCoord(ship), ship.getShipRotation());
                 if (res == null)
                     ship.setPlaced(false);
                 else {
                     ship.setPlaced(true);
-                    if (Math.abs(res[0] + 99999) > .1f) {
-                        ship.setPosition(res[0] - getX(), res[1] - getY());
-                    }
+                    if (Math.abs(res.x + 99999) > .1f)
+                        ship.setPosition(res.x - getX(), res.y - getY());
                 }
             }
             return true;

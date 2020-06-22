@@ -17,6 +17,7 @@ import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.H;
+import dev.ky3he4ik.battleship.utils.vectors.Vec2d;
 
 public class AloneShip extends Actor implements EventListener {
     @NotNull
@@ -91,11 +92,11 @@ public class AloneShip extends Actor implements EventListener {
                 return false;
             case touchDragged:
                 if (canBeMoved && !dead) {
-                    float[] pos = H.getAbsCoord(this);
+                    Vec2d pos = H.getAbsCoord(this);
                     float mouseX = Math.max(Math.min(Gdx.input.getX(), Gdx.graphics.getWidth()), 0);
                     float mouseY = Math.max(Math.min(Gdx.graphics.getHeight() - Gdx.input.getY(), Gdx.graphics.getHeight()), 0);
-                    setPosition(mouseX - pos[0] + getX() - getWidth() / 2,
-                            mouseY - pos[1] + getY() - getHeight() / 2);
+                    setPosition(mouseX - pos.x + getX() - getWidth() / 2,
+                            mouseY - pos.y + getY() - getHeight() / 2);
                     callback.shipMoved(H.getAbsCoord(this), this);
                 }
                 return true;

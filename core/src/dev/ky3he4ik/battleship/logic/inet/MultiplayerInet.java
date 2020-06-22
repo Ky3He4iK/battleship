@@ -13,6 +13,7 @@ import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.StaticContent;
 import dev.ky3he4ik.battleship.logic.World;
+import dev.ky3he4ik.battleship.utils.vectors.Vec2dInt;
 
 public class MultiplayerInet extends Thread implements Communication {
     private static String TAG = "MultiplayerInet";
@@ -154,7 +155,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 shipsA[i] = new int[]{ship.code, ship.idx, ship.idy, ship.rotation};
             }
             Action action = new Action(Action.ActionType.TURN, staticContent.deviceId);
-            action.setPos(new int[]{x, y});
+            action.setPos(new Vec2dInt(x, y));
             action.setShips(shipsA);
             action.setGameId(gameId);
             action.setOtherName(opponent);
@@ -255,7 +256,7 @@ public class MultiplayerInet extends Thread implements Communication {
                     }
                     if (opponent == null)
                         opponent = action.getOtherName();
-                    callback.turnFinished(action.getPos()[0], action.getPos()[1]);
+                    callback.turnFinished(action.getPos().x, action.getPos().y);
                 }
                 break;
             case CONNECTED:

@@ -11,6 +11,7 @@ import java.util.BitSet;
 
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
+import dev.ky3he4ik.battleship.utils.vectors.Vec2dInt;
 
 public class World {
     public static class Ship {
@@ -97,12 +98,12 @@ public class World {
      * @return array of opened cells
      */
     @NotNull
-    public ArrayList<int[]> open(int idx, int idy) {
-        ArrayList<int[]> openedCells = new ArrayList<>();
+    public ArrayList<Vec2dInt> open(int idx, int idy) {
+        ArrayList<Vec2dInt> openedCells = new ArrayList<>();
         if (!inBounds(idx, idy) || opened[idx].get(idy))
             return openedCells;
         opened[idx].set(idy);
-        openedCells.add(new int[]{idx, idy});
+        openedCells.add(new Vec2dInt(idx, idy));
         Ship ship = findShip(field[idx][idy]);
         if (ship == null)
             return openedCells;

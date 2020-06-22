@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
+import dev.ky3he4ik.battleship.utils.vectors.Vec2dInt;
+
 /*ships: id, idx, idy, rotation */
 public class Action {
     @NotNull
@@ -17,7 +19,7 @@ public class Action {
     @NotNull
     private String name;
     @Nullable
-    private int[] pos;
+    private Vec2dInt pos;
     @Nullable
     private int[][] ships;
     @Nullable
@@ -27,7 +29,7 @@ public class Action {
     private long gameId;
     private int code;
 
-    public Action(@NotNull ActionType actionType, @Nullable String config, int playerId, @NotNull String name, @Nullable int[] pos, @Nullable int[][] ships, @Nullable String otherName, @Nullable String msg, long gameId, int code) {
+    public Action(@NotNull ActionType actionType, @Nullable String config, int playerId, @NotNull String name, @Nullable Vec2dInt pos, @Nullable int[][] ships, @Nullable String otherName, @Nullable String msg, long gameId, int code) {
         this.actionType = actionType;
         this.config = config;
         this.playerId = playerId;
@@ -99,7 +101,7 @@ public class Action {
         if (actionType != action.actionType) return false;
         if (config != null ? !config.equals(action.config) : action.config != null) return false;
         if (!name.equals(action.name)) return false;
-        if (!Arrays.equals(pos, action.pos)) return false;
+        if (pos != null ? !pos.equals(action.pos) : action.pos != null) return false;
         if (!Arrays.deepEquals(ships, action.ships)) return false;
         if (otherName != null ? !otherName.equals(action.otherName) : action.otherName != null)
             return false;
@@ -112,7 +114,7 @@ public class Action {
         result = 31 * result + (config != null ? config.hashCode() : 0);
         result = 31 * result + playerId;
         result = 31 * result + name.hashCode();
-        result = 31 * result + Arrays.hashCode(pos);
+        result = 31 * result + (pos != null ? pos.hashCode() : 0);
         result = 31 * result + Arrays.deepHashCode(ships);
         result = 31 * result + (otherName != null ? otherName.hashCode() : 0);
         result = 31 * result + (msg != null ? msg.hashCode() : 0);
@@ -157,11 +159,11 @@ public class Action {
     }
 
     @Nullable
-    int[] getPos() {
+    Vec2dInt getPos() {
         return pos;
     }
 
-    void setPos(@Nullable int[] pos) {
+    void setPos(@Nullable Vec2dInt pos) {
         this.pos = pos;
     }
 

@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import org.jetbrains.annotations.Nullable;
 
 import dev.ky3he4ik.battleship.utils.Constants;
+import dev.ky3he4ik.battleship.utils.vectors.Vec3dInt;
 
 public class Cell extends Actor {
     private final Field field;
@@ -48,50 +49,6 @@ public class Cell extends Actor {
                 return false;
             }
 
-            @Overridepublic static class Ship {
-                public final int length;
-                public final String name;
-                public final int code;
-                public final int idx;
-                public final int idy;
-                public final int rotation;
-
-                public Ship(int length, int code, String name, int idx, int idy, int rotation) {
-                    this.length = length;
-                    this.code = code;
-                    this.name = name;
-                    this.idx = idx;
-                    this.idy = idy;
-                    this.rotation = rotation;
-                }
-
-                Ship move(int idx, int idy, int rotation) {
-                    String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-                    return new Ship(length, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
-                            idx, idy, rotation);
-                }
-
-                public boolean containsCell(int i, int j) {
-                    if (rotation == ROTATION_HORIZONTAL)
-                        return idy == j && idx <= i && idx + length > i;
-                    else
-                        return idx == i && idy <= j && idy + length > j;
-                }
-
-                @NotNull
-                public GameConfig.Ship convert() {
-                    String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-                    return new GameConfig.Ship(length, code, name_);
-                }
-
-                int getNthX(int i) {
-                    return H.I(rotation == ROTATION_HORIZONTAL) * i + idx;
-                }
-
-                int getNthY(int i) {
-                    return H.I(rotation == ROTATION_VERTICAL) * i + idy;
-                }
-            }
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
                 int localX = idx;
                 int localY = idy;
@@ -151,9 +108,9 @@ public class Cell extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         updateState(field.isEmptyCell(idx, idy), field.isOpened(idx, idy));
-        int[] click = field.getClick();
-        if (click[0] == 1 && (click[1] == idx || click[2] == idy)) {
-            if (click[1] == idx && click[2] == idy)
+        Vec3dInt click = field.getClick();
+        if (click.z == 1 && (click.x == idx || click.y == idy)) {
+            if (click.x == idx && click.y == idy)
                 batch.setColor(1, 0.5f, 0.5f, 1);
             else
                 batch.setColor(0.5f, 0.5f, 0.7f, 1);
