@@ -17,13 +17,10 @@ import dev.ky3he4ik.battleship.utils.H;
 public class World {
     public static final int ROTATION_HORIZONTAL = 0;
     public static final int ROTATION_VERTICAL = 1;
-    public static final int STATE_EMPTY = 0x0; // no ship
-    public static final int STATE_UNDAMAGED = 0x1; // ship
-    public static final int STATE_DAMAGED = 0x2; // damaged ship
-    public static final int STATE_SUNK = 0x3; // sunk ship
-    // ship codes
-    public static final int SHIP_MASK = 0xff00; // reserved for more ships
-    public static final int INVALID = -1;
+    public static final int EMPTY_CELL = 0x0; // no ship
+    private static final int STATE_UNDAMAGED = 0x1; // ship
+    private static final int STATE_DAMAGED = 0x2; // damaged ship
+    private static final int STATE_SUNK = 0x3; // sunk ship
     // cell states:
     private static final int STATE_MASK = 0xf; // reserved for more states
     private static final int STATE_SHIFT = 0;
@@ -48,10 +45,6 @@ public class World {
         return ships;
     }
 
-    public void setShips(ArrayList<Ship> ships) {
-        this.ships = ships;
-    }
-
     @Contract(pure = true)
     public int[][] getField() {
         return field;
@@ -59,11 +52,6 @@ public class World {
 
     public void setField(int[][] field) {
         this.field = field;
-    }
-
-    @Contract(pure = true)
-    public BitSet[] getOpened() {
-        return opened;
     }
 
     private void setOpened(BitSet[] opened) {
@@ -74,25 +62,9 @@ public class World {
         return width;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
     @Contract(pure = true)
     public int getHeight() {
         return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    @Contract(pure = true)
-    public World copy() {
-        World child = new World(width, height);
-        child.setOpened(opened);
-        child.setField(field);
-        return child;
     }
 
     private void setState(int i, int j, int state) {
@@ -119,7 +91,7 @@ public class World {
             return openedCells;
         opened[i].set(j);
         openedCells.add(new int[]{i, j});
-        if (getState(i, j) == STATE_UNDAMAGED) {
+        if (getState(i, j) != EMPTY_CELL) {
             setState(i, j, STATE_DAMAGED);
 
             // check ship
@@ -128,7 +100,7 @@ public class World {
                 switch (getState(iter, j)) {
                     case STATE_UNDAMAGED:
                         return openedCells;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -137,7 +109,7 @@ public class World {
                 switch (getState(iter, j)) {
                     case STATE_UNDAMAGED:
                         return openedCells;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -146,7 +118,7 @@ public class World {
                 switch (getState(i, iter)) {
                     case STATE_UNDAMAGED:
                         return openedCells;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -155,7 +127,7 @@ public class World {
                 switch (getState(i, iter)) {
                     case STATE_UNDAMAGED:
                         return openedCells;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -169,7 +141,7 @@ public class World {
                         len++;
                         setState(iter, j, STATE_SUNK);
                         break;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -182,7 +154,7 @@ public class World {
                         len++;
                         setState(iter, j, STATE_SUNK);
                         break;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -194,7 +166,7 @@ public class World {
                         len++;
                         setState(i, iter, STATE_SUNK);
                         break;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -207,7 +179,7 @@ public class World {
                         len++;
                         setState(i, iter, STATE_SUNK);
                         break;
-                    case STATE_EMPTY:
+                    case EMPTY_CELL:
                         break outerLoop;
                 }
             }
@@ -237,18 +209,9 @@ public class World {
     public boolean isDead() {
         for (Ship ship : ships) {
             for (int i = 0; i < ship.length; i++)
-                if (getState(ship.idx + H.I(ship.rotation == ROTATION_HORIZONTAL) * i, ship.idy + H.I(ship.rotation == ROTATION_VERTICAL) * i) == STATE_UNDAMAGED)
+                if (!isOpened(ship.idx + H.I(ship.rotation == ROTATION_HORIZONTAL) * i, ship.idy + H.I(ship.rotation == ROTATION_VERTICAL) * i))
                     return false;
         }
-        return true;
-    }
-
-    @Contract(pure = true)
-    public boolean isEmpty() {
-        for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
-                if (field[i][j] != 0)
-                    return false;
         return true;
     }
 
@@ -273,7 +236,7 @@ public class World {
             else
                 opened[i].clear();
             for (int j = 0; j < height; j++)
-                field[i][j] = STATE_EMPTY;
+                field[i][j] = EMPTY_CELL;
         }
     }
 
@@ -315,7 +278,7 @@ public class World {
 
     @Contract(pure = true)
     private boolean cellIsBusy(int idx, int idy) {
-        return inBounds(idx, idy) && getState(idx, idy) != STATE_EMPTY;
+        return inBounds(idx, idy) && getState(idx, idy) != EMPTY_CELL;
     }
 
     @Contract(pure = true)
@@ -328,7 +291,7 @@ public class World {
             if (ships.get(i).code == shipId) {
                 Ship ship = ships.get(i);
                 for (int j = 0; j < ship.length; j++)
-                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
+                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = EMPTY_CELL;
                 ships.remove(i);
                 return;
             }
@@ -340,7 +303,7 @@ public class World {
                 Ship ship = ships.get(i);
                 for (int j = 0; j < ship.length; j++)
                     field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)]
-                            [ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = STATE_EMPTY;
+                            [ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = EMPTY_CELL;
                 ships.remove(i);
                 return placeShip(ship, ship.idx, ship.idy, 1 - ship.rotation);
             }
@@ -359,22 +322,20 @@ public class World {
         Ship ship = findShip(shipId);
         if (ship == null)
             return false;
-        boolean alive = true;
         for (int i = 0; i < ship.length; i++)
-            alive = alive && getState(ship.idx + i * H.I(ship.rotation == ROTATION_HORIZONTAL),
-                    ship.idy + i * H.I(ship.rotation == ROTATION_VERTICAL)) == STATE_UNDAMAGED;
-        return alive;
+            if (isOpened(ship.getNthX(i), ship.getNthY(i)))
+                return true;
+        return false;
     }
 
     public boolean shipDead(int shipId) {
         Ship ship = findShip(shipId);
         if (ship == null)
             return false;
-        boolean alive = false;
         for (int i = 0; i < ship.length; i++)
-            alive = alive || getState(ship.idx + i * H.I(ship.rotation == ROTATION_HORIZONTAL),
-                    ship.idy + i * H.I(ship.rotation == ROTATION_VERTICAL)) == STATE_UNDAMAGED;
-        return !alive;
+            if (!isOpened(ship.getNthX(i), ship.getNthY(i)))
+                return false;
+        return true;
     }
 
     public boolean isPlaced(int shipId) {
@@ -411,7 +372,6 @@ public class World {
         public final int idy;
         public final int rotation;
 
-
         public Ship(int length, int code, String name, int idx, int idy, int rotation) {
             this.length = length;
             this.code = code;
@@ -442,6 +402,14 @@ public class World {
         public GameConfig.Ship convert() {
             String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
             return new GameConfig.Ship(length, code, name_);
+        }
+
+        public int getNthX(int i) {
+            return H.I(rotation == ROTATION_HORIZONTAL) * i + idx;
+        }
+
+        public int getNthY(int i) {
+            return H.I(rotation == ROTATION_VERTICAL) * i + idy;
         }
     }
 }

@@ -84,8 +84,7 @@ public class StepGame extends BaseStep {
             } else
                 callback.nextTurn();
         }
-        if (!callback.leftPlayer.getWorld().isEmpty() && !callback.rightPlayer.getWorld().isEmpty()
-                && (callback.rightPlayer.getWorld().isDead() || callback.leftPlayer.getWorld().isDead()))
+        if (callback.rightPlayer.getWorld().isDead() || callback.leftPlayer.getWorld().isDead())
             callback.nextStep();
     }
 

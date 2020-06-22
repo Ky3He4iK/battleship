@@ -23,7 +23,6 @@ public class Cell extends Actor {
 
     @Nullable
     private Animation<TextureRegion> animation = null;
-    private boolean isWaterBlow = false;
     private float animationPassed = 0;
 
     Cell(final Field field, final int idx, final int idy) {
@@ -33,9 +32,7 @@ public class Cell extends Actor {
 
         SpriteManager manager = SpriteManager.getInstance();
         manager.initSprite(Constants.CELL_EMPTY_IMG);
-        manager.initSprite(Constants.CELL_UNDAMAGED_IMG);
         manager.initSprite(Constants.CELL_DAMAGED_IMG);
-        manager.initSprite(Constants.CELL_SUNK_IMG);
         manager.initSprite(Constants.CELL_CLOSED_IMG);
 
         updateState(field.getState(idx, idy), field.isOpened(idx, idy));
@@ -142,13 +139,9 @@ public class Cell extends Actor {
             if (animation.isAnimationFinished(animationPassed))
                 animation = null;
             else {
-                TextureRegion currentFrame = animation.getKeyFrame(animationPassed);
-//                if (!isWaterBlow)
-//                    batch.setColor(1, .6f, .6f, 1);
-                batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+                batch.draw(animation.getKeyFrame(animationPassed), getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
             }
         }
-
 
         batch.setColor(1, 1, 1, 1);
     }
@@ -159,22 +152,10 @@ public class Cell extends Actor {
         this.state = state;
         this.isOpened = isOpened;
         if (isOpened)
-            switch (state) {
-                case World.STATE_EMPTY:
-                    sprite = SpriteManager.getInstance().getSprite(Constants.CELL_EMPTY_IMG);
-                    break;
-                case World.STATE_UNDAMAGED:
-                    sprite = SpriteManager.getInstance().getSprite(Constants.CELL_UNDAMAGED_IMG);
-                    break;
-                case World.STATE_DAMAGED:
-                    sprite = SpriteManager.getInstance().getSprite(Constants.CELL_DAMAGED_IMG);
-                    break;
-                case World.STATE_SUNK:
-                    sprite = SpriteManager.getInstance().getSprite(Constants.CELL_SUNK_IMG);
-                    break;
-                default:
-                    Gdx.app.error("Cell " + idx + "x" + idy, "Invalid state: " + state);
-            }
+            if (state == World.EMPTY_CELL)
+                sprite = SpriteManager.getInstance().getSprite(Constants.CELL_EMPTY_IMG);
+            else
+                sprite = SpriteManager.getInstance().getSprite(Constants.CELL_DAMAGED_IMG);
         else
             sprite = SpriteManager.getInstance().getSprite(Constants.CELL_CLOSED_IMG);
     }
@@ -182,14 +163,12 @@ public class Cell extends Actor {
     public void dispose() {
         SpriteManager manager = SpriteManager.getInstance();
         manager.dispose(Constants.CELL_EMPTY_IMG);
-        manager.dispose(Constants.CELL_UNDAMAGED_IMG);
         manager.dispose(Constants.CELL_DAMAGED_IMG);
         manager.dispose(Constants.CELL_CLOSED_IMG);
     }
 
     void blow(boolean isWater) {
-        isWaterBlow = isWater;
-        if (isWaterBlow)
+        if (isWater)
             animation = AnimationManager.getInstance().getAnimation(Constants.WATER_BLOW_ANIMATION);
         else
             animation = AnimationManager.getInstance().getAnimation(Constants.BLOW_ANIMATION);

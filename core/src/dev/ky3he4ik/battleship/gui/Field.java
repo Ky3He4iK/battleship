@@ -200,8 +200,8 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     public boolean open(int idx, int idy) {
         ArrayList<int[]> openedCells = world.open(idx, idy);
         for (int[] pair : openedCells)
-            cells[pair[0]][pair[1]].blow(world.getState(pair[0], pair[1]) == World.STATE_EMPTY);
-        return world.getState(idx, idy) != World.STATE_EMPTY;
+            cells[pair[0]][pair[1]].blow(world.getState(pair[0], pair[1]) == World.EMPTY_CELL);
+        return world.getState(idx, idy) != World.EMPTY_CELL;
     }
 
     public void setTurn() {

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 import dev.ky3he4ik.battleship.gui.MainView;
+import dev.ky3he4ik.battleship.logic.StaticContent;
 import dev.ky3he4ik.battleship.platform.PlatformSpecific;
 import dev.ky3he4ik.battleship.utils.Constants;
 
@@ -34,6 +35,7 @@ public class MyGdxGame extends Game {
 
     @Override
     public void create() {
+        StaticContent.createInstance(platformSpecific);
         batch = new SpriteBatch();
         font = new BitmapFont();
         shapeRenderer = new ShapeRenderer();

@@ -66,7 +66,7 @@ public class AIDummy extends AI {
 
     protected void rememberCell() {
         Gdx.app.debug("AIDummy", "remember cell: " + turnX + "x" + turnY);
-        if (enemy.getState(turnX, turnY) == World.STATE_UNDAMAGED) {
+        if (enemy.getState(turnX, turnY) != World.EMPTY_CELL && !enemy.isOpened(turnX, turnY)) {
             hitX = turnX;
             hitY = turnY;
         } else

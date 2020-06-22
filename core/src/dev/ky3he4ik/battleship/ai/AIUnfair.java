@@ -10,7 +10,6 @@ import dev.ky3he4ik.battleship.logic.PlayerFinished;
 import dev.ky3he4ik.battleship.logic.World;
 
 public class AIUnfair extends AIDummy {
-
     protected AIUnfair(@Nullable PlayerFinished callback, @NotNull World enemy, @NotNull World my, @NotNull GameConfig config) {
         super(callback, enemy, my, config);
     }
@@ -22,7 +21,7 @@ public class AIUnfair extends AIDummy {
         else {
             for (int i = 0; i < enemy.getWidth(); i++)
                 for (int j = 0; j < enemy.getHeight(); j++)
-                    if (!enemy.isOpened(i, j) && enemy.getState(i, j) == World.STATE_UNDAMAGED) {
+                    if (!enemy.isOpened(i, j) && enemy.getState(i, j) == World.EMPTY_CELL) {
                         turnX = i;
                         turnY = j;
                         rememberCell();
