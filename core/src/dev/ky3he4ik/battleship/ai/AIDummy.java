@@ -34,7 +34,7 @@ public class AIDummy extends AI {
         if (hitX == -1) {
             while (!queue.isEmpty()) {
                 int[] pair = queue.poll();
-                if (!enemy.isOpened(pair[0], pair[1])) {
+                if (!enemy.isCellOpened(pair[0], pair[1])) {
                     turnX = pair[0];
                     turnY = pair[1];
                     rememberCell();
@@ -45,7 +45,7 @@ public class AIDummy extends AI {
             Random random = new Random();
             turnX = random.nextInt(enemy.getWidth());
             turnY = random.nextInt(enemy.getHeight());
-            while (enemy.isOpened(turnX, turnY)) {
+            while (enemy.isCellOpened(turnX, turnY)) {
                 turnX = random.nextInt(enemy.getWidth());
                 turnY = random.nextInt(enemy.getHeight());
             }
@@ -64,9 +64,9 @@ public class AIDummy extends AI {
         }
     }
 
-    protected void rememberCell() {
+    void rememberCell() {
         Gdx.app.debug("AIDummy", "remember cell: " + turnX + "x" + turnY);
-        if (!enemy.isEmptyCell(turnX, turnY)&& !enemy.isOpened(turnX, turnY)) {
+        if (!enemy.isEmptyCell(turnX, turnY)&& !enemy.isCellOpened(turnX, turnY)) {
             hitX = turnX;
             hitY = turnY;
         } else

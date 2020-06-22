@@ -115,7 +115,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
         lastAccessId = ship.id - 1;
         if (field != null)
-            field.removeShip(pos[0], pos[1], ship.id);
+            field.removeShip(ship.id);
         return true;
     }
 

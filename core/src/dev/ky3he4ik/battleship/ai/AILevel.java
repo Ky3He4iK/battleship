@@ -42,7 +42,7 @@ public enum AILevel {
         @NotNull
         @Override
         public AI getAI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
-            return new AIDummy(callback, enemy, my, config);
+            return new AIUnfair(callback, enemy, my, config);
         }
     },
     IMPOSSIBLE(3, "Impossible") {

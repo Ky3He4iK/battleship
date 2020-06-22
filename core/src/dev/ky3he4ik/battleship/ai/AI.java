@@ -14,12 +14,12 @@ import dev.ky3he4ik.battleship.utils.H;
 
 abstract public class AI extends Thread implements Communication {
     @NotNull
-    protected World enemy;
+    World enemy;
     @NotNull
-    protected World my;
+     World my;
     @NotNull
     protected GameConfig config;
-    protected int turnX, turnY;
+     int turnX, turnY;
     @Nullable
     private PlayerFinished callback;
     private boolean isMyTurn;
@@ -28,7 +28,7 @@ abstract public class AI extends Thread implements Communication {
     private boolean turn = false;
     private boolean shipsPlaced = false;
 
-    protected AI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
+     AI(@Nullable PlayerFinished callback, @NotNull final World enemy, @NotNull final World my, @NotNull GameConfig config) {
         super();
         this.callback = callback;
         isPlaceShips = false;

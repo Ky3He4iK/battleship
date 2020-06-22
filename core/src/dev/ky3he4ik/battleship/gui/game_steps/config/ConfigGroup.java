@@ -52,9 +52,6 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
     private ActorWithSprite doneButton;
 
     @NotNull
-    private BitmapFont font;
-
-    @NotNull
     private ButtonGroup<TextButton> gameTypeGroup;
 
     @NotNull
@@ -128,7 +125,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         // yes, it is null and annotated as @NotNull
         // good old java
 
-        font = new BitmapFont();
+        BitmapFont font = new BitmapFont();
         font.getData().setScale(Gdx.graphics.getHeight() / 800f);
         font.setColor(Color.BLACK);
 

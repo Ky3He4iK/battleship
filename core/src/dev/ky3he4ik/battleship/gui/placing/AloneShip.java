@@ -116,8 +116,8 @@ public class AloneShip extends Actor implements EventListener {
             rotate();
     }
 
-    public boolean isPlaced() {
-        return placed;
+    public boolean isNotPlaced() {
+        return !placed;
     }
 
     public void setPlaced(boolean placed) {

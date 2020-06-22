@@ -148,7 +148,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     public boolean isOpened(int idx, int idy) {
-        return world.isOpened(idx, idy);
+        return world.isCellOpened(idx, idy);
     }
 
     void registerClick(int idx, int idy) {
@@ -170,10 +170,6 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     @NotNull
     int[] getClick() {
         return new int[]{(H.I(clicked)), clickX, clickY};
-    }
-
-    public void clearClick() {
-        clicked = false;
     }
 
     @NotNull
@@ -256,7 +252,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         communication = null;
     }
 
-    public void removeShip(float x, float y, int shipId) {
+    public void removeShip(int shipId) {
         world.removeShip(shipId);
     }
 
@@ -279,11 +275,6 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
         if (world.placeShip(ship.convert(), shadowLX, shadowLY, shadowRot))
             return new float[]{globalCellX(shadowLX), globalCellY(shadowLY)};
         return null;
-    }
-
-    @NotNull
-    public float[] getRectPos(int idx, int idy) {
-        return new float[]{getX() + idx * cellSize, getY() + idy * cellSize};
     }
 
     private int innerCellX(float x) {
@@ -339,9 +330,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     @Override
     public boolean shipPressed(@NotNull float[] pos, @NotNull AloneShip ship) {
-        if (!ship.isPlaced() || (callback.canMove(playerId) && world.shipAlive(ship.id) && callback.getTurn() == playerId && callback.getConfig().getGameType() != GameConfig.GameType.AI_VS_AI)) {
+        if (ship.isNotPlaced() || (callback.canMove(playerId) && world.shipAlive(ship.id) && callback.getTurn() == playerId && callback.getConfig().getGameType() != GameConfig.GameType.AI_VS_AI)) {
             lastAccessId = ship.id;
-            removeShip(pos[0], pos[1], ship.id);
+            removeShip(ship.id);
             return true;
         } else {
             registerRelease(innerCellX(Gdx.input.getX() - cellSize / 2), innerCellY(Gdx.graphics.getHeight() - Gdx.input.getY() - cellSize / 2));
@@ -358,7 +349,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                 Math.min(curPos[1] + getHeight() - cellSize, Math.max(curPos[1], pos[1])) - curPos[1]);
 //        }
         for (AloneShip child : childrenShips) {
-            if (!child.isPlaced()) {
+            if (child.isNotPlaced()) {
                 pos = H.getAbsCoord(child);
                 float[] newPos = unHighlight(child.ship, pos[0], pos[1], child.getShipRotation());
                 if (newPos != null) {

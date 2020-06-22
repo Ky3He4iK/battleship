@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -42,11 +41,6 @@ public class AnimationManager {
         return animations.get(animationInfo.name);
     }
 
-    @Nullable
-    private Animation<TextureRegion> getAnimation(@NotNull String name) {
-        return animations.get(name);
-    }
-
     @NotNull
     public Animation<TextureRegion> getAnimation(@NotNull AnimationInfo animationInfo) {
         if (contains(animationInfo.name))
@@ -54,43 +48,8 @@ public class AnimationManager {
         return initAnimation(animationInfo);
     }
 
-    @Nullable
-    public Animation<TextureRegion> cloneAnimation(@NotNull String currentName, @NotNull String newName) {
-        if (animations.containsKey(newName))
-            usageCnt.put(newName, usageCnt.get(newName) + 1);
-        else if (contains(currentName)) {
-            Animation<TextureRegion> animation = animations.get(currentName);
-            animations.put(newName, new Animation<>(animation.getFrameDuration(), animation.getKeyFrames()));
-            usageCnt.put(newName, 1);
-        }
-        return getAnimation(newName);
-    }
-
-    @NotNull
-    public Animation<TextureRegion> cloneAnimation(@NotNull AnimationInfo animationInfo, @NotNull String newName) {
-        if (animations.containsKey(newName))
-            usageCnt.put(newName, usageCnt.get(newName) + 1);
-        else {
-            Animation<TextureRegion> animation;
-            if (contains(animationInfo.name)) {
-                animation = animations.get(animationInfo.name);
-                animation = new Animation<>(animation.getFrameDuration(), animation.getKeyFrames());
-            } else
-                animation = new Animation<>(animationInfo.frameLength, loadFrames(animationInfo.name, animationInfo.colons, animationInfo.rows));
-            animation.setPlayMode(animationInfo.isLooped ? Animation.PlayMode.LOOP : Animation.PlayMode.NORMAL);
-
-            animations.put(newName, animation);
-            usageCnt.put(newName, 1);
-        }
-        return animations.get(newName);
-    }
-
     private boolean contains(@NotNull String name) {
         return animations.containsKey(name);
-    }
-
-    public boolean contains(@NotNull AnimationInfo animationInfo) {
-        return animations.containsKey(animationInfo.name);
     }
 
     private TextureRegion[] loadFrames(@NotNull String name, int colons, int rows) {

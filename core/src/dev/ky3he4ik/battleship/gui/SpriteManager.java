@@ -34,22 +34,6 @@ public class SpriteManager {
     }
 
     @NotNull
-    public Sprite cloneSprite(@NotNull String currentName, @NotNull String newName) {
-        Sprite sprite;
-        if (!contains(currentName))
-            sprite = new Sprite(new Texture(currentName));
-        else
-            sprite = sprites.get(currentName);
-        if (sprites.containsKey(newName))
-            usageCnt.put(newName, usageCnt.get(newName) + 1);
-        else {
-            sprites.put(newName, new Sprite(sprite));
-            usageCnt.put(newName, 1);
-        }
-        return getSprite(newName);
-    }
-
-    @NotNull
     Sprite initSprite(@NotNull String name) {
         if (sprites.containsKey(name))
             usageCnt.put(name, usageCnt.get(name) + 1);
@@ -83,11 +67,7 @@ public class SpriteManager {
         sprites.clear();
     }
 
-    boolean contains(@NotNull String name) {
+    private boolean contains(@NotNull String name) {
         return sprites.containsKey(name);
-    }
-
-    public int getUsageCount(@NotNull String name) {
-        return usageCnt.get(name);
     }
 }

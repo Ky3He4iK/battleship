@@ -39,15 +39,6 @@ public class ActorWithSprite extends Actor implements EventListener {
         addListener(this);
     }
 
-    public ActorWithSprite(@NotNull ActorWithSpriteListener callback, @NotNull String spriteName, int buttonId) {
-        this.callback = callback;
-        this.buttonId = buttonId;
-        sprite = SpriteManager.getInstance().getSprite(spriteName);
-        isPressed = false;
-        altSprite = null;
-        addListener(this);
-    }
-
     @NotNull
     public Sprite getSprite() {
         return sprite;
@@ -59,10 +50,6 @@ public class ActorWithSprite extends Actor implements EventListener {
             batch.draw(altSprite, getX(), getY(), getWidth(), getHeight());
         else
             batch.draw(sprite, getX(), getY(), getWidth(), getHeight());
-    }
-
-    public int getButtonId() {
-        return buttonId;
     }
 
     @Override

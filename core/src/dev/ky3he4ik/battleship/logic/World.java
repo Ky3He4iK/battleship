@@ -13,6 +13,51 @@ import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.H;
 
 public class World {
+    public static class Ship {
+        public final int length;
+        public final String name;
+        public final int code;
+        public final int idx;
+        public final int idy;
+        public final int rotation;
+
+        public Ship(int length, int code, String name, int idx, int idy, int rotation) {
+            this.length = length;
+            this.code = code;
+            this.name = name;
+            this.idx = idx;
+            this.idy = idy;
+            this.rotation = rotation;
+        }
+
+        Ship move(int idx, int idy, int rotation) {
+            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+            return new Ship(length, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
+                    idx, idy, rotation);
+        }
+
+        public boolean containsCell(int i, int j) {
+            if (rotation == ROTATION_HORIZONTAL)
+                return idy == j && idx <= i && idx + length > i;
+            else
+                return idx == i && idy <= j && idy + length > j;
+        }
+
+        @NotNull
+        public GameConfig.Ship convert() {
+            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+            return new GameConfig.Ship(length, code, name_);
+        }
+
+        int getNthX(int i) {
+            return H.I(rotation == ROTATION_HORIZONTAL) * i + idx;
+        }
+
+        int getNthY(int i) {
+            return H.I(rotation == ROTATION_VERTICAL) * i + idy;
+        }
+    }
+
     public static final int ROTATION_HORIZONTAL = 0;
     public static final int ROTATION_VERTICAL = 1;
     private static final int EMPTY_CELL = 0x0; // no ship
@@ -24,11 +69,6 @@ public class World {
 
     public World(int width, int height) {
         reset(width, height);
-    }
-
-    @NotNull
-    public static World fromJSON(@NotNull String json) {
-        return new Gson().fromJson(json, World.class);
     }
 
     @Contract(pure = true)
@@ -69,7 +109,7 @@ public class World {
 
         boolean isDead = true;
         for (int i = 0; i < ship.length; i++) {
-            if (!isOpened(ship.getNthX(i), ship.getNthY(i)))
+            if (!isCellOpened(ship.getNthX(i), ship.getNthY(i)))
                 isDead = false;
         }
         if (isDead) {
@@ -88,7 +128,7 @@ public class World {
         return openedCells;
     }
 
-    public boolean isOpened(int idx, int idy) {
+    public boolean isCellOpened(int idx, int idy) {
         if (inBounds(idx, idy))
             return opened[idx].get(idy);
         return false;
@@ -98,7 +138,7 @@ public class World {
     public boolean isDead() {
         for (Ship ship : ships) {
             for (int i = 0; i < ship.length; i++)
-                if (!isOpened(ship.idx + H.I(ship.rotation == ROTATION_HORIZONTAL) * i, ship.idy + H.I(ship.rotation == ROTATION_VERTICAL) * i))
+                if (!isCellOpened(ship.getNthX(i), ship.getNthY(i)))
                     return false;
         }
         return true;
@@ -148,10 +188,10 @@ public class World {
         removeShip(ship.code);
         for (int i = -1; i <= ship.length; i++) {
             if (rotation == ROTATION_HORIZONTAL) {
-                if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || (i >= 0 && i < ship.length && isOpened(idx + i, idy)))
+                if (cellIsBusy(idx + i, idy) || cellIsBusy(idx + i, idy + 1) || cellIsBusy(idx + i, idy - 1) || (i >= 0 && i < ship.length && isCellOpened(idx + i, idy)))
                     return false;
             } else {
-                if (cellIsBusy(idx, idy + i) || cellIsBusy(idx + 1, idy + i) || cellIsBusy(idx - 1, idy + i) || (i >= 0 && i < ship.length && isOpened(idx, idy + i)))
+                if (cellIsBusy(idx, idy + i) || cellIsBusy(idx + 1, idy + i) || cellIsBusy(idx - 1, idy + i) || (i >= 0 && i < ship.length && isCellOpened(idx, idy + i)))
                     return false;
             }
         }
@@ -180,7 +220,7 @@ public class World {
             if (ships.get(i).code == shipId) {
                 Ship ship = ships.get(i);
                 for (int j = 0; j < ship.length; j++)
-                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)][ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = EMPTY_CELL;
+                    field[ship.getNthX(j)][ship.getNthY(j)] = EMPTY_CELL;
                 ships.remove(i);
                 return;
             }
@@ -191,8 +231,8 @@ public class World {
             if (ships.get(i).code == shipId) {
                 Ship ship = ships.get(i);
                 for (int j = 0; j < ship.length; j++)
-                    field[ship.idx + j * H.I(ship.rotation == ROTATION_HORIZONTAL)]
-                            [ship.idy + j * H.I(ship.rotation == ROTATION_VERTICAL)] = EMPTY_CELL;
+                    field[ship.getNthX(j)]
+                            [ship.getNthY(j)] = EMPTY_CELL;
                 ships.remove(i);
                 return placeShip(ship, ship.idx, ship.idy, 1 - ship.rotation);
             }
@@ -212,7 +252,7 @@ public class World {
         if (ship == null)
             return false;
         for (int i = 0; i < ship.length; i++)
-            if (isOpened(ship.getNthX(i), ship.getNthY(i)))
+            if (isCellOpened(ship.getNthX(i), ship.getNthY(i)))
                 return true;
         return false;
     }
@@ -222,7 +262,7 @@ public class World {
         if (ship == null)
             return false;
         for (int i = 0; i < ship.length; i++)
-            if (!isOpened(ship.getNthX(i), ship.getNthY(i)))
+            if (!isCellOpened(ship.getNthX(i), ship.getNthY(i)))
                 return false;
         return true;
     }
@@ -237,50 +277,5 @@ public class World {
     @NotNull
     public String toJson() {
         return new Gson().toJson(this);
-    }
-
-    public static class Ship {
-        public final int length;
-        public final String name;
-        public final int code;
-        public final int idx;
-        public final int idy;
-        public final int rotation;
-
-        public Ship(int length, int code, String name, int idx, int idy, int rotation) {
-            this.length = length;
-            this.code = code;
-            this.name = name;
-            this.idx = idx;
-            this.idy = idy;
-            this.rotation = rotation;
-        }
-
-        Ship move(int idx, int idy, int rotation) {
-            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-            return new Ship(length, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
-                    idx, idy, rotation);
-        }
-
-        public boolean containsCell(int i, int j) {
-            if (rotation == ROTATION_HORIZONTAL)
-                return idy == j && idx <= i && idx + length > i;
-            else
-                return idx == i && idy <= j && idy + length > j;
-        }
-
-        @NotNull
-        public GameConfig.Ship convert() {
-            String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
-            return new GameConfig.Ship(length, code, name_);
-        }
-
-        int getNthX(int i) {
-            return H.I(rotation == ROTATION_HORIZONTAL) * i + idx;
-        }
-
-        int getNthY(int i) {
-            return H.I(rotation == ROTATION_VERTICAL) * i + idy;
-        }
     }
 }

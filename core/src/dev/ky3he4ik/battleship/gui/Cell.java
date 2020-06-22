@@ -48,7 +48,50 @@ public class Cell extends Actor {
                 return false;
             }
 
-            @Override
+            @Overridepublic static class Ship {
+                public final int length;
+                public final String name;
+                public final int code;
+                public final int idx;
+                public final int idy;
+                public final int rotation;
+
+                public Ship(int length, int code, String name, int idx, int idy, int rotation) {
+                    this.length = length;
+                    this.code = code;
+                    this.name = name;
+                    this.idx = idx;
+                    this.idy = idy;
+                    this.rotation = rotation;
+                }
+
+                Ship move(int idx, int idy, int rotation) {
+                    String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+                    return new Ship(length, code, name_ + (rotation == ROTATION_HORIZONTAL ? Constants.ROTATED_SUFFIX : ""),
+                            idx, idy, rotation);
+                }
+
+                public boolean containsCell(int i, int j) {
+                    if (rotation == ROTATION_HORIZONTAL)
+                        return idy == j && idx <= i && idx + length > i;
+                    else
+                        return idx == i && idy <= j && idy + length > j;
+                }
+
+                @NotNull
+                public GameConfig.Ship convert() {
+                    String name_ = (name.endsWith(Constants.ROTATED_SUFFIX)) ? name.substring(0, name.length() - Constants.ROTATED_SUFFIX.length()) : name;
+                    return new GameConfig.Ship(length, code, name_);
+                }
+
+                int getNthX(int i) {
+                    return H.I(rotation == ROTATION_HORIZONTAL) * i + idx;
+                }
+
+                int getNthY(int i) {
+                    return H.I(rotation == ROTATION_VERTICAL) * i + idy;
+                }
+            }
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
                 int localX = idx;
                 int localY = idy;

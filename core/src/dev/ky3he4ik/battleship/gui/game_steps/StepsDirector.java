@@ -233,7 +233,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         rightPlayer.restart();
     }
 
-    void calcCellSize() {
+    private void calcCellSize() {
         middleGap = getWidth() * Constants.MIDDLE_GAP_PART;
         sideWidth = getWidth() * Constants.SIDE_PART;
         headerHeight = getHeight() * Constants.HEADER_PART;
@@ -406,10 +406,6 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
 
     public float getRedundantY() {
         return redundantY;
-    }
-
-    public float getMiddleGap() {
-        return middleGap;
     }
 
     public float getHeaderHeight() {
