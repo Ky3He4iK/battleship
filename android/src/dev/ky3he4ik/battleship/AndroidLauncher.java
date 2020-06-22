@@ -13,7 +13,6 @@ public class AndroidLauncher extends AndroidApplication {
 
         config.useAccelerometer = false;
         config.useCompass = false;
-//		config.useGLSurfaceView20API18 = android.os.Build.VERSION.SDK_INT < 10;
 
         initialize(new MyGdxGame(new PlatformSpecificAndroid(getContext())), config);
     }

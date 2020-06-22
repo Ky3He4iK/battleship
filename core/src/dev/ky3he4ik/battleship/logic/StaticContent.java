@@ -34,11 +34,8 @@ public class StaticContent {
         return instance;
     }
 
-    public static synchronized @NotNull
-    StaticContent createInstance(@NotNull final PlatformSpecific platformSpecific) {
-        if (instance == null)
-            instance = new StaticContent(platformSpecific);
-        return instance;
+    public static synchronized void createInstance(@NotNull final PlatformSpecific platformSpecific) {
+        instance = new StaticContent(platformSpecific);
     }
 
     private StaticContent(@NotNull final PlatformSpecific platformSpecific) {
