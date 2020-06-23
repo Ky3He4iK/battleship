@@ -1,5 +1,8 @@
 package dev.ky3he4ik.battleship.utils.vectors;
 
+/**
+ * Двумерный вектор int
+ */
 public class Vec2dInt {
     public int x, y;
 

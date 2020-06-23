@@ -1,5 +1,8 @@
 package dev.ky3he4ik.battleship.utils;
 
+/**
+ * Пара двух элементов любых чисел
+ */
 public class Pair<T, K> {
     public T first;
     public K second;

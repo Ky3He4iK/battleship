@@ -14,6 +14,7 @@ import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.Field;
 import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
+import dev.ky3he4ik.battleship.gui.utils.GH;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -55,7 +56,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
 
         BUTTON_RANDOM = childrens.size();
         button = new ActorWithSprite(this, Constants.BUTTON_RND, Constants.BUTTON_RND_SELECTED, BUTTON_RANDOM);
-        H.setBoundsByHeight(button, 0, getY() - cellSize, cellSize);
+        GH.setBoundsByHeight(button, 0, getY() - cellSize, cellSize);
         childrens.add(button);
         addActor(button);
 
@@ -89,7 +90,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         middleGap -= shift * 2;
 
         childrens.get(BUTTON_ROTATE).setBounds(-middleGap - shift, getHeight() / 2 - middleGap / 2, middleGap, middleGap);
-        H.setBoundsByHeight(childrens.get(BUTTON_RANDOM), 0, -cellSize, cellSize);
+        GH.setBoundsByHeight(childrens.get(BUTTON_RANDOM), 0, -cellSize, cellSize);
         childrens.get(BUTTON_DONE).setBounds(getWidth() - cellSize, -cellSize, cellSize, cellSize);
     }
 
@@ -133,7 +134,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
         }
         if (field != null) {
             Vec2d newPos = field.unHighlight(availableShips.get(ship.id - 1), pos.x, pos.y, ship.getShipRotation());
-            Vec2d curPos = H.getAbsCoord(this);
+            Vec2d curPos = GH.getAbsCoord(this);
             if (newPos != null) {
                 ship.setPlaced(true);
                 Gdx.app.debug("ShipPlacer", "Ship placed: " + ship.id + " (" + ship.getShipName() + ")");
@@ -170,7 +171,7 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
             ships.get(lastAccessId).rotate();
             if (field != null) {
                 AloneShip ship = ships.get(lastAccessId);
-                Vec2d res = field.rotate(ship, H.getAbsCoord(ship), ship.getShipRotation());
+                Vec2d res = field.rotate(ship, GH.getAbsCoord(ship), ship.getShipRotation());
                 if (res == null)
                     ship.setPlaced(false);
                 else {

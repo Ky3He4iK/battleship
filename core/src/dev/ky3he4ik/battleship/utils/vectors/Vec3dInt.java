@@ -1,5 +1,8 @@
 package dev.ky3he4ik.battleship.utils.vectors;
 
+/**
+ * Трёхмерный вектор int
+ */
 public class Vec3dInt {
     public int x, y, z;
 

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.gui.placing.AloneShip;
 import dev.ky3he4ik.battleship.gui.placing.AloneShipListener;
+import dev.ky3he4ik.battleship.gui.utils.GH;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.PlayerFinished;
@@ -281,7 +282,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     private int innerCellX(float x) {
-        return Math.round((x - H.getAbsCoord(this).x) / cellSize);
+        return Math.round((x - GH.getAbsCoord(this).x) / cellSize);
     }
 
     public float globalCellX(int idx) {
@@ -293,7 +294,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     private int innerCellY(float y) {
-        return Math.round((y - H.getAbsCoord(this).y) / cellSize);
+        return Math.round((y - GH.getAbsCoord(this).y) / cellSize);
     }
 
     boolean getShadow() {
@@ -345,7 +346,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 
     @Override
     public void shipReleased(@NotNull Vec2d pos, @NotNull AloneShip ship) {
-        Vec2d curPos = H.getAbsCoord(this);
+        Vec2d curPos = GH.getAbsCoord(this);
 //        if (pos[0] + cellSize / 2 < curPos[0] || pos[1] + ship.getHeight() / 2 < curPos[1] || pos[0] > curPos[0] + getWidth() || pos[1] > curPos[1] + getHeight()) {
         ship.setPlaced(false);
         ship.setPosition(Math.min(curPos.x + getWidth() - cellSize, Math.max(curPos.x, pos.x)) - curPos.x,
@@ -353,7 +354,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
 //        }
         for (AloneShip child : childrenShips) {
             if (child.isNotPlaced()) {
-                pos = H.getAbsCoord(child);
+                pos = GH.getAbsCoord(child);
                 Vec2d newPos = unHighlight(child.ship, pos.x, pos.y, child.getShipRotation());
                 if (newPos != null) {
                     callback.registerMove(playerId);
@@ -404,7 +405,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
                         shadowLX = innerCellX(child.getGlobalX());
                         shadowLY = innerCellY(child.getGlobalY());
                         child.rotate();
-                        Vec2d res = rotate(child, H.getAbsCoord(child), child.getShipRotation());
+                        Vec2d res = rotate(child, GH.getAbsCoord(child), child.getShipRotation());
                         if (res != null) {
                             child.setPlaced(true);
                             child.setPosition(res.x - getX(), res.y - getY());

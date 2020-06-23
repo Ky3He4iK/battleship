@@ -29,6 +29,7 @@ import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.game_steps.StepConfigure;
 import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
+import dev.ky3he4ik.battleship.gui.utils.GH;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -137,8 +138,8 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         gameTypeGroup = new ButtonGroup<>();
         GameConfig.GameType[] gameTypes = GameConfig.GameType.values();
 
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(H.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED_2),
-                H.getSpriteDrawable(Constants.BUTTON_FRAME), H.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED), font);
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(GH.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED_2),
+                GH.getSpriteDrawable(Constants.BUTTON_FRAME), GH.getSpriteDrawable(Constants.BUTTON_FRAME_SELECTED), font);
         for (GameConfig.GameType gameType : gameTypes) {
             TextButton btn = new TextButton(gameType.name(), style);
             btn.setName(gameType.name());
@@ -162,7 +163,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         aiLevelGroup.setChecked(Objects.requireNonNull(AILevel.getById(config.getAiLevel())).name);
         aiLevelGroup2.setChecked(Objects.requireNonNull(AILevel.getById(config.getAiLevel2())).name);
 
-        Slider.SliderStyle sliderStyle = new Slider.SliderStyle(H.getSpriteDrawable(Constants.SLIDER_BACKGROUND), H.getSpriteDrawable(Constants.SLIDER_KNOB));
+        Slider.SliderStyle sliderStyle = new Slider.SliderStyle(GH.getSpriteDrawable(Constants.SLIDER_BACKGROUND), GH.getSpriteDrawable(Constants.SLIDER_KNOB));
         widthSlider = new Slider(7, 20, 1, false, sliderStyle);
         widthSliderLabel = new Label(null, labelStyle);
         heightSlider = new Slider(7, 20, 1, false, sliderStyle);
@@ -174,10 +175,10 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         movesSlider = new Slider(0, 16, 1, false, sliderStyle);
         movesSliderLabel = new Label(null, labelStyle);
 
-        addShots = H.getCheckbox(font);
+        addShots = GH.getCheckbox(font);
         addShotsLabel = new Label("Additional shots", labelStyle);
 
-        decrField = H.getCheckbox(font);
+        decrField = GH.getCheckbox(font);
         decrFieldLabel = new Label("Decreasing field", labelStyle);
 
         GameConfig.Ship[] ships = GameConfig.Ship.getAllShipsSamples();

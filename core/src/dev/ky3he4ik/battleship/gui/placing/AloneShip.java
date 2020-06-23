@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.gui.SpriteManager;
+import dev.ky3he4ik.battleship.gui.utils.GH;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.H;
@@ -80,24 +81,24 @@ public class AloneShip extends Actor implements EventListener {
         switch (event.getType()) {
             case touchDown:
                 if (event.getButton() == Input.Buttons.LEFT) {
-                    canBeMoved = callback.shipPressed(H.getAbsCoord(this), this);
+                    canBeMoved = callback.shipPressed(GH.getAbsCoord(this), this);
                     return true;
                 }
                 return false;
             case touchUp:
                 if (event.getButton() == Input.Buttons.LEFT && canBeMoved && !dead) {
-                    callback.shipReleased(H.getAbsCoord(this), this);
+                    callback.shipReleased(GH.getAbsCoord(this), this);
                     return true;
                 }
                 return false;
             case touchDragged:
                 if (canBeMoved && !dead) {
-                    Vec2d pos = H.getAbsCoord(this);
+                    Vec2d pos = GH.getAbsCoord(this);
                     float mouseX = Math.max(Math.min(Gdx.input.getX(), Gdx.graphics.getWidth()), 0);
                     float mouseY = Math.max(Math.min(Gdx.graphics.getHeight() - Gdx.input.getY(), Gdx.graphics.getHeight()), 0);
                     setPosition(mouseX - pos.x + getX() - getWidth() / 2,
                             mouseY - pos.y + getY() - getHeight() / 2);
-                    callback.shipMoved(H.getAbsCoord(this), this);
+                    callback.shipMoved(GH.getAbsCoord(this), this);
                 }
                 return true;
             case scrolled:

@@ -2,6 +2,9 @@ package dev.ky3he4ik.battleship.utils;
 
 import dev.ky3he4ik.battleship.gui.AnimationManager;
 
+/**
+ * Набор констант, чтобы избежать появления магических чисел и строк
+ */
 public class Constants {
     public static final float HEADER_PART = .1f;
     public static final float FOOTER_PART = .1f;
@@ -48,7 +51,7 @@ public class Constants {
     public static final AnimationManager.AnimationInfo WATER_ANIMATION = AnimationManager.AnimationInfo.byFPS(60, "water_animation_8_4.jpg", 8, 4, true);
     public static final AnimationManager.AnimationInfo LOADING_ANIMATION = AnimationManager.AnimationInfo.byDuration(1, "loading_animation_4_3.png", 4, 3, true);
     public static final String HOST_ADDRESS = DEBUG_MODE ? "ws://localhost:6683" : "ws://ky3he4ik.dev:6683";
-    static final String BUTTON_DONE_FRAME = "Button_done_frame.png";
+    public static final String BUTTON_DONE_FRAME = "Button_done_frame.png";
 
     public static final String FILENAME_DEVICEID = "deviceid.txt";
 //    public static final String HOST_ADDRESS = "ws://localhost:6683";

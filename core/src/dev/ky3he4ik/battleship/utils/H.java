@@ -1,30 +1,25 @@
 package dev.ky3he4ik.battleship.utils;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import dev.ky3he4ik.battleship.gui.ActorWithSprite;
-import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
-import dev.ky3he4ik.battleship.utils.vectors.Vec2d;
 
 /**
- * Class with several useful functions
+ * Класс с набором разных полезных функций
  */
 public final class H {
     private H() {
     }
 
+    /**
+     * Расположить корабли из @param availableShips на поле @param world в случайном порядке
+     */
     public static void placeShipsRandom(@NotNull World world, @NotNull ArrayList<GameConfig.Ship> availableShips) {
         boolean done = false;
         Random random = new Random();
@@ -58,6 +53,12 @@ public final class H {
         } while (!done);
     }
 
+    /**
+     * Расположить корабли из @param availableShips на поле @param world по рядам.
+     *
+     * @return успешность
+     * todo: более компактное размещение
+     */
     public static boolean placeShipsLines(@NotNull World world, @NotNull ArrayList<GameConfig.Ship> availableShips) {
         int idx = 0;
         int idy = 0;
@@ -80,51 +81,10 @@ public final class H {
     }
 
     /**
+     * Функция-индикатор. Возвращает 1 если i истинно и 0 в противном случае
      * Indicator function. @return `1` if @param i is true and `0` otherwise
      */
     public static int I(boolean i) {
         return i ? 1 : 0;
-    }
-
-    @NotNull
-    public static dev.ky3he4ik.battleship.utils.vectors.Vec2d getAbsCoord(@Nullable Actor actor) {
-        dev.ky3he4ik.battleship.utils.vectors.Vec2d coord = new Vec2d(0, 0);
-        while (actor != null) {
-            coord.x += actor.getX();
-            coord.y += actor.getY();
-            actor = actor.getParent();
-        }
-        return coord;
-    }
-
-    public static void setBoundsByWidth(@NotNull ActorWithSprite actor, float x, float y, float width) {
-        float scale = actor.getSprite().getWidth() / width;
-        actor.setBounds(x, y, width, actor.getSprite().getHeight() / scale);
-    }
-
-    public static void setBoundsByHeight(@NotNull ActorWithSprite actor, float x, float y, float height) {
-        float scale = actor.getSprite().getHeight() / height;
-        actor.setBounds(x, y, actor.getSprite().getWidth() / scale, height);
-    }
-
-    @NotNull
-    public static SpriteDrawable getSpriteDrawable(@NotNull String spriteName) {
-        SpriteDrawable drawable = new SpriteDrawable(SpriteManager.getInstance().getSprite(spriteName));
-        drawable.setMinHeight(Gdx.graphics.getHeight() / 10f);
-        drawable.setMinWidth(Gdx.graphics.getWidth() / 10f);
-        return drawable;
-    }
-
-    @NotNull
-    public static SpriteDrawable getSpriteDrawableMinimized(@NotNull String spriteName) {
-        SpriteDrawable drawable = new SpriteDrawable(SpriteManager.getInstance().getSprite(spriteName));
-        drawable.setMinHeight(0);
-        drawable.setMinWidth(0);
-        return drawable;
-    }
-
-    @NotNull
-    public static CheckBox getCheckbox(@NotNull BitmapFont font) {
-        return new CheckBox(null, new CheckBox.CheckBoxStyle(getSpriteDrawable(Constants.BUTTON_DONE_FRAME), getSpriteDrawable(Constants.BUTTON_DONE_SELECTED), font, font.getColor()));
     }
 }
