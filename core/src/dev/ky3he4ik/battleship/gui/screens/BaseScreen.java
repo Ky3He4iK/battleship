@@ -5,17 +5,22 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import org.jetbrains.annotations.NotNull;
 
+import dev.ky3he4ik.battleship.logic.StaticContent;
+
 public abstract class BaseScreen extends Stage {
     final int screenId;
 
     @NotNull
     final protected ScreensDirector callback;
 
+    @NotNull
+    final protected StaticContent staticContent;
+
     BaseScreen(@NotNull final ScreensDirector callback, int screenId) {
         this.callback = callback;
         this.screenId = screenId;
+        staticContent = StaticContent.getInstance();
     }
-
 
     abstract public void stepBegin();
 

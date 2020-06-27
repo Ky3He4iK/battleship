@@ -448,4 +448,9 @@ public class ScreensDirector extends Stage implements ActorWithSpriteListener, R
         else if (!staticContent.config.isAdditionalShots() && canShoot(playerId))
             shootedCurrentTurn++;
     }
+
+    void addActorWithSprite(ActorWithSprite actor) {
+        actor.setCallback(this);
+        addActor(actor);
+    }
 }

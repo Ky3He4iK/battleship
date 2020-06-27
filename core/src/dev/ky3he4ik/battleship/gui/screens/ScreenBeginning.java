@@ -8,6 +8,12 @@ import com.badlogic.gdx.utils.Align;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Главный экран игры. 4 кнопки: начать игру (ScreenChoose)
+ *                               настройки (ScreenSettings)
+ *                               вкл/выкл музыки и звука
+ * todo:do
+ */
 public class ScreenBeginning extends BaseScreen {
     @NotNull
     private Label startLabel;
@@ -36,11 +42,8 @@ public class ScreenBeginning extends BaseScreen {
     }
 
     @Override
-    public void act() {
-    }
-
-    @Override
     public void draw() {
+        super.draw();
         Batch batch = getBatch();
         batch.begin();
         startLabel.draw(batch, 1);

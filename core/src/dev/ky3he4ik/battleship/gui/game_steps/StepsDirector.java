@@ -110,17 +110,17 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener, Rel
         World leftWorld = new World(staticContent.config.getWidth(), staticContent.config.getHeight());
         World rightWorld = new World(staticContent.config.getWidth(), staticContent.config.getHeight());
 
-        leftPlayer = new Field(leftWorld, cellSize, null, TURN_LEFT, this);
+        leftPlayer = new Field(leftWorld, cellSize, null, TURN_LEFT, null);
         leftPlayer.setBounds(redundantX + sideWidth, redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         leftPlayer.setVisible(false);
         addActor(leftPlayer);
 
-        rightPlayer = new Field(rightWorld, cellSize, null, TURN_RIGHT, this);
+        rightPlayer = new Field(rightWorld, cellSize, null, TURN_RIGHT, null);
         rightPlayer.setBounds(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth(), redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         rightPlayer.setVisible(false);
         addActor(rightPlayer);
 
-        shipPlacer = new ShipPlacer(this, staticContent.config.getShips(), cellSize);
+        shipPlacer = new ShipPlacer(null, staticContent.config.getShips(), cellSize);
         shipPlacer.setVisible(false);
         shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth(), redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         addActor(shipPlacer);

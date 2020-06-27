@@ -22,14 +22,14 @@ public class ActorWithSprite extends Actor implements EventListener {
     @Nullable
     private Sprite altSprite;
 
-    @NotNull
+    @Nullable
     protected ActorWithSpriteListener callback;
 
     private int buttonId;
 
     private boolean isPressed;
 
-    public ActorWithSprite(@NotNull ActorWithSpriteListener callback, @NotNull String spriteName, @Nullable String altSpriteName, int buttonId) {
+    public ActorWithSprite(@Nullable ActorWithSpriteListener callback, @NotNull String spriteName, @Nullable String altSpriteName, int buttonId) {
         this.callback = callback;
         this.buttonId = buttonId;
         sprite = SpriteManager.getInstance().getSprite(spriteName);
@@ -46,6 +46,10 @@ public class ActorWithSprite extends Actor implements EventListener {
         return sprite;
     }
 
+    public void setCallback(@Nullable ActorWithSpriteListener callback) {
+        this.callback = callback;
+    }
+
     @Override
     public void draw(@NotNull Batch batch, float parentAlpha) {
         if (isPressed && altSprite != null)
@@ -56,6 +60,8 @@ public class ActorWithSprite extends Actor implements EventListener {
 
     @Override
     public boolean handle(Event e) {
+        if (callback == null)
+            return false;
         if (!(e instanceof InputEvent)) return false;
         InputEvent event = (InputEvent) e;
 

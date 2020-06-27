@@ -68,4 +68,11 @@ public final class GH {
     public static CheckBox getCheckbox(@NotNull BitmapFont font) {
         return new CheckBox(null, new CheckBox.CheckBoxStyle(getSpriteDrawable(Constants.BUTTON_DONE_FRAME), getSpriteDrawable(Constants.BUTTON_DONE_SELECTED), font, font.getColor()));
     }
+
+    /**
+     * Размещает @param actor так, чтоб его центр был в @param center, а ширина и высота - @param size
+     */
+    public static void setBoundsByCenter(@NotNull Actor actor, @NotNull Vec2d center, @NotNull Vec2d size) {
+        actor.setBounds(center.x - size.x / 2, center.y - size.y / 2, size.x, size.y);
+    }
 }
