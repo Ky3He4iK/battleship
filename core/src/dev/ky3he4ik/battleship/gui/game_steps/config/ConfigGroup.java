@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import dev.ky3he4ik.battleship.ai.AILevel;
-import dev.ky3he4ik.battleship.gui.ActorWithSprite;
-import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.game_steps.StepConfigure;
 import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.gui.utils.GH;

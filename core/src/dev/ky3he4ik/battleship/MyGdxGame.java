@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import org.jetbrains.annotations.NotNull;
 
 import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
+import dev.ky3he4ik.battleship.gui.screens.ScreensDirector;
 import dev.ky3he4ik.battleship.logic.StaticContent;
 import dev.ky3he4ik.battleship.platform.PlatformSpecific;
 import dev.ky3he4ik.battleship.utils.Constants;
@@ -18,10 +19,10 @@ import dev.ky3he4ik.battleship.utils.Constants;
 /**
  * Класс игры и экрана. В конструктор передается платформо-зависимые API.
  * Из логики только запуск музыки на повторе
- * todo: перенести музыку в StepsDirector
+ * todo: перенести музыку в ScreensDirector
  */
 public class MyGdxGame extends Game implements Screen {
-    private StepsDirector stage;
+    private ScreensDirector stage;
     private Music music;
 
     public MyGdxGame(@NotNull final PlatformSpecific platformSpecific) {
@@ -32,7 +33,7 @@ public class MyGdxGame extends Game implements Screen {
     public void create() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
         Gdx.app.setLogLevel(Constants.DEBUG_MODE ? Application.LOG_DEBUG : Application.LOG_ERROR);
-        stage = new StepsDirector();
+        stage = new ScreensDirector();
         Gdx.input.setInputProcessor(stage);
         music = Gdx.audio.newMusic(Gdx.files.internal("TRG_Banks_-_Grandpas_great_escape.ogg"));
         music.setLooping(true);

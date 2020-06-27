@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import dev.ky3he4ik.battleship.gui.ActorWithSprite;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.utils.Constants;
 import dev.ky3he4ik.battleship.utils.vectors.Vec2d;

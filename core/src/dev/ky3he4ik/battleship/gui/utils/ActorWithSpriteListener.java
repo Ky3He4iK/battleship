@@ -1,4 +1,4 @@
-package dev.ky3he4ik.battleship.gui;
+package dev.ky3he4ik.battleship.gui.utils;
 
 public interface ActorWithSpriteListener {
     boolean buttonPressed(int buttonId);

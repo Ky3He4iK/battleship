@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.Align;
 
 import org.jetbrains.annotations.NotNull;
 
-import dev.ky3he4ik.battleship.gui.ActorWithSprite;
-import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.utils.Constants;
 

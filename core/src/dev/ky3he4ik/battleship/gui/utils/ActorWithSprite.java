@@ -1,4 +1,4 @@
-package dev.ky3he4ik.battleship.gui;
+package dev.ky3he4ik.battleship.gui.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import dev.ky3he4ik.battleship.gui.SpriteManager;
 
 public class ActorWithSprite extends Actor implements EventListener {
     @NotNull

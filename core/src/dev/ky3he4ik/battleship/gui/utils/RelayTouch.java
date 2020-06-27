@@ -1,4 +1,4 @@
-package dev.ky3he4ik.battleship.gui;
+package dev.ky3he4ik.battleship.gui.utils;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -9,9 +9,9 @@ import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 
 public class RelayTouch extends InputListener {
     @NotNull
-    final private StepsDirector callback;
+    final private RelayTouchListener callback;
 
-    public RelayTouch(@NotNull final StepsDirector gameStage) {
+    public RelayTouch(@NotNull final RelayTouchListener gameStage) {
         callback = gameStage;
     }
 

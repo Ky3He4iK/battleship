@@ -10,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-import dev.ky3he4ik.battleship.gui.ActorWithSprite;
-import dev.ky3he4ik.battleship.gui.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.Field;
-import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
+import dev.ky3he4ik.battleship.gui.screens.ScreensDirector;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.utils.GH;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.World;
@@ -36,12 +36,12 @@ public class ShipPlacer extends Group implements AloneShipListener, ActorWithSpr
     @NotNull
     private ArrayList<ActorWithSprite> childrens;
     @NotNull
-    private StepsDirector callback;
+    private ScreensDirector callback;
     private float cellSize;
 
     private int lastAccessId = 0;
 
-    public ShipPlacer(@NotNull StepsDirector callback, @NotNull ArrayList<GameConfig.Ship> availableShips, float cellSize) {
+    public ShipPlacer(@NotNull ScreensDirector callback, @NotNull ArrayList<GameConfig.Ship> availableShips, float cellSize) {
         this.availableShips = availableShips;
         this.cellSize = cellSize;
         this.callback = callback;

@@ -10,9 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-import dev.ky3he4ik.battleship.gui.game_steps.StepsDirector;
 import dev.ky3he4ik.battleship.gui.placing.AloneShip;
 import dev.ky3he4ik.battleship.gui.placing.AloneShipListener;
+import dev.ky3he4ik.battleship.gui.screens.ScreensDirector;
 import dev.ky3he4ik.battleship.gui.utils.GH;
 import dev.ky3he4ik.battleship.logic.Communication;
 import dev.ky3he4ik.battleship.logic.GameConfig;
@@ -47,9 +47,9 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     private int playerId;
 
     @NotNull
-    private StepsDirector callback;
+    private ScreensDirector callback;
 
-    public Field(@NotNull final World world, float cellSize, @Nullable final Communication communication, int playerId, @NotNull StepsDirector callback) {
+    public Field(@NotNull final World world, float cellSize, @Nullable final Communication communication, int playerId, @NotNull ScreensDirector callback) {
         this.world = world;
         this.cellSize = cellSize;
         this.showShips = false;
@@ -425,7 +425,7 @@ public class Field extends Group implements PlayerFinished, AloneShipListener {
     }
 
     @NotNull
-    public StepsDirector getCallback() {
+    public ScreensDirector getCallback() {
         return callback;
     }
 

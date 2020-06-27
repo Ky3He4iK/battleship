@@ -1,4 +1,4 @@
-package dev.ky3he4ik.battleship.gui.game_steps;
+package dev.ky3he4ik.battleship.gui.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -14,30 +14,32 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-import dev.ky3he4ik.battleship.gui.utils.ActorWithSprite;
-import dev.ky3he4ik.battleship.gui.utils.ActorWithSpriteListener;
 import dev.ky3he4ik.battleship.gui.AnimationManager;
 import dev.ky3he4ik.battleship.gui.Field;
-import dev.ky3he4ik.battleship.gui.utils.RelayTouch;
 import dev.ky3he4ik.battleship.gui.SpriteManager;
 import dev.ky3he4ik.battleship.gui.placing.ShipPlacer;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSprite;
+import dev.ky3he4ik.battleship.gui.utils.ActorWithSpriteListener;
+import dev.ky3he4ik.battleship.gui.utils.RelayTouch;
 import dev.ky3he4ik.battleship.gui.utils.RelayTouchListener;
 import dev.ky3he4ik.battleship.logic.GameConfig;
 import dev.ky3he4ik.battleship.logic.StaticContent;
 import dev.ky3he4ik.battleship.logic.World;
 import dev.ky3he4ik.battleship.utils.Constants;
 
-public class StepsDirector extends Stage implements ActorWithSpriteListener, RelayTouchListener {
-    public final static int STEP_AFTERMATH = 5;
-    final static int TURN_LEFT = 0;
-    final static int TURN_RIGHT = 1;
-    final static int STEP_BEGINNING = 0;
-    private final static int STEP_CHOOSE_CONFIG = 1;
-    private final static int STEP_PLACEMENT_L = 2;
-    final static int STEP_PLACEMENT_R = 3;
-    final static int STEP_GAME = 4;
-    final static int STEP_CONNECTING = 6;
-    final static int STEP_CONNECTING_CLIENT = 7;
+public class ScreensDirector extends Stage implements ActorWithSpriteListener, RelayTouchListener {
+    public final static int TURN_LEFT = 0;
+    public final static int TURN_RIGHT = 1;
+
+    public final static int STAY_ON_THIS_SCREEN = -1;
+    public final static int SCREEN_BEGINNING = 0;
+    public final static int SCREEN_CHOOSE = 1;
+    public final static int SCREEN_SETUP = 2;
+    public final static int SCREEN_PLACEMENT = 3;
+    public final static int SCREEN_CONNECTING = 4;
+    public final static int SCREEN_GAME = 5;
+    public final static int SCREEN_RESULTS = 6;
+    public final static int SCREEN_SETTINGS = 7;
 
     private static final int ROTATE_BTN_ID = 1;
 
@@ -80,14 +82,14 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener, Rel
     boolean p2Ready;
     boolean isP2 = false;
     @NotNull
-    private ArrayList<BaseStep> steps;
+    private ArrayList<BaseScreen> steps;
     @NotNull
     private SpriteManager manager;
-    private int currentStep = STEP_BEGINNING;
+    private int currentStep = SCREEN_BEGINNING;
     private int movedCurrentTurn;
     private int shootedCurrentTurn;
 
-    public StepsDirector() {
+    public ScreensDirector() {
         font = new BitmapFont();
         font.getData().setScale(Gdx.graphics.getHeight() / 400f);
         font.setColor(Color.BLACK);
@@ -95,14 +97,14 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener, Rel
         stepLabel = new Label("", new Label.LabelStyle(font, font.getColor()));
 
         steps = new ArrayList<>();
-        steps.add(new StepBeginning(this, STEP_BEGINNING));
-        steps.add(new StepConfigure(this, STEP_CHOOSE_CONFIG));
-        steps.add(new StepPlacementLeft(this, STEP_PLACEMENT_L));
-        steps.add(new StepPlacementRight(this, STEP_PLACEMENT_R));
-        steps.add(new StepGame(this, STEP_GAME));
-        steps.add(new StepAftermath(this, STEP_AFTERMATH));
-        steps.add(new StepConnecting(this, STEP_CONNECTING));
-        steps.add(new StepConnectingClient(this, STEP_CONNECTING_CLIENT));
+        steps.add(new ScreenBeginning(this, SCREEN_BEGINNING));
+        steps.add(new ScreenChoose(this, SCREEN_CHOOSE));
+        steps.add(new ScreenSetup(this, SCREEN_SETUP));
+        steps.add(new ScreenPlacement(this, SCREEN_PLACEMENT));
+        steps.add(new ScreenConnecting(this, SCREEN_CONNECTING));
+        steps.add(new ScreenGame(this, SCREEN_GAME));
+        steps.add(new ScreenResults(this, SCREEN_RESULTS));
+        steps.add(new ScreenSettings(this, SCREEN_SETTINGS));
 
         manager = SpriteManager.getInstance();
         calcCellSize();
@@ -138,19 +140,24 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener, Rel
 
         getStep().stepBegin();
         for (int i = 0; i < steps.size(); i++)
-            if (steps.get(i).stepId != i)
-                Gdx.app.error("StepsDirector", "invalid step #" + steps.get(i).stepId + " at pos " + i);
+            if (steps.get(i).screenId != i)
+                Gdx.app.error("StepsDirector", "invalid step #" + steps.get(i).screenId + " at pos " + i);
     }
 
     private void prevStep() {
-        steps.get(currentStep).stepEnd();
-        currentStep = STEP_BEGINNING;
+        //todo: do anything
+        int nextStep = steps.get(currentStep).stepEnd();
+        if (nextStep == STAY_ON_THIS_SCREEN)
+            return;
+        currentStep = nextStep;
+        if (currentStep < 0)
+            currentStep = SCREEN_BEGINNING;
         steps.get(currentStep).stepBegin();
         stepLabel.setText(steps.get(currentStep).getName());
     }
 
     void nextStep() {
-        if (currentStep == STEP_BEGINNING)
+        if (currentStep == SCREEN_BEGINNING)
             restart();
         currentStep = steps.get(currentStep).stepEnd();
         steps.get(currentStep).stepBegin();
@@ -264,12 +271,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener, Rel
         calcCellSize();
 
         leftPlayer.setBounds(sideWidth + redundantX, redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
-        rightPlayer.setY(redundantY + footerHeight);
-        if (currentStep == STEP_PLACEMENT_R)
-            rightPlayer.setX(sideWidth + redundantX);
-        else
-            rightPlayer.setX(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth());
-        rightPlayer.setSize(cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
+        rightPlayer.setBounds(redundantY + footerHeight, sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth(),
+                cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         shipPlacer.setBounds(sideWidth + redundantX + middleGap + cellSize * staticContent.config.getWidth(), redundantY + footerHeight, cellSize * staticContent.config.getWidth(), cellSize * staticContent.config.getHeight());
         shipPlacer.setCellSize(cellSize);
 
@@ -309,12 +312,12 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener, Rel
     }
 
     @NotNull
-    private BaseStep getStep() {
+    private BaseScreen getStep() {
         return steps.get(currentStep);
     }
 
     public void setStep(int step) {
-        if (currentStep == STEP_BEGINNING)
+        if (currentStep == SCREEN_BEGINNING)
             restart();
         steps.get(currentStep).stepEnd();
         currentStep = step;
@@ -358,7 +361,7 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener, Rel
         rightPlayer.clearActions();
         rightPlayer.clearListeners();
         rightPlayer.dispose();
-        for (BaseStep step : steps)
+        for (BaseScreen step : steps)
             step.dispose();
         font.dispose();
     }
