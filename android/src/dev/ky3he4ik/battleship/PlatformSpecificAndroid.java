@@ -1,5 +1,6 @@
 package dev.ky3he4ik.battleship;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
@@ -65,5 +66,10 @@ public class PlatformSpecificAndroid implements PlatformSpecific {
     @Override
     public String platformName() {
         return "Android" + Build.VERSION.SDK_INT;
+    }
+
+    @Override
+    public boolean hasBluetooth() {
+        return BluetoothAdapter.getDefaultAdapter() != null;
     }
 }

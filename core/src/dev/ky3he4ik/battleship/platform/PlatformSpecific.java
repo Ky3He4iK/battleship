@@ -13,4 +13,6 @@ public interface PlatformSpecific {
     boolean write(@NotNull String filename, @NotNull String content);
 
     @NotNull String platformName();
+
+    boolean hasBluetooth();
 }

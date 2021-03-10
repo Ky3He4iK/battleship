@@ -50,4 +50,9 @@ public class PlatformSpecificDesktop implements PlatformSpecific {
     public String platformName() {
         return "Desktop";
     }
+
+    @Override
+    public boolean hasBluetooth() {
+        return false;
+    }
 }
