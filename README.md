@@ -1,8 +1,6 @@
 # battleship
 Battleships game written using libgdx
 
-Project made to Samsung IT Academy by ky3he4ik
-
 Features:
 * Multiple shots per turn
 * Moving ships
@@ -12,3 +10,7 @@ Features:
 
 Server side: https://github.com/Ky3He4iK/battleship_server
 
+Запуск:
+    Серверная часть требует открытого порта 6683 на сервере, а так же запущенной базы данных redis
+
+    Запуск приложения: собрать akp и запустить на устройстве пользователя

@@ -61,7 +61,7 @@ public class NameClient extends Stage implements ActorWithSpriteListener {
         labelStyle = new Label.LabelStyle(font, font.getColor());
 
         Skin skin = SpriteManager.getInstance().getSkin();
-        nameInput = new TextField("Anon #" + Math.abs(new Random().nextInt()), skin);
+        nameInput = new TextField("Anon #" + Math.abs(new Random().nextInt() % 10000), skin);
         addActor(nameInput);
 
         nameLabel = new Label("Enter your name:", skin);

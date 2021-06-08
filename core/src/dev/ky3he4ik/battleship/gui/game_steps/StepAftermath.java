@@ -1,5 +1,7 @@
 package dev.ky3he4ik.battleship.gui.game_steps;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -50,7 +52,8 @@ public class StepAftermath extends BaseStep {
 
     @Override
     public void draw() {
-        clear();
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         getBatch().begin();
         textLabel.draw(getBatch(), 1);
         getBatch().end();
@@ -58,6 +61,8 @@ public class StepAftermath extends BaseStep {
 
     @Override
     public int stepEnd() {
+        callback.leftPlayer.setShowShips(false);
+        callback.rightPlayer.setShowShips(false);
         return StepsDirector.STEP_BEGINNING;
     }
 

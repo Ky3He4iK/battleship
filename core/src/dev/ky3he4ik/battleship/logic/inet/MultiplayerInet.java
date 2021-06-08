@@ -327,6 +327,7 @@ public class MultiplayerInet extends Thread implements Communication {
                 break;
             case GET_STATS:
                 info = action.getMsg();
+                break;
         }
     }
 

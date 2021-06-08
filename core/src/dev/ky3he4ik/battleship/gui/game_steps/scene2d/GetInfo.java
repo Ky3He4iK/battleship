@@ -122,8 +122,8 @@ public class GetInfo extends Stage implements ActorWithSpriteListener {
                 Gdx.graphics.getHeight() - callbackCallback.getRedundantY() * 2 - callbackCallback.getFooterHeight() - callbackCallback.getHeaderHeight() - infoLabel.getHeight());
         infoArea.setBounds(textContainer.getX(), textContainer.getY(), textContainer.getWidth(), textContainer.getHeight());
         scrollPane.setBounds(0, 0, infoArea.getWidth(), infoArea.getHeight());
-        textContainer.setVisible(true);
-
+        textContainer.setVisible(false);
+        scrollPane.setVisible(false);
 
         okButton.setBounds(Gdx.graphics.getWidth() - callbackCallback.getRedundantX() - cellSize - callbackCallback.getSideWidth(),
                 callbackCallback.getRedundantY() + callbackCallback.getFooterHeight() - cellSize, cellSize, cellSize);
@@ -131,7 +131,7 @@ public class GetInfo extends Stage implements ActorWithSpriteListener {
         cTime = 0;
 
         if (callbackCallback.isInetClient)
-            player = (MultiplayerInet) callbackCallback.rightPlayer.getCommunication();
+            player = (MultiplayerInet) callbackCallback.leftPlayer.getCommunication();
         else
             player = (MultiplayerInet) callbackCallback.rightPlayer.getCommunication();
 
@@ -143,34 +143,37 @@ public class GetInfo extends Stage implements ActorWithSpriteListener {
 
     @Override
     public void act() {
-        if (player == null)
-            callback.onOk();
-        if (player.getInfo() == null)
-            super.act();
-        else {
+//        if (player == null)
+//            callback.nextStep();
+        if (player.getInfo() != null) {
+            textContainer.setVisible(true);
+            scrollPane.setVisible(true);
             info = player.getInfo();
             infoArea.setText(info);
         }
+        super.act();
     }
 
     @Override
     public void draw() {
+        Batch batch = getBatch();
+        batch.begin();
         if (info == null) {
             cTime += Gdx.graphics.getDeltaTime();
-            Batch batch = getBatch();
-            batch.begin();
             TextureRegion frame = animation.getKeyFrame(cTime);
             batch.draw(frame, callback.getWidth() / 2 - cellSize / 2f, callback.getHeight() / 2 - cellSize / 2f, cellSize, cellSize);
-            batch.end();
         } else
-            super.draw();
+            font.draw(batch, info, 10, Gdx.graphics.getHeight() - 10);
+
+        batch.end();
+        super.draw();
     }
 
     @Override
     public boolean buttonPressed(int buttonId) {
         if (buttonId == OK_BUTTON_ID) {
             Gdx.input.setInputProcessor(inputProcessor);
-            callback.onOk();
+//            callback.onOk();
             return true;
         }
         return false;
