@@ -52,8 +52,6 @@ public class StepAftermath extends BaseStep {
 
     @Override
     public void draw() {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         getBatch().begin();
         textLabel.draw(getBatch(), 1);
         getBatch().end();
