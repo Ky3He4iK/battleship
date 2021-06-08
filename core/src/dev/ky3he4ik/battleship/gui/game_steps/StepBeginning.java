@@ -51,10 +51,14 @@ public class StepBeginning extends BaseStep {
     @Override
     public boolean relayTouch(InputEvent event, float x, float y, int pointer, int button) {
         if (y > Gdx.graphics.getHeight() / 2f) {
+            callback.isInetClient = false;
+            callback.isInetGame = false;
             callback.nextStep();
         } else {
+            callback.isInetClient = true;
+            callback.isInetGame = true;
             callback.gotConfig = false;
-            callback.setStep(StepsDirector.STEP_CONNECTING_CLIENT);
+            callback.setStep(StepsDirector.STEP_NAME_CLIENT);
         }
         return true;
     }

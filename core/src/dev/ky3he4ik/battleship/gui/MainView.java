@@ -20,7 +20,7 @@ public class MainView implements Screen {
         Gdx.input.setInputProcessor(stage);
         music = Gdx.audio.newMusic(Gdx.files.internal("TRG_Banks_-_Grandpas_great_escape.ogg"));
         music.setLooping(true);
-        music.play();
+//        music.play();
         music.setVolume(.4f);
     }
 

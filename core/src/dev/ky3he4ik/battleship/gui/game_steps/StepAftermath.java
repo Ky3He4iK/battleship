@@ -50,6 +50,7 @@ public class StepAftermath extends BaseStep {
 
     @Override
     public void draw() {
+        clear();
         getBatch().begin();
         textLabel.draw(getBatch(), 1);
         getBatch().end();

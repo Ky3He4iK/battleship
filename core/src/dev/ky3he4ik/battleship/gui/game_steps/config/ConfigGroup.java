@@ -210,7 +210,7 @@ public class ConfigGroup extends Stage implements ActorWithSpriteListener, Proxy
         addActor(tableContainer);
 
         doneButton = new ActorWithSprite(this, Constants.BUTTON_DONE, Constants.BUTTON_DONE_SELECTED, DONE_BUTTON_ID);
-        doneButton.setVisible(false);
+        doneButton.setVisible(true);
         doneButton.setName("Config/Done");
         addActor(doneButton);
     }

@@ -42,6 +42,10 @@ public class MultiplayerInet extends Thread implements Communication {
     @Nullable
     private Action pending;
     private boolean isReconnect;
+    private boolean isRequestInfo = false;
+
+    @Nullable
+    private String info;
 
     public MultiplayerInet(@NotNull final World localField, @NotNull final World inetField, @NotNull GameConfig config, @NotNull String name, long uuid, boolean isHost) {
         this.name = name;
@@ -117,10 +121,14 @@ public class MultiplayerInet extends Thread implements Communication {
                         client.send(pending);
                     isReconnect = false;
                 }
+                if (isRequestInfo) {
+                    client.send(new Action(Action.ActionType.GET_STATS, name, uuid));
+                    isRequestInfo = false;
+                }
                 i++;
                 if (i % 10 == 0) {
                     client.send(Action.ping(name, uuid));
-                    Gdx.app.error(TAG, "ping: " + name);
+                    Gdx.app.debug(TAG, "ping: " + name);
                 }
 
                 if (i > 100) {
@@ -144,6 +152,16 @@ public class MultiplayerInet extends Thread implements Communication {
             }
         }
 
+    }
+
+    public void requestInfo() {
+        isRequestInfo = true;
+        info = null;
+    }
+
+    @Nullable
+    public String getInfo() {
+        return info;
     }
 
     @Override
@@ -307,6 +325,8 @@ public class MultiplayerInet extends Thread implements Communication {
 //                World e = World.fromJSON(action.getMsg());
 //                e.duplicate(inetField);
                 break;
+            case GET_STATS:
+                info = action.getMsg();
         }
     }
 

@@ -273,6 +273,8 @@ public class Action {
         // > -
 
         SYNC,   // msg: World in JSON
+
+        GET_STATS, // msg: all connected players
     }
 
 

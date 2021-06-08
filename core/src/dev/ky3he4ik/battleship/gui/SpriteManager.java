@@ -1,7 +1,11 @@
 package dev.ky3he4ik.battleship.gui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,9 +19,20 @@ public class SpriteManager {
     @NotNull
     private HashMap<String, Integer> usageCnt;
 
+    @NotNull
+    private final Skin skin;
+
     private SpriteManager() {
         sprites = new HashMap<>();
         usageCnt = new HashMap<>();
+        TextureAtlas atlas = new TextureAtlas("uiskin.atlas");
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin.addRegions(atlas);
+    }
+
+    @NotNull
+    public Skin getSkin() {
+        return skin;
     }
 
     @NotNull

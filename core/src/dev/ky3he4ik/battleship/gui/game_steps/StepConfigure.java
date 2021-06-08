@@ -82,12 +82,14 @@ public class StepConfigure extends BaseStep {
             rightComm.init();
             callback.rightPlayer.setCommunication(rightComm);
         } else if (config.getGameType() == GameConfig.GameType.GLOBAL_INET) {
-            Communication rightComm = new MultiplayerInet(leftWorld, rightWorld, config, callback.name, callback.uuid, true);
-            rightComm.init();
-            callback.rightPlayer.setCommunication(rightComm);
+            callback.isInetGame = true;
+            callback.isInetClient = false;
         }
         callback.isP2 = false;
         callback.rightPlayer.init();
+
+        if (callback.isInetGame)
+            return StepsDirector.STEP_NAME_CLIENT;
 
         return super.stepEnd();
     }
@@ -101,11 +103,6 @@ public class StepConfigure extends BaseStep {
     @NotNull
     public GameConfig getConfig() {
         return callback.config;
-    }
-
-    @NotNull
-    public StepsDirector getCallback() {
-        return callback;
     }
 
     public void ConfigIsDone() {

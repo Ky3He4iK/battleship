@@ -33,6 +33,11 @@ public abstract class BaseStep extends Stage {
         super.draw();
     }
 
+    @NotNull
+    public StepsDirector getCallback() {
+        return callback;
+    }
+
     @Override
     public void dispose() {
         super.dispose();

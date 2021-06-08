@@ -30,15 +30,19 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     final static int TURN_LEFT = 0;
     final static int TURN_RIGHT = 1;
     final static int STEP_BEGINNING = 0;
-    private final static int STEP_CHOOSE_CONFIG = 1;
-    private final static int STEP_PLACEMENT_L = 2;
+    final static int STEP_CHOOSE_CONFIG = 1;
+    final static int STEP_PLACEMENT_L = 2;
     final static int STEP_PLACEMENT_R = 3;
     final static int STEP_GAME = 4;
     final static int STEP_CONNECTING = 6;
     final static int STEP_CONNECTING_CLIENT = 7;
+    final static int STEP_NAME_CLIENT = 8;
+    final static int STEP_GET_INFO = 9;
 
     private static final int ROTATE_BTN_ID = 1;
     public boolean gotConfig = false;
+    public boolean isInetGame = false;
+    public boolean isInetClient = false;
     int turn = 0;
     float cellSize;
     float redundantX;
@@ -57,9 +61,9 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     int leftScore = 0;
     int rightScore = 0;
     @NotNull
-    Field leftPlayer;
+    public Field leftPlayer;
     @NotNull
-    Field rightPlayer;
+    public Field rightPlayer;
     @NotNull
     GameConfig config;
     @NotNull
@@ -79,9 +83,9 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
     long uuid;
     boolean isP2 = false;
     @NotNull
-    private ArrayList<BaseStep> steps;
+    private final ArrayList<BaseStep> steps;
     @NotNull
-    private SpriteManager manager;
+    private final SpriteManager manager;
     private int currentStep = STEP_BEGINNING;
     private int movedCurrentTurn;
     private int shootedCurrentTurn;
@@ -107,6 +111,8 @@ public class StepsDirector extends Stage implements ActorWithSpriteListener {
         steps.add(new StepAftermath(this, STEP_AFTERMATH));
         steps.add(new StepConnecting(this, STEP_CONNECTING));
         steps.add(new StepConnectingClient(this, STEP_CONNECTING_CLIENT));
+        steps.add(new StepNameClient(this, STEP_NAME_CLIENT));
+        steps.add(new StepGetInfo(this, STEP_GET_INFO));
 
         manager = SpriteManager.getInstance();
         calcCellSize();
